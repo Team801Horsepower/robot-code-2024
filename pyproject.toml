@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "robot-code-2024"
+version = "0.1.0"
+description = ""
+authors = ["Ishaan Sen"]
+readme = "README.md"
+packages = [{include = "robot_code_2024"}]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.12"
+robotpy = {extras = ["rev"], version = "^2023.4.3.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
