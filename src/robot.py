@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
 import wpilib
+import rev
+from subsystems.drive import Drive
 
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
-        pass
+        self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
 
     def autonomousInit(self):
         pass
@@ -17,8 +19,10 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
-        print("Hello, World!")
+        # print("Hello, World!")
         # Open pynetconsole ("python3 -m netconsole 10.8.1.2") to view
+
+        self.motor.set(0.5)
 
     def testInit(self):
         pass
