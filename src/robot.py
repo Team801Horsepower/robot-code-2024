@@ -7,8 +7,10 @@ from subsystems import drive
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
+        self.controller = wpilib.XboxController(0)
+
         # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
-        self.drive = drive.Drive(11)
+        self.drive = drive.Drive()
 
     def autonomousInit(self):
         pass
@@ -25,7 +27,10 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.motor.set(0.5)
 
-        self.drive.drive(0.5)
+        self.drive.drive(
+            self.controller.getLeftY(),
+            self.controller.getRightY(),
+        )
 
     def testInit(self):
         pass
