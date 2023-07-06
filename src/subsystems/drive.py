@@ -13,7 +13,7 @@ from typing import List
 
 # 12 9 2 20
 class Drive:
-    def __init__(self):
+    def __init__(self) -> None:
         # TODO: replace with actually measured `dimensions`
         # meters, (length, width)
         self.dimensions = Translation2d(0.7, 0.4)
@@ -62,7 +62,7 @@ class Drive:
     `vel`: (forward, leftward, counterclockwise), m/s, rad/s
     """
 
-    def drive(self, vel: Transform2d):
+    def drive(self, vel: Transform2d) -> None:
         motors = zip(
             chain(self.drive_l, self.drive_r),
             chain(self.turn_l, self.turn_r),
