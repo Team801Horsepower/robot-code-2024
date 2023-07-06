@@ -74,17 +74,15 @@ class Drive:
             # leaving only a division by 2.
             rot_vec = self.dimensions / 2.0 * vel.rotation().radians()
             rot_vec = Translation2d(rot_vec.x * pos[0], rot_vec.y * pos[1])
-            rot_vec = rot_vec.rotateBy(
-                Rotation2d(cos(math.pi / 2.0), sin(math.pi / 2.0))
-            )
+            rot_vec = rot_vec.rotateBy(Rotation2d.fromDegrees(90))
 
             total_vec = rot_vec + vel.translation()
 
-            turn_position = total_vec.angle() * self.turn_gear_ratio
+            turn_position = total_vec.angle().radians() * self.turn_gear_ratio
             drive_speed = total_vec.norm() * self.drive_gear_ratio
 
             turn_motor.getPIDController().setReference(
-                turn_position.radians(), rev.CANSparkMaxLowLevel.ControlType.kPosition
+                turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
             )
             drive_motor.getPIDController().setReference(
                 drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
