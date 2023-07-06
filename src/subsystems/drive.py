@@ -1,7 +1,10 @@
+"""Drive subsystem for the 2022 swerve chassis"""
+
 import rev
 
+# pylint: disable=missing-docstring, too-few-public-methods
 
-# 12 9 2 20
+
 class Drive:
     def __init__(self):
         self.drive_l = [

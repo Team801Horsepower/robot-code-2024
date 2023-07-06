@@ -9,6 +9,9 @@ packages = [{include = "robot_code_2024"}]
 [tool.poetry.dependencies]
 python = ">=3.11,<3.12"
 robotpy = {extras = ["rev"], version = "^2023.4.3.0"}
+mypy = "^1.4.1"
+black = "^23.3.0"
+pylint = "^2.17.4"
 
 
 [build-system]

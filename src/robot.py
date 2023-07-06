@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
 import wpilib
-import rev
 from subsystems import drive
 
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
+        # pylint: disable=attribute-defined-outside-init
+
         self.controller = wpilib.XboxController(0)
 
         # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
