@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 import wpilib
+import wpimath
 import rev
 from subsystems import drive
 
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
-        self.controller = wpilib.XboxController(0)
+        self.driver_controller = wpilib.XboxController(0)
 
-        # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
         self.drive = drive.Drive()
 
     def autonomousInit(self):
@@ -27,10 +27,12 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.motor.set(0.5)
 
-        self.drive.drive(
-            self.controller.getLeftY(),
-            self.controller.getRightY(),
-        )
+        # TODO: Enable driving after resolving the gear ratios and robot dimensions
+        # self.drive.drive(
+        #     self.driver_controller.getLeftY(),
+        #     self.driver_controller.getRightY(),
+        # )
+        pass
 
     def testInit(self):
         pass
