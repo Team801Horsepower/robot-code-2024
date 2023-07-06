@@ -1,16 +1,19 @@
 import wpimath
 import rev
 import math
+from math import sin, cos, tan
+
 
 from rev import CANSparkMax
-from wpimath.geometry import Translation2d, Transform2d
+from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 from itertools import chain
+
+from typing import List
 
 
 # 12 9 2 20
 class Drive:
     def __init__(self):
-
         # TODO: replace with actually measured `dimensions`
         # meters, (length, width)
         self.dimensions = Translation2d(0.7, 0.4)
@@ -20,20 +23,20 @@ class Drive:
         self.drive_gear_ratio = 1.0
         self.turn_gear_ratio = 1.0
 
-        self.drive_l: [CANSparkMax] = [
+        self.drive_l: List[CANSparkMax] = [
             CANSparkMax(12, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(20, CANSparkMax.MotorType.kBrushless),
         ]
-        self.drive_r: [CANSparkMax] = [
+        self.drive_r: List[CANSparkMax] = [
             CANSparkMax(9, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(2, CANSparkMax.MotorType.kBrushless),
         ]
 
-        self.turn_l: [CANSparkMax] = [
+        self.turn_l: List[CANSparkMax] = [
             CANSparkMax(11, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(19, CANSparkMax.MotorType.kBrushless),
         ]
-        self.turn_r: [CANSparkMax] = [
+        self.turn_r: List[CANSparkMax] = [
             CANSparkMax(10, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(1, CANSparkMax.MotorType.kBrushless),
         ]
@@ -58,25 +61,31 @@ class Drive:
     """
     `vel`: (forward, leftward, counterclockwise), m/s, rad/s
     """
+
     def drive(self, vel: Transform2d):
         motors = zip(
             chain(self.drive_l, self.drive_r),
             chain(self.turn_l, self.turn_r),
             [(1, 1), (-1, 1), (1, -1), (-1, -1)],
         )
-        for (drive_motor, turn_motor, pos) in motors:
+        for drive_motor, turn_motor, pos in motors:
             # Normalizing involves dividing by (radius * 2), but converting from
             # angular velocity to linear velocity means multiplying by radius,
             # leaving only a division by 2.
-            rot_vec = self.dimensions / 2.0 * vel.rotation()
-            rot_vec.x *= pos[0]
-            rot_vec.y *= pos[1]
-            rot_vec = rot_vec.rotateBy(math.pi / 2.0)
+            rot_vec = self.dimensions / 2.0 * vel.rotation().radians()
+            rot_vec = Translation2d(rot_vec.x * pos[0], rot_vec.y * pos[1])
+            rot_vec = rot_vec.rotateBy(
+                Rotation2d(cos(math.pi / 2.0), sin(math.pi / 2.0))
+            )
 
             total_vec = rot_vec + vel.translation()
 
             turn_position = total_vec.angle() * self.turn_gear_ratio
             drive_speed = total_vec.norm() * self.drive_gear_ratio
 
-            turn_motor.getPIDController().setReference(turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition)
-            drive_motor.getPIDController().setReference(drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity)
+            turn_motor.getPIDController().setReference(
+                turn_position.radians(), rev.CANSparkMaxLowLevel.ControlType.kPosition
+            )
+            drive_motor.getPIDController().setReference(
+                drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
+            )
