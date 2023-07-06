@@ -1,0 +1,20 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]; then
+	echo "Illegal parameter count"
+
+elif [ $1 = 'verify' ]; then
+	poetry run black src/
+	poetry run mypy src/
+	poetry run pylint src/ --disable=missing-docstring,invalid-name,missing-module-docstring
+
+elif [ $1 = 'deploy' ]; then
+	poetry run src/robot.py deploy
+
+elif [ $1 = 'console' ]; then
+	poetry run netconsole 10.8.1.2
+
+else
+	echo 'Invalid input. Usage: ./frc [verify | deploy | console]'
+
+fi
