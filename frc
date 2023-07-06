@@ -4,8 +4,11 @@ if [ $# -ne 1 ]; then
 	echo "Illegal parameter count"
 
 elif [ $1 = 'verify' ]; then
+	printf 'Running black auto-formatter...\n\n'
 	poetry run black src/
+	printf 'Running mypy static type checker...\n\n'
 	poetry run mypy src/
+	printf 'Running pylint linter...\n\n'
 	poetry run pylint src/ --disable=missing-docstring,invalid-name,missing-module-docstring
 
 elif [ $1 = 'deploy' ]; then
