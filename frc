@@ -1,7 +1,11 @@
 #!/bin/sh
 
+frc_help() {
+	echo 'Usage: ./frc [verify | deploy | console]'
+}
+
 if [ $# -ne 1 ]; then
-	echo "Illegal parameter count"
+	frc_help
 
 elif [ $1 = 'verify' ]; then
 	printf 'Running black auto-formatter...\n\n'
@@ -21,6 +25,6 @@ elif [ $1 = 'shell' ]; then
 	poetry shell
 
 else
-	echo 'Invalid input. Usage: ./frc [verify | deploy | console]'
+	frc_help
 
 fi
