@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 import wpilib
-import wpimath
-import rev
 from subsystems import drive
 
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
+        # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
 
         self.drive = drive.Drive()

@@ -1,6 +1,6 @@
+"""Drive subsystem for the 2022 swerve chassis"""
 import wpimath
 import rev
-import math
 from math import sin, cos, tan
 
 
@@ -10,8 +10,9 @@ from itertools import chain
 
 from typing import List
 
+# pylint: disable=missing-docstring, too-few-public-methods
 
-# 12 9 2 20
+
 class Drive:
     def __init__(self) -> None:
         # TODO: replace with actually measured `dimensions`

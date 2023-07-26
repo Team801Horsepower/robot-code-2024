@@ -1,0 +1,30 @@
+#!/bin/sh
+
+frc_help() {
+	echo 'Usage: ./frc [verify | deploy | console]'
+}
+
+if [ $# -ne 1 ]; then
+	frc_help
+
+elif [ $1 = 'verify' ]; then
+	printf 'Running black auto-formatter...\n\n'
+	poetry run black src/
+	printf 'Running mypy static type checker...\n\n'
+	poetry run mypy src/
+	printf 'Running pylint linter...\n\n'
+	poetry run pylint src/ --disable=missing-docstring,invalid-name,missing-module-docstring
+
+elif [ $1 = 'deploy' ]; then
+	poetry run src/robot.py deploy
+
+elif [ $1 = 'console' ]; then
+	poetry run netconsole 10.8.1.2
+
+elif [ $1 = 'shell' ]; then
+	poetry shell
+
+else
+	frc_help
+
+fi
