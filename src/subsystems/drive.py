@@ -1,52 +1,57 @@
 """Drive subsystem for the 2022 swerve chassis"""
 import wpimath
 import rev
-from math import sin, cos, tan
+from math import sin, cos, tan, pi
 
 
-from rev import CANSparkMax
+from rev import CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 from itertools import chain
 
 from typing import List
 
 # pylint: disable=missing-docstring, too-few-public-methods
-
-
 class Drive:
     def __init__(self) -> None:
-        # TODO: replace with actually measured `dimensions`
         # meters, (length, width)
-        self.dimensions = Translation2d(0.7, 0.4)
+        self.dimensions = Translation2d(0.631825, 0.53975)
         self.radius = self.dimensions.norm() / 2.0
 
-        # TODO: replace with actual gear ratios
-        self.drive_gear_ratio = 1.0
-        self.turn_gear_ratio = 1.0
+        self.drive_gear_ratio = 16.0 / 3.0
+        self.turn_gear_ratio = 60.0
 
-        self.drive_l: List[CANSparkMax] = [
+        def setup_motors(motors: List[CANSparkMax]) -> List[tuple[CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder]]:
+            return list(map(lambda motor: (motor, motor.getPIDController(),  motor.getEncoder()), motors))
+
+        self.drive_l = setup_motors([
             CANSparkMax(12, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(20, CANSparkMax.MotorType.kBrushless),
-        ]
-        self.drive_r: List[CANSparkMax] = [
+        ])
+        self.drive_r = setup_motors([
             CANSparkMax(9, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(2, CANSparkMax.MotorType.kBrushless),
-        ]
+        ])
 
-        self.turn_l: List[CANSparkMax] = [
+        self.turn_l = setup_motors([
             CANSparkMax(11, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(19, CANSparkMax.MotorType.kBrushless),
-        ]
-        self.turn_r: List[CANSparkMax] = [
+        ])
+        self.turn_r = setup_motors([
             CANSparkMax(10, CANSparkMax.MotorType.kBrushless),
             CANSparkMax(1, CANSparkMax.MotorType.kBrushless),
-        ]
+        ])
+
+        for _, _, encoder in chain(self.drive_l, self.drive_r):
+            encoder.setPosition(0.0)
+        for _, _, encoder in chain(self.turn_l, self.turn_r):
+            # encoder.setPosition(0.25 * self.turn_gear_ratio)
+            encoder.setPosition(0.0)
 
         # PIDs to tune
-        for motor in chain(self.drive_l, self.drive_r):
-            motor.getPIDController().setP(0.5)
-        for motor in chain(self.turn_l, self.turn_r):
-            motor.getPIDController().setP(0.5)
+        for _, pid, _ in chain(self.drive_l, self.drive_r):
+            pid.setP(0.001)
+        for _, pid, _ in chain(self.turn_l, self.turn_r):
+            pid.setP(0.1)
 
         # for i in self.turn_motors:
         #     i.setIdleMode(CANSparkMax.IdleMode.kBrake)
@@ -69,7 +74,7 @@ class Drive:
             chain(self.turn_l, self.turn_r),
             [(1, 1), (-1, 1), (1, -1), (-1, -1)],
         )
-        for drive_motor, turn_motor, pos in motors:
+        for (_, drive_pid, _), (_, turn_pid, turn_enc), pos in motors:
             # Normalizing involves dividing by (radius * 2), but converting from
             # angular velocity to linear velocity means multiplying by radius,
             # leaving only a division by 2.
@@ -79,12 +84,16 @@ class Drive:
 
             total_vec = rot_vec + vel.translation()
 
-            turn_position = total_vec.angle().radians() * self.turn_gear_ratio
-            drive_speed = total_vec.norm() * self.drive_gear_ratio
+            turn_position = total_vec.angle().degrees() / 360.0 * self.turn_gear_ratio
+            # TODO: Divide by wheel circumference
+            drive_speed = -5.0 * total_vec.norm() * self.drive_gear_ratio / 2.0 / pi * 60.0
 
-            turn_motor.getPIDController().setReference(
-                turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
-            )
-            drive_motor.getPIDController().setReference(
+            if pos == (1, 1):
+                print(total_vec, turn_position, drive_speed, turn_enc.getPosition())
+
+            # turn_pid.setReference(
+            #     turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
+            # )
+            drive_pid.setReference(
                 drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
             )

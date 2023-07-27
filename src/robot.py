@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import wpilib
+import wpimath
 from subsystems import drive
 
 
@@ -31,7 +32,18 @@ class MyRobot(wpilib.TimedRobot):
         #     self.driver_controller.getLeftY(),
         #     self.driver_controller.getRightY(),
         # )
-        pass
+
+        def deadzone(activation: float) -> float:
+            if abs(activation) < 0.08:
+                return 0.0
+            return activation
+
+        drive_input = wpimath.geometry.Transform2d(
+            deadzone(-self.driver_controller.getLeftY()),
+            deadzone(-self.driver_controller.getLeftX()),
+            deadzone(-self.driver_controller.getRightX()),
+        )
+        self.drive.drive(drive_input)
 
     def testInit(self):
         pass
