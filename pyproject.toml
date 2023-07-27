@@ -2,18 +2,30 @@
 name = "robot-code-2024"
 version = "0.1.0"
 description = ""
-authors = ["Ishaan Sen"]
+authors = ["Ishaan Sen", "Nikhil Iyer <iyer.h.nikhil@gmail.com>"]
 readme = "README.md"
 packages = [{include = "robot_code_2024"}]
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
-robotpy = {extras = ["rev"], version = "^2023.4.3.0"}
+python = ">=3.10,<3.12"
+robotpy = {extras = ["rev", "photonvision", "pathplannerlib"], version = "^2023.4.3.0"}
+
+[tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"
 black = "^23.3.0"
 pylint = "^2.17.4"
 python-lsp-server = "^1.7.4"
+pre-commit = "^3.3.3"
+isort = "^5.12.0"
 
+[tool.poetry.scripts]
+deploy = 'robot.py:main'
+console = ''
+
+[tool.mypy]
+# warn_return_any = true
+disallow_untyped_defs = true
+# disallow_untyped_calls = true
 
 [build-system]
 requires = ["poetry-core"]
