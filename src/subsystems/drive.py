@@ -88,12 +88,19 @@ class Drive:
             # TODO: Divide by wheel circumference
             drive_speed = -5.0 * total_vec.norm() * self.drive_gear_ratio / 2.0 / pi * 60.0
 
-            if pos == (1, 1):
-                print(total_vec, turn_position, drive_speed, turn_enc.getPosition())
+            # if pos == (1, 1):
+            #     print(total_vec, turn_position, drive_speed, turn_enc.getPosition())
 
-            # turn_pid.setReference(
-            #     turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
-            # )
+            cur_position = turn_enc.getPosition()
+            half_turn = self.turn_gear_ratio / 2.0
+            while turn_position < cur_position - half_turn:
+                turn_position += 2 * half_turn
+            while turn_position > cur_position + half_turn:
+                turn_position -= 2 * half_turn
+
+            turn_pid.setReference(
+                turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
+            )
             drive_pid.setReference(
                 drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
             )
