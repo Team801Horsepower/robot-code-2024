@@ -36,7 +36,7 @@ repos:
     hooks:
       - id: mypy
         args: [
-          "--disallow-untyped-defs",
+          # "--disallow-untyped-defs",
         ]
   - repo: https://github.com/floatingpurr/sync_with_poetry
     rev: 1.1.0

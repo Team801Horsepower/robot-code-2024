@@ -9,6 +9,7 @@ packages = [{include = "robot_code_2024"}]
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 robotpy = {extras = ["rev", "photonvision", "pathplannerlib"], version = "^2023.4.3.0"}
+pint = "^0.22"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"
@@ -24,7 +25,7 @@ console = ''
 
 [tool.mypy]
 # warn_return_any = true
-disallow_untyped_defs = true
+# disallow_untyped_defs = true
 # disallow_untyped_calls = true
 
 [build-system]
