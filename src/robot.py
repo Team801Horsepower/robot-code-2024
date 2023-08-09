@@ -4,6 +4,8 @@ import wpilib
 import wpimath
 from subsystems import drive
 
+import config
+
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
@@ -39,9 +41,9 @@ class MyRobot(wpilib.TimedRobot):
             return activation
 
         drive_input = wpimath.geometry.Transform2d(
-            deadzone(-self.driver_controller.getLeftY()),
-            deadzone(-self.driver_controller.getLeftX()),
-            deadzone(-self.driver_controller.getRightX()),
+            deadzone(-config.drive_speed * self.driver_controller.getLeftY()),
+            deadzone(-config.drive_speed * self.driver_controller.getLeftX()),
+            deadzone(-config.turn_speed * self.driver_controller.getRightX()),
         )
         self.drive.drive(drive_input)
 

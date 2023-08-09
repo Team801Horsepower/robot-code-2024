@@ -15,10 +15,11 @@ class Drive:
     def __init__(self) -> None:
         # meters, (length, width)
         self.dimensions = Translation2d(0.631825, 0.53975)
-        self.radius = self.dimensions.norm() / 2.0
 
         self.drive_gear_ratio = 16.0 / 3.0
         self.turn_gear_ratio = 60.0
+
+        self.wheel_diameter = wpimath.units.inchesToMeters(4.0)
 
         def setup_motors(motors: List[CANSparkMax]) -> List[tuple[CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder]]:
             return list(map(lambda motor: (motor, motor.getPIDController(),  motor.getEncoder()), motors))
@@ -49,7 +50,7 @@ class Drive:
 
         # PIDs to tune
         for _, pid, _ in chain(self.drive_l, self.drive_r):
-            pid.setP(0.001)
+            pid.setP(0.0001)
         for _, pid, _ in chain(self.turn_l, self.turn_r):
             pid.setP(0.1)
 
@@ -85,8 +86,9 @@ class Drive:
             total_vec = rot_vec + vel.translation()
 
             turn_position = total_vec.angle().degrees() / 360.0 * self.turn_gear_ratio
-            # TODO: Divide by wheel circumference
-            drive_speed = -5.0 * total_vec.norm() * self.drive_gear_ratio / 2.0 / pi * 60.0
+            # # TODO: Divide by wheel circumference
+            # drive_speed = total_vec.norm() * self.drive_gear_ratio / 2.0 / pi * 60.0
+            drive_speed = total_vec.norm() / (pi * self.wheel_diameter) * self.drive_gear_ratio
 
             # if pos == (1, 1):
             #     print(total_vec, turn_position, drive_speed, turn_enc.getPosition())
@@ -102,5 +104,5 @@ class Drive:
                 turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
             )
             drive_pid.setReference(
-                drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
+                -drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
             )
