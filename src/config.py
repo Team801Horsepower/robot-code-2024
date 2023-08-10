@@ -1,5 +1,5 @@
 import wpimath
-import wpimath.units
+from wpimath import units
 from wpimath.geometry import Translation2d
 
 
@@ -15,7 +15,7 @@ robot_dimensions = Translation2d(0.631825, 0.53975)
 drive_gear_ratio = 6.0
 turn_gear_ratio = 25.5
 
-wheel_diameter = wpimath.units.inchesToMeters(4.0)
+wheel_diameter = units.inchesToMeters(4.0)
 
 drive_speed = 150.0
 turn_speed = 150.0

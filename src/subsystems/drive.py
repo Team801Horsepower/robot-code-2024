@@ -10,16 +10,10 @@ from itertools import chain
 
 from typing import List
 
+import config
 # pylint: disable=missing-docstring, too-few-public-methods
 class Drive:
     def __init__(self) -> None:
-        # meters, (length, width)
-        self.dimensions = Translation2d(0.631825, 0.53975)
-
-        self.drive_gear_ratio = 16.0 / 3.0
-        self.turn_gear_ratio = 60.0
-
-        self.wheel_diameter = wpimath.units.inchesToMeters(4.0)
 
         def setup_motors(motors: List[CANSparkMax]) -> List[tuple[CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder]]:
             return list(map(lambda motor: (motor, motor.getPIDController(),  motor.getEncoder()), motors))
@@ -79,22 +73,22 @@ class Drive:
             # Normalizing involves dividing by (radius * 2), but converting from
             # angular velocity to linear velocity means multiplying by radius,
             # leaving only a division by 2.
-            rot_vec = self.dimensions / 2.0 * vel.rotation().radians()
+            rot_vec = config.robot_dimensions / 2.0 * vel.rotation().radians()
             rot_vec = Translation2d(rot_vec.x * pos[0], rot_vec.y * pos[1])
             rot_vec = rot_vec.rotateBy(Rotation2d.fromDegrees(90))
 
             total_vec = rot_vec + vel.translation()
 
-            turn_position = total_vec.angle().degrees() / 360.0 * self.turn_gear_ratio
+            turn_position = total_vec.angle().degrees() / 360.0 * config.turn_gear_ratio
             # # TODO: Divide by wheel circumference
             # drive_speed = total_vec.norm() * self.drive_gear_ratio / 2.0 / pi * 60.0
-            drive_speed = total_vec.norm() / (pi * self.wheel_diameter) * self.drive_gear_ratio
+            drive_speed = total_vec.norm() / (pi * config.wheel_diameter) * config.drive_gear_ratio
 
             # if pos == (1, 1):
             #     print(total_vec, turn_position, drive_speed, turn_enc.getPosition())
 
             cur_position = turn_enc.getPosition()
-            half_turn = self.turn_gear_ratio / 2.0
+            half_turn = config.turn_gear_ratio / 2.0
             while turn_position < cur_position - half_turn:
                 turn_position += 2 * half_turn
             while turn_position > cur_position + half_turn:
