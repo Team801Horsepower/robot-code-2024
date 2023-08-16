@@ -6,12 +6,14 @@ from subsystems import drive
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
+
+        self.encs = [wpilib.AnalogInput(i) for i in range(4)]
         # pylint: disable=attribute-defined-outside-init
 
-        self.controller = wpilib.XboxController(0)
+        # self.controller = wpilib.XboxController(0)
 
-        # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
-        self.drive = drive.Drive()
+        # # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
+        # self.drive = drive.Drive()
 
     def autonomousInit(self):
         pass
@@ -23,15 +25,16 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
+        print([enc.getValue() for enc in self.encs])
         # print("Hello, World!")
         # Open pynetconsole ("python3 -m netconsole 10.8.1.2") to view
 
         # self.motor.set(0.5)
 
-        self.drive.drive(
-            self.controller.getLeftY(),
-            self.controller.getRightY(),
-        )
+        # self.drive.drive(
+        #     self.controller.getLeftY(),
+        #     self.controller.getRightY(),
+        # )
 
     def testInit(self):
         pass
