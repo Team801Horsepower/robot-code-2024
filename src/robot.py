@@ -41,9 +41,9 @@ class MyRobot(wpilib.TimedRobot):
             return activation
 
         drive_input = wpimath.geometry.Transform2d(
-            deadzone(-config.drive_speed * self.driver_controller.getLeftY()),
-            deadzone(-config.drive_speed * self.driver_controller.getLeftX()),
-            deadzone(-config.turn_speed * self.driver_controller.getRightX()),
+            config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
+            config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
+            config.turn_speed * deadzone(-self.driver_controller.getRightX()),
         )
         self.drive.drive(drive_input)
 
