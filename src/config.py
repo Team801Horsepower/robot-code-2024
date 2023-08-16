@@ -9,11 +9,11 @@ from wpimath.geometry import Translation2d
 robot_dimensions = Translation2d(0.631825, 0.53975)
 
 # Old Chassis
-# drive_gear_ratio = 16.0 / 3.0
-# turn_gear_ratio = 60.0
+drive_gear_ratio = 16.0 / 3.0
+turn_gear_ratio = 60.0
 # New Chassis
-drive_gear_ratio = 6.0
-turn_gear_ratio = 25.5
+# drive_gear_ratio = 6.0
+# turn_gear_ratio = 25.5
 
 wheel_diameter = units.inchesToMeters(4.0)
 
