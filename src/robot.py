@@ -47,6 +47,10 @@ class MyRobot(wpilib.TimedRobot):
         )
         self.drive.drive(drive_input)
 
+        # Set swerves button
+        if self.driver_controller.getAButton():
+            self.drive.set_swerves()
+
     def testInit(self):
         pass
 

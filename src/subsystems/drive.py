@@ -14,6 +14,7 @@ from itertools import chain
 from typing import List
 
 import config
+
 # pylint: disable=missing-docstring, too-few-public-methods
 class Drive:
     def __init__(self) -> None:
@@ -34,11 +35,27 @@ class Drive:
             swerve.drive_pid.setP(0.0001)
             swerve.turn_pid.setP(0.1)
 
+    def set_swerves(self):
+        for swerve in chain(self.swerves_l, self.swerves_r):
+            cur_position = swerve.turn_encoder.getPosition()
+            half_turn = config.turn_gear_ratio / 2.0
+            zero_position = 0.0
+            while zero_position < cur_position - half_turn:
+                zero_position += 2.0 * half_turn
+            while zero_position > cur_position + half_turn:
+                zero_position -= 2.0 * half_turn
+            swerve.turn_pid.setReference(zero_position, rev.CANSparkMaxLowLevel.ControlType.kPosition)
+
     """
     `vel`: (forward, leftward, counterclockwise), m/s, rad/s
     """
-
     def drive(self, vel: Transform2d) -> None:
+        # Equality check is fine here since the deadzone handles rounding to 0.
+        if vel.rotation().degrees() == 0.0 and vel.translation().norm() == 0.0:
+            for swerve in chain(self.swerves_l, self.swerves_r):
+                swerve.drive_pid.setReference(0.0, rev.CANSparkMaxLowLevel.ControlType.kVelocity)
+            return
+
         swerves = zip(
             chain(self.swerves_l, self.swerves_r),
             [(1, 1), (-1, 1), (1, -1), (-1, -1)],
@@ -49,7 +66,7 @@ class Drive:
             # leaving only a division by 2.
             rot_vec = config.robot_dimensions / 2.0 * vel.rotation().radians()
             rot_vec = Translation2d(rot_vec.x * pos[0], rot_vec.y * pos[1])
-            rot_vec = rot_vec.rotateBy(Rotation2d.fromDegrees(90))
+            rot_vec = rot_vec.rotateBy(Rotation2d.fromDegrees(90.0))
 
             total_vec = rot_vec + vel.translation()
 
@@ -58,10 +75,20 @@ class Drive:
 
             cur_position = swerve.turn_encoder.getPosition()
             half_turn = config.turn_gear_ratio / 2.0
+
             while turn_position < cur_position - half_turn:
-                turn_position += 2 * half_turn
+                turn_position += 2.0 * half_turn
             while turn_position > cur_position + half_turn:
-                turn_position -= 2 * half_turn
+                turn_position -= 2.0 * half_turn
+
+            # Flip check
+            quarter_turn = half_turn / 2.0
+            if turn_position < cur_position - quarter_turn:
+                turn_position += half_turn
+                drive_speed *= -1.0
+            elif turn_position > cur_position + quarter_turn:
+                turn_position -= half_turn
+                drive_speed *= -1.0
 
             swerve.turn_pid.setReference(
                 turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
