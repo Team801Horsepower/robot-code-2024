@@ -71,7 +71,8 @@ class Drive:
             total_vec = rot_vec + vel.translation()
 
             turn_position = total_vec.angle().degrees() / 360.0 * config.turn_gear_ratio
-            drive_speed = total_vec.norm() / (pi * config.wheel_diameter) * config.drive_gear_ratio
+            # Multiply by 60 for RPM
+            drive_speed = total_vec.norm() / (pi * config.wheel_diameter) * config.drive_gear_ratio * 60.0
 
             cur_position = swerve.turn_encoder.getPosition()
             half_turn = config.turn_gear_ratio / 2.0
