@@ -1,0 +1,17 @@
+# See src/config/README.md for information on how to use this file. 
+
+[robot]
+name = 'testing'
+year = '2022'
+
+[robot.drive]
+type = 'swerve'
+
+swerves_l = [[12, 11], [20, 19]]
+swerves_r = [[9, 10], [2, 1]]
+
+gear_ratios = {turn = 60.0, drive = 5.33333}
+wheel_dia = 0.1016 # m
+
+[robot.chassis]
+dimensions = [0.631825, 0.53975] # length, width (m)
