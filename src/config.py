@@ -2,9 +2,15 @@ import wpimath
 from wpimath import units
 from wpimath.geometry import Translation2d
 import tomllib
+import sys
 
-with open('/config.toml', 'rb') as f:
-    robot_data = tomllib.load(f)['robot']
+try: 
+    with open('/config.toml', 'rb') as f:
+        robot_data = tomllib.load(f)['robot']
+except FileNotFoundError:
+    raise Exception("/config.toml is not present; please refer to src/config/README.md for instructions on the placement of the config file")
+
+
 
 # (length, width)
 # robot_dimensions = Translation2d(0.631825, 0.53975)
