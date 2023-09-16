@@ -13,7 +13,7 @@ from itertools import chain
 
 from typing import List
 
-from config import robot_data
+from subsystems.config import robot_data
 
 # pylint: disable=missing-docstring, too-few-public-methods
 class Drive:

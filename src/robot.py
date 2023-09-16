@@ -2,9 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import drive
-
-import config
+from subsystems import drive, config
 
 
 class MyRobot(wpilib.TimedRobot):
