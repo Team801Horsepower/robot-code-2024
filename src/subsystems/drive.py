@@ -36,6 +36,7 @@ class Drive:
 
         for swerve in chain(self.swerves_l, self.swerves_r):
             swerve.drive_encoder.setPosition(0.0)
+            swerve.turn_motor.setInverted(True)
 
             # Divide by 0.66 because the function expects 5V but the encoders use 3.3V.
             # TODO: Change this once the encoders move to 5V.

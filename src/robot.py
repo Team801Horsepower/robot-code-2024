@@ -36,7 +36,7 @@ class MyRobot(wpilib.TimedRobot):
         # )
 
         def deadzone(activation: float) -> float:
-            if abs(activation) < 0.08:
+            if abs(activation) < 0.1:
                 return 0.0
             return activation
 
