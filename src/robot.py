@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import wpilib
+import wpimath
 from subsystems import drive
+
+import config
 
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
         # pylint: disable=attribute-defined-outside-init
+        self.driver_controller = wpilib.XboxController(0)
 
-        self.controller = wpilib.XboxController(0)
-
-        # self.motor = rev.CANSparkMax(11, rev.CANSparkMax.MotorType.kBrushless)
         self.drive = drive.Drive()
 
     def autonomousInit(self):
@@ -28,10 +29,27 @@ class MyRobot(wpilib.TimedRobot):
 
         # self.motor.set(0.5)
 
-        self.drive.drive(
-            self.controller.getLeftY(),
-            self.controller.getRightY(),
+        # TODO: Enable driving after resolving the gear ratios and robot dimensions
+        # self.drive.drive(
+        #     self.driver_controller.getLeftY(),
+        #     self.driver_controller.getRightY(),
+        # )
+
+        def deadzone(activation: float) -> float:
+            if abs(activation) < 0.1:
+                return 0.0
+            return activation
+
+        drive_input = wpimath.geometry.Transform2d(
+            config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
+            config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
+            config.turn_speed * deadzone(-self.driver_controller.getRightX()),
         )
+        self.drive.drive(drive_input)
+
+        # Set swerves button
+        if self.driver_controller.getAButton():
+            self.drive.set_swerves()
 
     def testInit(self):
         pass
