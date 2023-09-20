@@ -1,5 +1,6 @@
 from rev import CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder
 
+
 class Swerve:
     def __init__(self, drive: CANSparkMax, turn: CANSparkMax):
         self.drive_motor = drive

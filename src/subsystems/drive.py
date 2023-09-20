@@ -15,6 +15,7 @@ from typing import List
 
 from subsystems.config import robot_data
 
+
 # pylint: disable=missing-docstring, too-few-public-methods
 class Drive:
     def __init__(self) -> None:
@@ -24,15 +25,19 @@ class Drive:
                 CANSparkMax(turn_id, CANSparkMax.MotorType.kBrushless),
             )
 
-        self.turn_gear_ratio = robot_data['drive']['gear_ratios']['turn']
-        self.drive_gear_ratio = robot_data['drive']['gear_ratios']['drive']
-        
-        self.wheel_diameter = robot_data['drive']['wheel_dia']
-        
-        self.robot_dimensions = Translation2d(*robot_data['chassis']['dimensions'])
+        self.turn_gear_ratio = robot_data["drive"]["gear_ratios"]["turn"]
+        self.drive_gear_ratio = robot_data["drive"]["gear_ratios"]["drive"]
 
-        self.swerves_l = list(map(lambda t: make_swerve(*t), robot_data['drive']['swerves_l']))
-        self.swerves_r = list(map(lambda t: make_swerve(*t), robot_data['drive']['swerves_r']))
+        self.wheel_diameter = robot_data["drive"]["wheel_dia"]
+
+        self.robot_dimensions = Translation2d(*robot_data["chassis"]["dimensions"])
+
+        self.swerves_l = list(
+            map(lambda t: make_swerve(*t), robot_data["drive"]["swerves_l"])
+        )
+        self.swerves_r = list(
+            map(lambda t: make_swerve(*t), robot_data["drive"]["swerves_r"])
+        )
 
         # self.swerves_l = list(map(lambda t: make_swerve(*t), [(12, 11), (20, 19)]))
         # self.swerves_r = list(map(lambda t: make_swerve(*t), [(9, 10), (2, 1)]))
@@ -87,9 +92,7 @@ class Drive:
 
             turn_position = total_vec.angle().degrees() / 360.0 * self.turn_gear_ratio
             drive_speed = (
-                total_vec.norm()
-                / (pi * self.wheel_diameter)
-                * self.drive_gear_ratio
+                total_vec.norm() / (pi * self.wheel_diameter) * self.drive_gear_ratio
             )
 
             cur_position = swerve.turn_encoder.getPosition()

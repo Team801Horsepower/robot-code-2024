@@ -4,12 +4,13 @@ from wpimath.geometry import Translation2d
 import tomllib
 import sys
 
-try: 
-    with open('/config.toml', 'rb') as f:
-        robot_data = tomllib.load(f)['robot']
+try:
+    with open("/config.toml", "rb") as f:
+        robot_data = tomllib.load(f)["robot"]
 except FileNotFoundError:
-    raise Exception("/config.toml is not present; please refer to src/config/README.md for instructions on the placement of the config file")
-
+    raise Exception(
+        "/config.toml is not present; please refer to src/config/README.md for instructions on the placement of the config file"
+    )
 
 
 # (length, width)
