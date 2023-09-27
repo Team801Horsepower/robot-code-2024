@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import drive
+from subsystems import chassis, drive
 
 import config
 
@@ -49,7 +49,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # Set swerves button
         if self.driver_controller.getAButton():
-            self.drive.set_swerves()
+            self.drive.chassis.set_swerves()
 
     def testInit(self):
         pass
