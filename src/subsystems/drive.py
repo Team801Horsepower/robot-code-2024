@@ -9,5 +9,8 @@ class Drive:
         self.chassis = Chassis()
         self.odometry = Odometry()
 
-    def drive(self, vel: Transform2d):
+    def drive(self, vel: Transform2d, field_oriented: bool = False):
+        if field_oriented:
+            translation = vel.translation().rotateBy(self.odometry.rotation())
+            vel = Transform2d(translation, vel.rotation())
         self.chassis.drive(vel)

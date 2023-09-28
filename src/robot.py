@@ -14,6 +14,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drive = drive.Drive()
 
+        self.field_oriented_drive = True
+
     def autonomousInit(self):
         pass
 
@@ -45,11 +47,13 @@ class MyRobot(wpilib.TimedRobot):
             config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
             config.turn_speed * deadzone(-self.driver_controller.getRightX()),
         )
-        self.drive.drive(drive_input)
+        self.drive.drive(drive_input, self.field_oriented_drive)
 
         # Set swerves button
         if self.driver_controller.getAButton():
             self.drive.chassis.set_swerves()
+        if self.driver_controller.getBButtonPressed():
+            self.field_oriented_drive ^= True
 
     def testInit(self):
         pass
