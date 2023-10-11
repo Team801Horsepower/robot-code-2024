@@ -1,7 +1,7 @@
 # robot-code-2024-python
 ---
 ## Installation
-1. Install Python >=3.10
+1. Install Python >=3.11
 2. Install poetry >=1.3.2
 3. Clone this repository
 4. Run `poetry install` in the root of the repository
