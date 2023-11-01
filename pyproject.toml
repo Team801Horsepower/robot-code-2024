@@ -6,9 +6,10 @@ authors = ["Ishaan Sen", "Nikhil Iyer <iyer.h.nikhil@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.11,<3.12"
 robotpy = {extras = ["rev", "photonvision", "pathplannerlib"], version = "^2023.4.3.0"}
 pint = "^0.22"
+phoenix6 = "^23.10.0a8"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"
