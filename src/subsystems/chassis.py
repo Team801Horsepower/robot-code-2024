@@ -1,4 +1,5 @@
 from subsystems.swerve import Swerve
+import config
 
 import wpimath
 import rev
@@ -10,15 +11,14 @@ from wpilib import AnalogEncoder
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 from itertools import chain
 
-from typing import List
-
-import config
+from typing import List, Tuple
 
 
 # pylint: disable=missing-docstring, too-few-public-methods
 class Chassis:
     def __init__(self) -> None:
-        def make_swerve(drive_id: int, turn_id: int, turn_abs_enc_id: int) -> Swerve:
+        def make_swerve(t: Tuple[int, int, int]) -> Swerve:
+            drive_id, turn_id, turn_abs_enc_id = t
             return Swerve(
                 CANSparkMax(drive_id, CANSparkMax.MotorType.kBrushless),
                 CANSparkMax(turn_id, CANSparkMax.MotorType.kBrushless),
@@ -30,17 +30,22 @@ class Chassis:
         # self.swerves_l = list(map(lambda t: make_swerve(*t), [(12, 11), (20, 19)]))
         # self.swerves_r = list(map(lambda t: make_swerve(*t), [(9, 10), (2, 1)]))
         # New Chassis
-        self.swerves_l = list(map(lambda t: make_swerve(*t), [(8, 14, 2), (4, 7, 1)]))
-        self.swerves_r = list(map(lambda t: make_swerve(*t), [(2, 15, 3), (1, 5, 0)]))
+        # self.swerves_l = list(map(lambda t: make_swerve(*t), [(8, 14, 2), (4, 7, 1)]))
+        # self.swerves_r = list(map(lambda t: make_swerve(*t), [(2, 15, 3), (1, 5, 0)]))
+        # Newer Chassis
+        self.swerves_l = list(map(make_swerve, [(12, 11, 0), (20, 19, 3)]))
+        self.swerves_r = list(map(make_swerve, [(10, 9, 1), (2, 1, 2)]))
 
+        print("swerves:")
         for swerve in chain(self.swerves_l, self.swerves_r):
             swerve.drive_encoder.setPosition(0.0)
             swerve.turn_motor.setInverted(True)
 
             # Divide by 0.66 because the function expects 5V but the encoders use 3.3V.
             # TODO: Change this once the encoders move to 5V.
-            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() / 0.66
-            swerve.turn_encoder.setPosition(-cur_turn * config.turn_gear_ratio)
+            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition()
+            # swerve.turn_encoder.setPosition(-cur_turn * config.turn_gear_ratio)
+            print(cur_turn)
 
             # PIDs to tune
             swerve.drive_pid.setP(0.0001)

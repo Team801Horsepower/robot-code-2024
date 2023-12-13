@@ -14,3 +14,4 @@ class Drive:
             translation = vel.translation().rotateBy(self.odometry.rotation())
             vel = Transform2d(translation, vel.rotation())
         self.chassis.drive(vel)
+        self.odometry.update(self.chassis)
