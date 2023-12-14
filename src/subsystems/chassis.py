@@ -35,17 +35,24 @@ class Chassis:
         # Newer Chassis
         self.swerves_l = list(map(make_swerve, [(12, 11, 0), (20, 19, 3)]))
         self.swerves_r = list(map(make_swerve, [(10, 9, 1), (2, 1, 2)]))
+        # TODO: Don't hardcode this
+        abs_enc_vals = [
+            0.8576425,
+            0.4142499,
+            0.6548459,
+            0.2648037,
+        ]
 
-        print("swerves:")
-        for swerve in chain(self.swerves_l, self.swerves_r):
+        for swerve, abs_enc_val in zip(
+            chain(self.swerves_l, self.swerves_r), abs_enc_vals
+        ):
             swerve.drive_encoder.setPosition(0.0)
             swerve.turn_motor.setInverted(True)
 
             # Divide by 0.66 because the function expects 5V but the encoders use 3.3V.
             # TODO: Change this once the encoders move to 5V.
-            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition()
-            # swerve.turn_encoder.setPosition(-cur_turn * config.turn_gear_ratio)
-            print(cur_turn)
+            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
+            swerve.turn_encoder.setPosition(-cur_turn * config.turn_gear_ratio)
 
             # PIDs to tune
             swerve.drive_pid.setP(0.0001)
