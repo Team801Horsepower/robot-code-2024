@@ -541,6 +541,23 @@ files = [
 ]
 
 [[package]]
+name = "phoenix6"
+version = "24.1.0"
+description = "Phoenix 6 Libraries"
+optional = false
+python-versions = ">=3.7, <4"
+files = [
+    {file = "phoenix6-24.1.0-cp39-abi3-macosx_10_16_universal2.whl", hash = "sha256:65b687a22b462e48db0e02224f43b641a9a8d4df7c7c06cdf60da097fce8be60"},
+    {file = "phoenix6-24.1.0-cp39-abi3-manylinux_2_35_aarch64.whl", hash = "sha256:c3c75782066665be9d37d3641c061be4bf1460e838f482c8f5723e754080ba76"},
+    {file = "phoenix6-24.1.0-cp39-abi3-manylinux_2_35_armv7l.whl", hash = "sha256:48f79760706515157512d4596a2964c327235da53dd7b4cadbc50c4bd61b3b65"},
+    {file = "phoenix6-24.1.0-cp39-abi3-manylinux_2_35_x86_64.whl", hash = "sha256:4aa88861786861aa647193052da0df0d8f26a91cabfa5e84d85fa71af0de649b"},
+    {file = "phoenix6-24.1.0-cp39-abi3-win_amd64.whl", hash = "sha256:c70dce1831afd224e10705483d1e383817bd58ff604cf139d64ba7bb8f9f5df8"},
+]
+
+[package.dependencies]
+setuptools = "*"
+
+[[package]]
 name = "pint"
 version = "0.23"
 description = "Physical quantities module"
@@ -886,12 +903,16 @@ files = [
 ]
 
 [package.dependencies]
+phoenix6 = {version = ">=24.1,<25.0", optional = true, markers = "python_version >= \"3.9\" and (platform_machine != \"armv7l\" and platform_machine != \"aarch64\") and extra == \"phoenix6\""}
 pyfrc = {version = ">=2024.0.0,<2025", markers = "platform_machine != \"roborio\" and platform_machine != \"armv7l\" and platform_machine != \"aarch64\""}
 pyntcore = "2024.1.1.1"
 robotpy-cli = ">=2024.0.0,<2025"
 robotpy-hal = "2024.1.1.1"
 robotpy-halsim-gui = {version = "2024.1.1.1", markers = "platform_machine != \"roborio\" and platform_machine != \"armv7l\" and platform_machine != \"aarch64\""}
 robotpy-installer = {version = ">=2024.0.2,<2025", markers = "platform_machine != \"roborio\" and platform_machine != \"armv7l\" and platform_machine != \"aarch64\""}
+robotpy-navx = {version = ">=2024.1.0,<2025.0.0", optional = true, markers = "extra == \"navx\""}
+robotpy-pathplannerlib = {version = ">=2024.1.1,<2025.0.0", optional = true, markers = "extra == \"pathplannerlib\""}
+robotpy-rev = {version = ">=2024.2.0,<2025.0.0", optional = true, markers = "extra == \"rev\""}
 robotpy-wpilib-utilities = ">=2024.0.0,<2025"
 robotpy-wpimath = "2024.1.1.1"
 robotpy-wpinet = "2024.1.1.1"
@@ -923,6 +944,21 @@ files = [
     {file = "robotpy-cli-2024.0.0.tar.gz", hash = "sha256:e6519f06856eb0a7ef5f25a57bfc8dcb20635cef84706fb37c0b602d59e33f39"},
     {file = "robotpy_cli-2024.0.0-py3-none-any.whl", hash = "sha256:9284035fa67058b33593b1846e13501eda0861fb9d9adce4bd01b101c9f1f26e"},
 ]
+
+[[package]]
+name = "robotpy-commands-v2"
+version = "2024.0.0b4"
+description = "WPILib command framework v2"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "robotpy-commands-v2-2024.0.0b4.tar.gz", hash = "sha256:0161feea5288b6af6fe3eddc412ad30c920acb929bcb5fea6899ba47e2e5763b"},
+    {file = "robotpy_commands_v2-2024.0.0b4-py3-none-any.whl", hash = "sha256:e0f808645f3f01c1a49d54cbdca6a2f528c2797913bb6382bec067c69b646065"},
+]
+
+[package.dependencies]
+typing-extensions = ">=4.1.0,<5"
+wpilib = ">=2024.0.0b2,<2025"
 
 [[package]]
 name = "robotpy-hal"
@@ -998,6 +1034,84 @@ paramiko = "*"
 pynetconsole = ">=2.0.2,<2.1.0"
 robotpy-cli = ">=2024.0,<2025.0"
 tomli = "*"
+
+[[package]]
+name = "robotpy-navx"
+version = "2024.1.0"
+description = "Python wrapper for KauaiLabs NavX sensor"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "robotpy-navx-2024.1.0.tar.gz", hash = "sha256:816d52d172ff1bfc87f10a91fbbeb36f873f6e02a1c16fb3befdcad73cf266f2"},
+    {file = "robotpy_navx-2024.1.0-cp310-cp310-macosx_10_16_x86_64.whl", hash = "sha256:a56f6c71678b23cd3f9ce376d7040243b921c01dda8d0de8a828b4a2db45d6e2"},
+    {file = "robotpy_navx-2024.1.0-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:00282c61864bfcbd104cbe2ee10b0bcfb517adb27586f43cc89a631c9d471189"},
+    {file = "robotpy_navx-2024.1.0-cp310-cp310-win_amd64.whl", hash = "sha256:1e24ba17aa30bd926569cd3def6ae1c96b64ba1a02a7c87a42c51b16d82a613a"},
+    {file = "robotpy_navx-2024.1.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:44bbf7bbfaa26ecf59a8a361842f5e89bb7ab44116e4b6a82675d98813c7e045"},
+    {file = "robotpy_navx-2024.1.0-cp311-cp311-manylinux_2_35_x86_64.whl", hash = "sha256:5e5b7389dac357825c76fe69e09475d00477c2a1de2b6b6b7ef00f4461e6cf06"},
+    {file = "robotpy_navx-2024.1.0-cp311-cp311-win_amd64.whl", hash = "sha256:ba22ed1be09525ebb35e9a5ee1a4eca7953848a8b0fec167398e167db9490025"},
+    {file = "robotpy_navx-2024.1.0-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:0c3e382fe21196d3eeaa906d9e82b18711af7690d159cb7af999b8a733d39ebb"},
+    {file = "robotpy_navx-2024.1.0-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:a6757655b2aaa1d8028068f22b4c0fbddcb38d3189f9efcaa6f97204d70d2632"},
+    {file = "robotpy_navx-2024.1.0-cp312-cp312-win_amd64.whl", hash = "sha256:6e2fc4c871a20d305fb9f6ba5cb5cb424f9a31b78327b77c3f7e28c2437f84d8"},
+    {file = "robotpy_navx-2024.1.0-cp38-cp38-macosx_10_16_x86_64.whl", hash = "sha256:82598483738393ad7e94fb3ad73628c2ee842329ef526e1b52a05b7945ca10f4"},
+    {file = "robotpy_navx-2024.1.0-cp38-cp38-manylinux_2_35_x86_64.whl", hash = "sha256:ebc481d6d8b3921d7fb58a9d7820fd7ccc94d1aac2fe189ac35dfcc38c6bfa91"},
+    {file = "robotpy_navx-2024.1.0-cp38-cp38-win_amd64.whl", hash = "sha256:383e7cdc303934932fabfe33a7fae536d8dbc133d7135a08fc26f821592cdbfd"},
+    {file = "robotpy_navx-2024.1.0-cp39-cp39-macosx_10_16_x86_64.whl", hash = "sha256:d896a66171b18f47d7d47c4516a00c47da77cc7e68f91c182dfa38adb61fdc64"},
+    {file = "robotpy_navx-2024.1.0-cp39-cp39-manylinux_2_35_x86_64.whl", hash = "sha256:004b6b3a88cafda02b7258203687d844c91f921d2c204dd8838390f17a5febed"},
+    {file = "robotpy_navx-2024.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:5c7e5edf7c51d9e9280215cd182a3c71d65fafdf1a1f9e2ef6c98cbd2bb0ff9a"},
+]
+
+[package.dependencies]
+robotpy-wpimath = ">=2024.1.1,<2025.0.0"
+robotpy-wpiutil = ">=2024.1.1,<2025.0.0"
+wpilib = ">=2024.1.1,<2025.0.0"
+
+[[package]]
+name = "robotpy-pathplannerlib"
+version = "2024.1.1"
+description = "Python implementation of PathPlannerLib"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "robotpy-pathplannerlib-2024.1.1.tar.gz", hash = "sha256:991135e25424cabce79cbcf07bbfd83f21c71f55542b05fbe59ac620b348326d"},
+    {file = "robotpy_pathplannerlib-2024.1.1-py3-none-any.whl", hash = "sha256:a2a266a02782b8c65655928ede4ee491f98e73d13e5ea4e323838e5ba67e8d88"},
+]
+
+[package.dependencies]
+pyntcore = ">=2024.1.1"
+robotpy-commands-v2 = ">=2024.0.0b4"
+robotpy-hal = ">=2024.1.1"
+robotpy-wpimath = ">=2024.1.1"
+robotpy-wpiutil = ">=2024.1.1"
+
+[[package]]
+name = "robotpy-rev"
+version = "2024.2.0"
+description = "REVLib for RobotPy"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "robotpy-rev-2024.2.0.tar.gz", hash = "sha256:d5bff680765dadb2685a29640804259bfa3794a7b918d9242b6c27895e6e8417"},
+    {file = "robotpy_rev-2024.2.0-cp310-cp310-macosx_10_16_x86_64.whl", hash = "sha256:a62b32f743ef9e27c54443819544e31cdaaccbf24db07c4766d055958864b409"},
+    {file = "robotpy_rev-2024.2.0-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:48634ff5bb8cf0fc9233fa8f69fb2387d08d59758f9536d762bb8e7374351834"},
+    {file = "robotpy_rev-2024.2.0-cp310-cp310-win_amd64.whl", hash = "sha256:8673fbc3ceb5f69674560f1877128429d3365bf1e61594b70d593322ca455960"},
+    {file = "robotpy_rev-2024.2.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:dfcd8c4497e09cb83d9370ddb98c5ae9683b3a9d90b8e5de126a490061244ceb"},
+    {file = "robotpy_rev-2024.2.0-cp311-cp311-manylinux_2_35_x86_64.whl", hash = "sha256:bcb2679eaeb73a90e83694192e64fa8c3a87856ec42edfc16ffa0f718fb2400f"},
+    {file = "robotpy_rev-2024.2.0-cp311-cp311-win_amd64.whl", hash = "sha256:ffd8748e1425f674c1fb0fe51620f7da9f40c11a7643f9c03139747e7237aea0"},
+    {file = "robotpy_rev-2024.2.0-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:4f981f40cb848cbffa1d678fdaa8d05ebd1c727bc0572142626714c79ba6bcd9"},
+    {file = "robotpy_rev-2024.2.0-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:3df12e1c5d9df3a4492abfc8d192006182d4356b687708edf214e1b683911017"},
+    {file = "robotpy_rev-2024.2.0-cp312-cp312-win_amd64.whl", hash = "sha256:d021d19d2116279aa912edd93b6864fc36c624aa138f0a54a628df210ff97a0f"},
+    {file = "robotpy_rev-2024.2.0-cp38-cp38-macosx_10_16_x86_64.whl", hash = "sha256:59ae89a3450444fbca48beeb9abc1cadd39452f1fb9a059f06d41c7bb8b24af6"},
+    {file = "robotpy_rev-2024.2.0-cp38-cp38-manylinux_2_35_x86_64.whl", hash = "sha256:c4698be1c7df04ebb7d37cf80c94d6e4c626ab0a55d64c66556085b0b4bf994a"},
+    {file = "robotpy_rev-2024.2.0-cp38-cp38-win_amd64.whl", hash = "sha256:1a6126ae57485eaa3f57657e81e021e8f762388a167ddf9bca520a527bf880cd"},
+    {file = "robotpy_rev-2024.2.0-cp39-cp39-macosx_10_16_x86_64.whl", hash = "sha256:644592718825d8029a0b506986cdcbaa8abfeff59f750305c0ca91849a6a38eb"},
+    {file = "robotpy_rev-2024.2.0-cp39-cp39-manylinux_2_35_x86_64.whl", hash = "sha256:15cc9e8e7bccbea8f508c53f8fe40dafb539b1b07b54f45f13445b370fcb73a9"},
+    {file = "robotpy_rev-2024.2.0-cp39-cp39-win_amd64.whl", hash = "sha256:331bb9e17b18d844a940a9b1944fd335f739d9885c51de3ed2895c34c2200c1d"},
+]
+
+[package.dependencies]
+robotpy-wpimath = ">=2024.1.1,<2025.0.0"
+robotpy-wpiutil = ">=2024.1.1,<2025.0.0"
+wpilib = ">=2024.1.1,<2025.0.0"
 
 [[package]]
 name = "robotpy-wpilib-utilities"
@@ -1347,4 +1461,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "d89a1835d347a090e45fb977c520a95b529792154629baa623825fc79460523a"
+content-hash = "417ebc0258ad284085b0eeb6af0811b6127202e76eb85e2b267c3d8d16a42dfa"
