@@ -35,40 +35,29 @@ class Chassis:
         # Newer Chassis
         self.swerves_l = list(map(make_swerve, [(12, 11, 0), (20, 19, 3)]))
         self.swerves_r = list(map(make_swerve, [(10, 9, 1), (2, 1, 2)]))
-        # TODO: Don't hardcode this
-        abs_enc_vals = [
-            0.8576425,
-            0.4142499,
-            0.6548459,
-            0.2648037,
-        ]
 
         for swerve, abs_enc_val in zip(
-            chain(self.swerves_l, self.swerves_r), abs_enc_vals
+            chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
         ):
             swerve.drive_encoder.setPosition(0.0)
             swerve.turn_motor.setInverted(True)
 
-            # Divide by 0.66 because the function expects 5V but the encoders use 3.3V.
-            # TODO: Change this once the encoders move to 5V.
+            print(swerve.turn_abs_encoder.getAbsolutePosition())
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
-            swerve.turn_encoder.setPosition(-cur_turn * config.turn_gear_ratio)
+            swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
 
             # PIDs to tune
             swerve.drive_pid.setP(0.0001)
             swerve.turn_pid.setP(0.1)
 
     def set_swerves(self):
-        for swerve in chain(self.swerves_l, self.swerves_r):
-            cur_position = swerve.turn_encoder.getPosition()
-            half_turn = config.turn_gear_ratio / 2.0
-            zero_position = 0.0
-            while zero_position < cur_position - half_turn:
-                zero_position += 2.0 * half_turn
-            while zero_position > cur_position + half_turn:
-                zero_position -= 2.0 * half_turn
+        for swerve, abs_enc_val in zip(
+            chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
+        ):
+            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
+            swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
             swerve.turn_pid.setReference(
-                zero_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
+                0.0, rev.CANSparkMaxLowLevel.ControlType.kPosition
             )
 
     """

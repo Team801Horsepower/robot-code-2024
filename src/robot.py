@@ -26,17 +26,6 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
-        # print("Hello, World!")
-        # Open pynetconsole ("python3 -m netconsole 10.8.1.2") to view
-
-        # self.motor.set(0.5)
-
-        # TODO: Enable driving after resolving the gear ratios and robot dimensions
-        # self.drive.drive(
-        #     self.driver_controller.getLeftY(),
-        #     self.driver_controller.getRightY(),
-        # )
-
         def deadzone(activation: float) -> float:
             if abs(activation) < 0.1:
                 return 0.0
@@ -54,6 +43,8 @@ class MyRobot(wpilib.TimedRobot):
             self.drive.chassis.set_swerves()
         if self.driver_controller.getBButtonPressed():
             self.field_oriented_drive ^= True
+        if self.driver_controller.getXButtonPressed():
+            self.drive.odometry.reset()
 
     def testInit(self):
         pass
