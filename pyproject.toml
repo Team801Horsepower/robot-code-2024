@@ -2,13 +2,12 @@
 name = "robot-code-2024"
 version = "0.1.0"
 description = ""
-authors = ["Ishaan Sen", "Nikhil Iyer <iyer.h.nikhil@gmail.com>"]
+authors = ["Ishaan Sen <ishaan.sen100@gmail.com", "Nikhil Iyer <iyer.h.nikhil@gmail.com>", "Omkar Subramaniam <omnikar5@gmail.com>", "Aneesha Guna <aneesha.guna@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.11"
-robotpy = {extras = ["rev", "photonvision", "pathplannerlib"], version = "^2023.4.3.0"}
-pint = "^0.22"
+python = ">=3.11,<3.13"
+robotpy = "^2024.1.1.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.4.1"
