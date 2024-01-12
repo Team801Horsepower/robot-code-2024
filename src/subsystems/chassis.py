@@ -57,7 +57,7 @@ class Chassis:
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
             swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
             swerve.turn_pid.setReference(
-                0.0, rev.CANSparkMaxLowLevel.ControlType.kPosition
+                0.0, rev.CANSparkLowLevel.ControlType.kPosition
             )
 
     """
@@ -69,7 +69,7 @@ class Chassis:
         if vel.rotation().degrees() == 0.0 and vel.translation().norm() == 0.0:
             for swerve in chain(self.swerves_l, self.swerves_r):
                 swerve.drive_pid.setReference(
-                    0.0, rev.CANSparkMaxLowLevel.ControlType.kVelocity
+                    0.0, rev.CANSparkLowLevel.ControlType.kVelocity
                 )
             return
 
@@ -114,8 +114,8 @@ class Chassis:
                 drive_speed *= -1.0
 
             swerve.turn_pid.setReference(
-                turn_position, rev.CANSparkMaxLowLevel.ControlType.kPosition
+                turn_position, rev.CANSparkLowLevel.ControlType.kPosition
             )
             swerve.drive_pid.setReference(
-                -drive_speed, rev.CANSparkMaxLowLevel.ControlType.kVelocity
+                -drive_speed, rev.CANSparkLowLevel.ControlType.kVelocity
             )
