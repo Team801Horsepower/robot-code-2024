@@ -24,6 +24,9 @@ elif [ $1 = 'console' ]; then
 elif [ $1 = 'shell' ]; then
 	poetry shell
 
+elif [ $1 = 'rlds' ]; then
+	ssh -o StrictHostKeyChecking=no admin@10.8.1.2 'sh /home/lvuser/rlds/deploy'
+
 else
 	frc_help
 
