@@ -22,7 +22,7 @@ if "%1" == "" (
 ) else if "%1" == "shell" (
     poetry shell
 ) else if "%1" == "rlds" (
-    ssh -o StrictHostKeyChecking=no admin@10.8.1.2 'sh /home/lvuser/rlds/deploy'
+    ssh -o StrictHostKeyChecking=no admin@10.8.1.2 '/home/lvuser/rlds/deploy'
 ) else (
     call :frc_help
 )
