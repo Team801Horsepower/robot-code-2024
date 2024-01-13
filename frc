@@ -16,13 +16,16 @@ elif [ $1 = 'verify' ]; then
 	poetry run pylint src/ --disable=missing-docstring,invalid-name,missing-module-docstring
 
 elif [ $1 = 'deploy' ]; then
-	poetry run src/robot.py deploy
+	(cd src/; poetry run robotpy deploy --skip-tests --team 801)
 
 elif [ $1 = 'console' ]; then
 	poetry run netconsole 10.8.1.2
 
 elif [ $1 = 'shell' ]; then
 	poetry shell
+
+elif [ $1 = 'rlds' ]; then
+	ssh -o StrictHostKeyChecking=no admin@10.8.1.2 '/home/lvuser/rlds/deploy'
 
 else
 	frc_help
