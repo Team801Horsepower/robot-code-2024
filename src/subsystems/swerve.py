@@ -1,4 +1,4 @@
-from rev import CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder
+from rev import CANSparkMax, SparkMaxPIDController
 from wpilib import AnalogEncoder
 from wpimath.geometry import Rotation2d
 
