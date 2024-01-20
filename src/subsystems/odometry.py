@@ -23,10 +23,12 @@ class Odometry:
     # def navx_position(self) -> Translation2d:
     #     return Translation2d(self.ahrs.getDisplacementX(), self.ahrs.getDisplacementY())
 
-    def reset(self):
-        self.translation = Translation2d()
+    def reset(self, pose: Pose2d = Pose2d()):
+        self.translation = pose.translation()
         self.ahrs.setAngleAdjustment(0)
-        self.ahrs.setAngleAdjustment(-self.rotation().degrees())
+        self.ahrs.setAngleAdjustment(
+            pose.rotation().degrees() - self.rotation().degrees()
+        )
         self.ahrs.resetDisplacement()
 
     def update(self, chassis: Chassis):

@@ -11,6 +11,8 @@ from wpilib import AnalogEncoder
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 from itertools import chain
 
+from wpimath.kinematics import ChassisSpeeds
+
 from typing import List, Tuple
 
 
@@ -49,6 +51,8 @@ class Chassis:
             # PIDs to tune
             swerve.drive_pid.setP(0.0001)
             swerve.turn_pid.setP(0.1)
+
+        self.drive_input = Transform2d()
 
     def set_swerves(self):
         for swerve, abs_enc_val in zip(
@@ -119,3 +123,17 @@ class Chassis:
             swerve.drive_pid.setReference(
                 -drive_speed, rev.CANSparkLowLevel.ControlType.kVelocity
             )
+
+        self.drive_input = vel
+
+    # Robot relative
+    def chassis_speeds(self) -> ChassisSpeeds:
+        # vels = []
+        # for swerve in chain(self.swerves_l, self.swerves_r):
+
+        # HACK
+        return ChassisSpeeds(
+            self.drive_input.x,
+            self.drive_input.y,
+            self.drive_input.rotation().radians(),
+        )
