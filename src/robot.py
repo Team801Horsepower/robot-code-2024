@@ -12,7 +12,6 @@ from pathplannerlib.config import (
 )
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d
-from commands2 import CommandScheduler
 
 import config
 
@@ -48,6 +47,7 @@ class MyRobot(wpilib.TimedRobot):
         self.auto_command.initialize()
 
     def autonomousPeriodic(self):
+        # TODO: Handle commands properly, usind a command scheduler
         if not self.auto_command.isFinished():
             self.auto_command.execute()
 

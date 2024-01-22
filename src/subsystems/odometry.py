@@ -36,11 +36,16 @@ class Odometry:
         total = Translation2d()
 
         for swerve in chain(chassis.swerves_l, chassis.swerves_r):
+            # Grab previous values and update immediately to prevent any loss of delta
+            prev_drive = swerve.prev_drive_enc
+            prev_turn = swerve.prev_rotation
+            swerve.update_prevs()
+
             delta = (
                 Translation2d(1.0, 0.0)
-                .rotateBy(swerve.rotation())
+                .rotateBy((swerve.rotation() + prev_turn) / 2)
                 .rotateBy(self.rotation())
-                * (swerve.drive_encoder.getPosition() - swerve.prev_drive_enc)
+                * (swerve.drive_encoder.getPosition() - prev_drive)
                 / config.drive_gear_ratio
                 * config.wheel_diameter
                 * pi
@@ -48,8 +53,6 @@ class Odometry:
 
             total += delta
             count += 1
-
-            swerve.update_prevs()
 
         avg = total / count
         self.translation += avg
