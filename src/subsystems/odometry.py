@@ -14,7 +14,7 @@ class Odometry:
         self.translation = Translation2d()
 
     def rotation(self) -> Rotation2d:
-        return Rotation2d.fromDegrees(self.ahrs.getAngle())
+        return Rotation2d.fromDegrees(-self.ahrs.getAngle())
 
     def pose(self) -> Pose2d:
         return Pose2d(self.translation.x, self.translation.y, self.rotation())
@@ -27,7 +27,7 @@ class Odometry:
         self.translation = pose.translation()
         self.ahrs.setAngleAdjustment(0)
         self.ahrs.setAngleAdjustment(
-            pose.rotation().degrees() - self.rotation().degrees()
+            self.rotation().degrees() - pose.rotation().degrees()
         )
         self.ahrs.resetDisplacement()
 
@@ -42,13 +42,8 @@ class Odometry:
             swerve.update_prevs()
 
             delta = (
-                Translation2d(1.0, 0.0)
-                .rotateBy((swerve.rotation() + prev_turn) / 2)
-                .rotateBy(self.rotation())
-                * (swerve.drive_encoder.getPosition() - prev_drive)
-                / config.drive_gear_ratio
-                * config.wheel_diameter
-                * pi
+                Translation2d(prev_drive - swerve.drive_encoder.getPosition(), 0)
+                .rotateBy(swerve.rotation() + self.rotation())
             )
 
             total += delta

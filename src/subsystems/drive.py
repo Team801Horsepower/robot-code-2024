@@ -11,7 +11,7 @@ class Drive:
 
     def drive(self, vel: Transform2d, field_oriented: bool = False):
         if field_oriented:
-            translation = vel.translation().rotateBy(self.odometry.rotation())
+            translation = vel.translation().rotateBy(-self.odometry.rotation())
             vel = Transform2d(translation, vel.rotation())
         self.chassis.drive(vel)
         self.odometry.update(self.chassis)

@@ -22,9 +22,7 @@ class Swerve:
         self.update_prevs()
 
     def rotation(self) -> Rotation2d:
-        return Rotation2d.fromDegrees(
-            self.turn_encoder.getPosition() / config.turn_gear_ratio * 360.0
-        )
+        return Rotation2d(self.turn_encoder.getPosition())
 
     def update_prevs(self):
         self.prev_drive_enc = self.drive_encoder.getPosition()

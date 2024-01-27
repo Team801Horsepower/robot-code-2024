@@ -46,11 +46,26 @@ class Chassis:
 
             print(swerve.turn_abs_encoder.getAbsolutePosition())
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
-            swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
+
+            # Makes turn encoders operate in radians
+            swerve.turn_encoder.setPositionConversionFactor(
+                2 * pi / config.turn_gear_ratio
+            )
+            swerve.turn_encoder.setPosition(2 * pi * cur_turn)
+
+            # Makes drive encoders operate in m/s
+            swerve.drive_encoder.setVelocityConversionFactor(
+                pi * config.wheel_diameter / 60 / config.drive_gear_ratio
+            )
+            swerve.drive_encoder.setPositionConversionFactor(
+                pi * config.wheel_diameter / config.drive_gear_ratio
+            )
 
             # PIDs to tune
-            swerve.drive_pid.setP(0.0001)
-            swerve.turn_pid.setP(0.1)
+            swerve.drive_pid.setP(0.15)
+            swerve.turn_pid.setP(0.5)
+
+            swerve.update_prevs()
 
         self.drive_input = Transform2d()
 
@@ -60,6 +75,7 @@ class Chassis:
         ):
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
             swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
+            swerve.turn_encoder.setPosition(2 * pi * cur_turn)
             swerve.turn_pid.setReference(
                 0.0, rev.CANSparkLowLevel.ControlType.kPosition
             )
@@ -91,34 +107,27 @@ class Chassis:
 
             total_vec = rot_vec + vel.translation()
 
-            turn_position = total_vec.angle().degrees() / 360.0 * config.turn_gear_ratio
-            # Multiply by 60 for RPM
-            drive_speed = (
-                total_vec.norm()
-                / (pi * config.wheel_diameter)
-                * config.drive_gear_ratio
-                * 60.0
-            )
+            turn_angle = total_vec.angle().radians()
+            drive_speed = total_vec.norm()
 
             cur_position = swerve.turn_encoder.getPosition()
-            half_turn = config.turn_gear_ratio / 2.0
 
-            while turn_position < cur_position - half_turn:
-                turn_position += 2.0 * half_turn
-            while turn_position > cur_position + half_turn:
-                turn_position -= 2.0 * half_turn
+            while turn_angle < cur_position - pi:
+                turn_angle += 2.0 * pi
+            while turn_angle > cur_position + pi:
+                turn_angle -= 2.0 * pi
 
             # Flip check
-            quarter_turn = half_turn / 2.0
-            if turn_position < cur_position - quarter_turn:
-                turn_position += half_turn
+            quarter_turn = pi / 2.0
+            if turn_angle < cur_position - quarter_turn:
+                turn_angle += pi
                 drive_speed *= -1.0
-            elif turn_position > cur_position + quarter_turn:
-                turn_position -= half_turn
+            elif turn_angle > cur_position + quarter_turn:
+                turn_angle -= pi
                 drive_speed *= -1.0
 
             swerve.turn_pid.setReference(
-                turn_position, rev.CANSparkLowLevel.ControlType.kPosition
+                turn_angle, rev.CANSparkLowLevel.ControlType.kPosition
             )
             swerve.drive_pid.setReference(
                 -drive_speed, rev.CANSparkLowLevel.ControlType.kVelocity
@@ -128,12 +137,34 @@ class Chassis:
 
     # Robot relative
     def chassis_speeds(self) -> ChassisSpeeds:
-        # vels = []
-        # for swerve in chain(self.swerves_l, self.swerves_r):
+        def hadamard(a: Translation2d, b: Tuple[float, float]) -> Translation2d:
+            return Translation2d(a.x * b[0], a.y * b[1])
 
-        # HACK
-        return ChassisSpeeds(
-            self.drive_input.x,
-            self.drive_input.y,
-            self.drive_input.rotation().radians(),
+        def cross(a: Translation2d, b: Translation2d) -> float:
+            return a.x * b.y - a.y * b.x
+
+        movs = []
+        rots = []
+        swerves = zip(
+            chain(self.swerves_l, self.swerves_r),
+            [(1, 1), (-1, 1), (1, -1), (-1, -1)],
         )
+        for swerve, pos in swerves:
+            v = (
+                Translation2d(1, 0).rotateBy(
+                    Rotation2d.fromDegrees(swerve.turn_encoder.getPosition() * 180 / pi)
+                )
+                * swerve.drive_encoder.getVelocity()
+            )
+            d = config.robot_dimensions
+            dnorm = d.norm()
+
+            rot = 2 * cross(v, hadamard(d / dnorm, pos)) / dnorm
+            rots.append(rot)
+
+            movs.append(v)
+
+        mov = reduce(Translation2d.__add__, movs) / len(movs)
+        rot = sum(rots) / len(rots)
+
+        return ChassisSpeeds(-mov.x, -mov.y, rot)

@@ -29,7 +29,7 @@ class MyRobot(wpilib.TimedRobot):
             self.drive.odometry.pose,
             self.drive.odometry.reset,
             self.drive.chassis.chassis_speeds,
-            lambda cs: self.drive.chassis.drive(Transform2d(cs.vx, cs.vy, cs.omega)),
+            lambda cs: self.drive.drive(Transform2d(cs.vx, cs.vy, cs.omega)),
             HolonomicPathFollowerConfig(
                 PIDConstants(0.4, 0, 0),
                 PIDConstants(0.4, 0, 0),
