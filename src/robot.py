@@ -33,7 +33,7 @@ class MyRobot(wpilib.TimedRobot):
             HolonomicPathFollowerConfig(
                 PIDConstants(0.4, 0, 0),
                 PIDConstants(0.4, 0, 0),
-                2.5,
+                config.drive_speed,
                 16.97056275,
                 ReplanningConfig(),
             ),

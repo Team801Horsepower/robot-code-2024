@@ -74,7 +74,6 @@ class Chassis:
             chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
         ):
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
-            swerve.turn_encoder.setPosition(cur_turn * config.turn_gear_ratio)
             swerve.turn_encoder.setPosition(2 * pi * cur_turn)
             swerve.turn_pid.setReference(
                 0.0, rev.CANSparkLowLevel.ControlType.kPosition

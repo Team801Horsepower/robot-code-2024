@@ -41,10 +41,9 @@ class Odometry:
             prev_turn = swerve.prev_rotation
             swerve.update_prevs()
 
-            delta = (
-                Translation2d(prev_drive - swerve.drive_encoder.getPosition(), 0)
-                .rotateBy(swerve.rotation() + self.rotation())
-            )
+            delta = Translation2d(
+                prev_drive - swerve.drive_encoder.getPosition(), 0
+            ).rotateBy(swerve.rotation() + self.rotation())
 
             total += delta
             count += 1
