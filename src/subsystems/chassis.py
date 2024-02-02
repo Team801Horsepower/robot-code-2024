@@ -12,6 +12,7 @@ from wpimath.geometry import Translation2d, Transform2d, Rotation2d
 from itertools import chain
 
 from wpimath.kinematics import ChassisSpeeds
+from functools import reduce
 
 from typing import List, Tuple
 
