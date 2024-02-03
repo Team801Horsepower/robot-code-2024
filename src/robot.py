@@ -47,7 +47,7 @@ class MyRobot(wpilib.TimedRobot):
         self.auto_command.initialize()
 
     def autonomousPeriodic(self):
-        # TODO: Handle commands properly, usind a command scheduler
+        # TODO: Handle commands properly, using a command scheduler
         if not self.auto_command.isFinished():
             self.auto_command.execute()
 
