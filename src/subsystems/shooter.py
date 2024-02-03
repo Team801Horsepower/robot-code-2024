@@ -3,6 +3,7 @@ from rev import CANSparkMax, SparkPIDController
 from wpilib import DutyCycleEncoder
 from math import pi
 
+
 class Shooter:
     def __init__(self, flywheel_motors: List[int], feeder_motor: int, pitch_motor: int):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
@@ -41,10 +42,10 @@ class Shooter:
         return angle
 
     def seek_pitch(self, target_pitch: float) -> None:
-        current_pitch = get_pitch()
+        current_pitch = self.get_pitch()
         if abs(current_pitch - target_pitch) < 0.05:
             self.pitch_motor.set(0)
-        else if current_pitch > target_pitch:
+        elif current_pitch > target_pitch:
             self.pitch_motor.set(0.1)
-        else if current_pitch < target_pitch:
+        elif current_pitch < target_pitch:
             self.pitch_motor.set(-0.1)
