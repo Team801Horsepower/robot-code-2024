@@ -25,9 +25,9 @@ class Shooter:
         for flywheel_pid in self.flywheel_pids:
             flywheel_pid.setP(0.5)
 
-    def start_flywheels(self, speed: float) -> None:
-        self.flywheel_pids[0].setReference(speed, CANSparkMax.ControlType.kVelocity)
-        self.flywheel_pids[1].setReference(-speed, CANSparkMax.ControlType.kVelocity)
+    def set_flywheels(self, speeds: List[float]) -> None:
+        for pair in zip(self.flywheel_pids, speeds):
+            pair[0].setReference(pair[1], CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
         angle_offset = 0
@@ -49,3 +49,9 @@ class Shooter:
             self.pitch_motor.set(0.1)
         elif current_pitch < target_pitch:
             self.pitch_motor.set(-0.1)
+
+    def feed(self) -> None:
+        self.feeder_pid.setReference(0.5, CANSparkMax.ControlType.kVelocity)
+
+    def stop_feed(self) -> None:
+        self.feeder_pid.setReference(0, CANSparkMax.ControlType.kVelocity)
