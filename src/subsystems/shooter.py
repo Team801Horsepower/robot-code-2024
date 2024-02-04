@@ -1,17 +1,22 @@
+from math import pi
 from typing import List
+
 from rev import CANSparkMax, SparkPIDController
 from wpilib import DutyCycleEncoder
-from math import pi
+
+# pylint: disable=too-many-instance-attributes
 
 
 class Shooter:
     def __init__(self, flywheel_motors: List[int], feeder_motor: int, pitch_motor: int):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
         self.pitch_encoder = DutyCycleEncoder(9)
+        self.pitch_target = 0.0
 
         self.feeder_motor = CANSparkMax(feeder_motor, CANSparkMax.MotorType.kBrushless)
         self.feeder_pid = self.feeder_motor.getPIDController()
         self.feeder_pid.setP(0.5)
+        self.feeder_target = False
 
         self.flywheel_motors: List[CANSparkMax] = list(
             map(
@@ -24,9 +29,12 @@ class Shooter:
         ]
         for flywheel_pid in self.flywheel_pids:
             flywheel_pid.setP(0.5)
+        self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
+        self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
 
     def set_flywheels(self, speeds: List[float]) -> None:
-        for pair in zip(self.flywheel_pids, speeds):
+        self.flywheel_targets = speeds
+        for pair in zip(self.flywheel_pids, self.flywheel_targets):
             pair[0].setReference(pair[1], CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
@@ -41,17 +49,49 @@ class Shooter:
 
         return angle
 
-    def seek_pitch(self, target_pitch: float) -> None:
+    def set_pitch(self, pitch: float) -> None:
+        self.pitch_target = pitch
         current_pitch = self.get_pitch()
-        if abs(current_pitch - target_pitch) < 0.05:
+        if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
-        elif current_pitch > target_pitch:
+        elif current_pitch > self.pitch_target:
             self.pitch_motor.set(0.1)
-        elif current_pitch < target_pitch:
+        elif current_pitch < self.pitch_target:
             self.pitch_motor.set(-0.1)
 
     def feed(self) -> None:
+        self.feeder_target = True
         self.feeder_pid.setReference(0.5, CANSparkMax.ControlType.kVelocity)
 
     def stop_feed(self) -> None:
+        self.feeder_target = False
         self.feeder_pid.setReference(0, CANSparkMax.ControlType.kVelocity)
+
+    def flywheels_ready(self) -> bool:
+        flywheel_ok_threshold = 0.1
+        return bool(
+            sum(
+                (
+                    abs(
+                        self.flywheel_targets[i]
+                        - self.flywheel_encoders[i].getVelocity()
+                    )
+                    for i in range(len(self.flywheel_targets))
+                )
+            )
+            / len(self.flywheel_targets)
+            <= flywheel_ok_threshold
+        )
+
+    def pitch_ready(self) -> bool:
+        pitch_ok_threshold = 0.1
+        return bool(abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold)
+
+    def run_shooter(self, pitch: float, velocity: float, differential: float = 0):
+        flywheel_speeds = [velocity + differential, velocity - differential]
+        self.set_flywheels(flywheel_speeds)
+        self.set_pitch(pitch)
+        if self.flywheels_ready() and self.pitch_ready():
+            self.feed()
+        else:
+            self.stop_feed()
