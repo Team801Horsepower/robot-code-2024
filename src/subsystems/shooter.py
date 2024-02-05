@@ -1,7 +1,7 @@
 from math import pi
 from typing import List
 
-from rev import CANSparkMax, SparkPIDController
+from rev import CANSparkMax, SparkPIDController, ColorSensorV3
 from wpilib import DutyCycleEncoder
 
 # pylint: disable=too-many-instance-attributes
@@ -17,6 +17,8 @@ class Shooter:
         self.feeder_pid = self.feeder_motor.getPIDController()
         self.feeder_pid.setP(0.5)
         self.feeder_target = False
+
+        self.color_sensor = ColorSensorV3(9999)
 
         self.flywheel_motors: List[CANSparkMax] = list(
             map(
@@ -87,11 +89,14 @@ class Shooter:
         pitch_ok_threshold = 0.1
         return bool(abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold)
 
+    def note_present(self) -> bool:
+        return bool(self.color_sensor.getProximity() >= 512)
+
     def run_shooter(self, pitch: float, velocity: float, differential: float = 0):
         flywheel_speeds = [velocity + differential, velocity - differential]
         self.set_flywheels(flywheel_speeds)
         self.set_pitch(pitch)
-        if self.flywheels_ready() and self.pitch_ready():
+        if self.flywheels_ready() and self.pitch_ready() and self.note_present():
             self.feed()
         else:
             self.stop_feed()
