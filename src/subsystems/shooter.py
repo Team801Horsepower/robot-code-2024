@@ -20,12 +20,10 @@ class Shooter:
 
         self.color_sensor = ColorSensorV3(9999)
 
-        self.flywheel_motors: List[CANSparkMax] = list(
-            map(
-                lambda id: CANSparkMax(id, CANSparkMax.MotorType.kBrushless),
-                flywheel_motors,
-            )
-        )
+        self.flywheel_motors: List[CANSparkMax] = [
+            CANSparkMax(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
+        ]
+
         self.flywheel_pids: List[SparkPIDController] = [
             motor.getPIDController() for motor in self.flywheel_motors
         ]
@@ -36,8 +34,8 @@ class Shooter:
 
     def set_flywheels(self, speeds: List[float]) -> None:
         self.flywheel_targets = speeds
-        for pair in zip(self.flywheel_pids, self.flywheel_targets):
-            pair[0].setReference(pair[1], CANSparkMax.ControlType.kVelocity)
+        for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
+            pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
         angle_offset = 0
@@ -46,7 +44,7 @@ class Shooter:
         while angle > pi:
             angle -= 2.0 * pi
 
-        while angle < pi:
+        while angle < -pi:
             angle += 2.0 * pi
 
         return angle
@@ -71,15 +69,10 @@ class Shooter:
 
     def flywheels_ready(self) -> bool:
         flywheel_ok_threshold = 0.1
-        return bool(
+        return (
             sum(
-                (
-                    abs(
-                        self.flywheel_targets[i]
-                        - self.flywheel_encoders[i].getVelocity()
-                    )
-                    for i in range(len(self.flywheel_targets))
-                )
+                abs(self.flywheel_targets[i] - self.flywheel_encoders[i].getVelocity())
+                for i in range(len(self.flywheel_targets))
             )
             / len(self.flywheel_targets)
             <= flywheel_ok_threshold
@@ -87,10 +80,10 @@ class Shooter:
 
     def pitch_ready(self) -> bool:
         pitch_ok_threshold = 0.1
-        return bool(abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold)
+        return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def note_present(self) -> bool:
-        return bool(self.color_sensor.getProximity() >= 512)
+        return self.color_sensor.getProximity() >= 512
 
     def run_shooter(self, pitch: float, velocity: float, differential: float = 0):
         flywheel_speeds = [velocity + differential, velocity - differential]
