@@ -3,6 +3,7 @@
 import wpilib
 import wpimath
 from subsystems import chassis, drive
+from commands.drive_to_pose import DriveToPose
 
 from pathplannerlib.auto import AutoBuilder, PathPlannerAuto
 from pathplannerlib.config import (
@@ -11,7 +12,10 @@ from pathplannerlib.config import (
     PIDConstants,
 )
 from wpilib import DriverStation
-from wpimath.geometry import Transform2d
+from wpimath.geometry import Transform2d, Pose2d, Rotation2d
+from commands2 import CommandScheduler
+
+from math import pi
 
 import config
 
@@ -25,38 +29,29 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
 
-        AutoBuilder.configureHolonomic(
-            self.drive.odometry.pose,
-            self.drive.odometry.reset,
-            self.drive.chassis.chassis_speeds,
-            lambda cs: self.drive.drive(Transform2d(cs.vx, cs.vy, cs.omega)),
-            HolonomicPathFollowerConfig(
-                PIDConstants(0.4, 0, 0),
-                PIDConstants(0.4, 0, 0),
-                config.drive_speed,
-                16.97056275,
-                ReplanningConfig(),
-            ),
-            lambda: False,
-            self.drive,
-        )
+        self.scheduler = CommandScheduler()
 
-        self.auto_command = PathPlannerAuto("Circle Auto")
+    def robotPeriodic(self):
+        self.drive.odometry.update(self.drive.chassis)
 
     def autonomousInit(self):
-        self.auto_command.initialize()
+        self.drive.odometry.reset()
+        dtp = DriveToPose(
+            Pose2d(1, 0, 3 * pi / 2),
+            self.drive.odometry.pose,
+            self.drive.drive,
+        )
+        self.scheduler.schedule(dtp)
 
     def autonomousPeriodic(self):
-        # TODO: Handle commands properly, using a command scheduler
-        if not self.auto_command.isFinished():
-            self.auto_command.execute()
+        self.scheduler.run()
 
     def teleopInit(self):
         pass
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
-            if abs(activation) < 0.1:
+            if abs(activation) < 0.14:
                 return 0.0
             return activation
 

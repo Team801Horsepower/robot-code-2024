@@ -45,6 +45,9 @@ class Chassis:
             swerve.drive_encoder.setPosition(0.0)
             swerve.turn_motor.setInverted(True)
 
+            swerve.drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
+            swerve.turn_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
+
             print(swerve.turn_abs_encoder.getAbsolutePosition())
             cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
 
@@ -68,8 +71,6 @@ class Chassis:
 
             swerve.update_prevs()
 
-        self.drive_input = Transform2d()
-
     def set_swerves(self):
         for swerve, abs_enc_val in zip(
             chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
@@ -85,6 +86,9 @@ class Chassis:
     """
 
     def drive(self, vel: Transform2d) -> None:
+        # HACK: We don't know the actual reason for the discrepancy
+        #       between configured speeds and effective speeds.
+        vel *= 2.5
         # Equality check is fine here since the deadzone handles rounding to 0.
         if vel.rotation().degrees() == 0.0 and vel.translation().norm() == 0.0:
             for swerve in chain(self.swerves_l, self.swerves_r):
@@ -102,8 +106,8 @@ class Chassis:
             # angular velocity to linear velocity means multiplying by radius,
             # leaving only a division by 2.
             rot_vec = config.robot_dimensions / 2.0 * vel.rotation().radians()
-            rot_vec = Translation2d(rot_vec.x * pos[0], rot_vec.y * pos[1])
-            rot_vec = rot_vec.rotateBy(Rotation2d.fromDegrees(90.0))
+            # Negate components according to coordinates and rotate 90° counterclockwise.
+            rot_vec = Translation2d(-rot_vec.y * pos[1], rot_vec.x * pos[0])
 
             total_vec = rot_vec + vel.translation()
 
@@ -132,8 +136,6 @@ class Chassis:
             swerve.drive_pid.setReference(
                 -drive_speed, rev.CANSparkLowLevel.ControlType.kVelocity
             )
-
-        self.drive_input = vel
 
     # Robot relative
     def chassis_speeds(self) -> ChassisSpeeds:
