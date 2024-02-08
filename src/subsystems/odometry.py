@@ -14,7 +14,7 @@ class Odometry:
         self.translation = Translation2d()
 
     def rotation(self) -> Rotation2d:
-        return Rotation2d.fromDegrees(self.ahrs.getAngle())
+        return Rotation2d.fromDegrees(-self.ahrs.getAngle())
 
     def pose(self) -> Pose2d:
         return Pose2d(self.translation.x, self.translation.y, self.rotation())
@@ -23,10 +23,12 @@ class Odometry:
     # def navx_position(self) -> Translation2d:
     #     return Translation2d(self.ahrs.getDisplacementX(), self.ahrs.getDisplacementY())
 
-    def reset(self):
-        self.translation = Translation2d()
+    def reset(self, pose: Pose2d = Pose2d()):
+        self.translation = pose.translation()
         self.ahrs.setAngleAdjustment(0)
-        self.ahrs.setAngleAdjustment(-self.rotation().degrees())
+        self.ahrs.setAngleAdjustment(
+            self.rotation().degrees() - pose.rotation().degrees()
+        )
         self.ahrs.resetDisplacement()
 
     def update(self, chassis: Chassis):
@@ -34,20 +36,17 @@ class Odometry:
         total = Translation2d()
 
         for swerve in chain(chassis.swerves_l, chassis.swerves_r):
-            delta = (
-                Translation2d(1.0, 0.0)
-                .rotateBy(swerve.rotation())
-                .rotateBy(self.rotation())
-                * (swerve.drive_encoder.getPosition() - swerve.prev_drive_enc)
-                / config.drive_gear_ratio
-                * config.wheel_diameter
-                * pi
-            )
+            # Grab previous values and update immediately to prevent any loss of delta
+            prev_drive = swerve.prev_drive_enc
+            prev_turn = swerve.prev_rotation
+            swerve.update_prevs()
+
+            delta = Translation2d(
+                prev_drive - swerve.drive_encoder.getPosition(), 0
+            ).rotateBy(swerve.rotation() + self.rotation())
 
             total += delta
             count += 1
-
-            swerve.update_prevs()
 
         avg = total / count
         self.translation += avg

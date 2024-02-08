@@ -3,6 +3,19 @@
 import wpilib
 import wpimath
 from subsystems import chassis, drive
+from commands.drive_to_pose import DriveToPose
+
+from pathplannerlib.auto import AutoBuilder, PathPlannerAuto
+from pathplannerlib.config import (
+    HolonomicPathFollowerConfig,
+    ReplanningConfig,
+    PIDConstants,
+)
+from wpilib import DriverStation
+from wpimath.geometry import Transform2d, Pose2d, Rotation2d
+from commands2 import CommandScheduler
+
+from math import pi
 
 import config
 
@@ -16,18 +29,29 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
 
+        self.scheduler = CommandScheduler()
+
+    def robotPeriodic(self):
+        self.drive.odometry.update(self.drive.chassis)
+
     def autonomousInit(self):
-        pass
+        self.drive.odometry.reset()
+        dtp = DriveToPose(
+            Pose2d(1, 0, 3 * pi / 2),
+            self.drive.odometry.pose,
+            self.drive.drive,
+        )
+        self.scheduler.schedule(dtp)
 
     def autonomousPeriodic(self):
-        pass
+        self.scheduler.run()
 
     def teleopInit(self):
         pass
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
-            if abs(activation) < 0.1:
+            if abs(activation) < 0.14:
                 return 0.0
             return activation
 
