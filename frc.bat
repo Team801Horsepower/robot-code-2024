@@ -1,11 +1,8 @@
 @echo off
 
-:frc_help
-echo Usage: frc.cmd [verify ^| deploy ^| console ^| shell ^| rlds]
-goto :eof
-
 if "%1" == "" (
-    call :frc_help
+    echo Usage: .\frc.bat [verify ^| deploy ^| console ^| shell ^| rlds]
+    EXIT /B 0
 ) else if "%1" == "verify" (
     echo Running black auto-formatter...
     poetry run black src/
@@ -24,5 +21,6 @@ if "%1" == "" (
 ) else if "%1" == "rlds" (
     ssh -o StrictHostKeyChecking=no admin@10.8.1.2 'sh /home/lvuser/rlds/deploy'
 ) else (
-    call :frc_help
+    echo Usage: .\frc.bat [verify ^| deploy ^| console ^| shell ^| rlds]
+    EXIT /B 0
 )
