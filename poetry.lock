@@ -558,6 +558,23 @@ files = [
 setuptools = "*"
 
 [[package]]
+name = "photonlibpy"
+version = "2024.2.4"
+description = "Pure-python implementation of PhotonLib for interfacing with PhotonVision on coprocessors."
+optional = false
+python-versions = "*"
+files = [
+    {file = "photonlibpy-2024.2.4-py3-none-any.whl", hash = "sha256:7397f92bbbb74cfb09dc36eb7c13dfe85431d75c9ca10dac1f218d1fd952ff14"},
+    {file = "photonlibpy-2024.2.4.tar.gz", hash = "sha256:2409f935e3ce96281b534104a1aef8a2ed4b95bcc503d501f75f4357db37e613"},
+]
+
+[package.dependencies]
+pyntcore = ">=2024.0.0b2,<2025"
+robotpy-apriltag = ">=2024.0.0b2,<2025"
+robotpy-wpimath = ">=2024.0.0b2,<2025"
+wpilib = ">=2024.0.0b2,<2025"
+
+[[package]]
 name = "pint"
 version = "0.23"
 description = "Physical quantities module"
@@ -933,6 +950,34 @@ rev = ["robotpy-rev (>=2024.2.0,<2025.0.0)"]
 romi = ["robotpy-romi (==2024.1.1.1)"]
 sim = ["robotpy-halsim-ds-socket (==2024.1.1.1)", "robotpy-halsim-ws (==2024.1.1.1)"]
 xrp = ["robotpy-xrp (==2024.1.1.1)"]
+
+[[package]]
+name = "robotpy-apriltag"
+version = "2024.1.1.1"
+description = "RobotPy bindings for WPILib's AprilTag library"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "robotpy_apriltag-2024.1.1.1-cp310-cp310-macosx_10_16_x86_64.whl", hash = "sha256:f3403cc6490e4bdb304c2400126666406827cef52516b2c7a16ac5af426a79d4"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:6d2a59551ba4c9bf09dfc282bf621b8c003c9bfea613fae245fc751219920a13"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp310-cp310-win_amd64.whl", hash = "sha256:8e15aafbd4ad501ae75b5a8eee22c1b8897b9fb519d937d006fc3d284425366c"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp311-cp311-macosx_12_0_universal2.whl", hash = "sha256:e2206d17a3b159c1901ae117ce079afe841e03b64f9f25344a73df24da47eff5"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp311-cp311-manylinux_2_35_x86_64.whl", hash = "sha256:6b69bc0c3e11f7d5caf8b61974a6886603ffade4cdcc61d721c40bff931dd1a3"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp311-cp311-win_amd64.whl", hash = "sha256:be4d00b84a63816f072adbdb4b20aa9cebaca24464955fc7a91e66aed215932b"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp312-cp312-macosx_12_0_universal2.whl", hash = "sha256:7bf2c2383b970a9033aa6ddecee3a498ed1352a38b9f0201540eed9ffbc01679"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp312-cp312-manylinux_2_35_x86_64.whl", hash = "sha256:78a7e4dda7d299d2a7e0e4a454178c0360b5af222e594427fe49f31efdb6984a"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp312-cp312-win_amd64.whl", hash = "sha256:b057bca872f1f0899b69d2a2c335df60564b09451b6a79f8b7f2d72373cb35c4"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp38-cp38-macosx_10_16_x86_64.whl", hash = "sha256:deabe76213cc72491eda853e7a95b1c6b0a20b28480896e149ffc4504ea247bc"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp38-cp38-manylinux_2_35_x86_64.whl", hash = "sha256:a6cd390755537b2caeeece9dd773edcc4f64e78248ae13cc58943cd51303d119"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp38-cp38-win_amd64.whl", hash = "sha256:18a7375b82d9828821b66572a350c4f20008a71bda9c832e18abd1d3f2250670"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp39-cp39-macosx_10_16_x86_64.whl", hash = "sha256:2d97edf63e137a8c83ec23cd650c0a1c1aeb44927dcd5ad9765e07ffb5988b63"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp39-cp39-manylinux_2_35_x86_64.whl", hash = "sha256:543d8b8babaacbca1589760432f4c383afe5627e9357a58d23496e7ef769fc62"},
+    {file = "robotpy_apriltag-2024.1.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:217fc510eb6bdcd612d32bdfa6d27536a981c452fb52cc35bbfa6d37dfaf3a7c"},
+]
+
+[package.dependencies]
+robotpy-wpimath = "2024.1.1.1"
+robotpy-wpiutil = "2024.1.1.1"
 
 [[package]]
 name = "robotpy-cli"
@@ -1461,4 +1506,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11,<3.13"
-content-hash = "417ebc0258ad284085b0eeb6af0811b6127202e76eb85e2b267c3d8d16a42dfa"
+content-hash = "6e929bfe055905b7f6056bdb03e09a4ec57b75dfae1ffc33d12b5c87191ced11"
