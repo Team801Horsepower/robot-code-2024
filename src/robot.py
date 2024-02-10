@@ -17,11 +17,16 @@ from commands2 import CommandScheduler
 
 from math import pi
 
+import logging
+import datetime
+
 import config
 
+logging.basicConfig(filename=f"/home/lvuser/log/{datetime.datetime.now()}.log", encoding='utf-8', level=logging.DEBUG)
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
+        logging.info("robotInit called")
         # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
 
@@ -35,6 +40,7 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.odometry.update(self.drive.chassis)
 
     def autonomousInit(self):
+        logging.log("autonomousInit called")
         self.drive.odometry.reset()
         dtp = DriveToPose(
             Pose2d(1, 0, 3 * pi / 2),
@@ -47,6 +53,7 @@ class MyRobot(wpilib.TimedRobot):
         self.scheduler.run()
 
     def teleopInit(self):
+        logging.log("teleopInit called")
         pass
 
     def teleopPeriodic(self):
