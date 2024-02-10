@@ -50,32 +50,41 @@ class MyRobot(wpilib.TimedRobot):
         self.scheduler.schedule(dtp)
 
     def autonomousPeriodic(self):
-        self.scheduler.run()
+        try:
+            self.scheduler.run()
+        except:
+            logging.log('')
 
     def teleopInit(self):
         logging.log("teleopInit called")
         pass
 
     def teleopPeriodic(self):
-        def deadzone(activation: float) -> float:
-            if abs(activation) < 0.14:
-                return 0.0
-            return activation
+        try:
+            def deadzone(activation: float) -> float:
+                if abs(activation) < 0.14:
+                    return 0.0
+                else:
+                    return 1/0
+                return activation
 
-        drive_input = wpimath.geometry.Transform2d(
-            config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
-            config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
-            config.turn_speed * deadzone(-self.driver_controller.getRightX()),
-        )
-        self.drive.drive(drive_input, self.field_oriented_drive)
+            drive_input = wpimath.geometry.Transform2d(
+                config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
+                config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
+                config.turn_speed * deadzone(-self.driver_controller.getRightX()),
+            )
+            self.drive.drive(drive_input, self.field_oriented_drive)
 
-        # Set swerves button
-        if self.driver_controller.getAButton():
-            self.drive.chassis.set_swerves()
-        if self.driver_controller.getBButtonPressed():
-            self.field_oriented_drive ^= True
-        if self.driver_controller.getXButtonPressed():
-            self.drive.odometry.reset()
+            # Set swerves button
+            if self.driver_controller.getAButton():
+                self.drive.chassis.set_swerves()
+            if self.driver_controller.getBButtonPressed():
+                self.field_oriented_drive ^= True
+            if self.driver_controller.getXButtonPressed():
+                self.drive.odometry.reset()
+
+        except:
+            logging.log('')
 
     def testInit(self):
         pass
