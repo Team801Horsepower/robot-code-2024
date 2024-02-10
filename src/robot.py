@@ -19,19 +19,18 @@ class MyRobot(wpilib.TimedRobot):
         # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
 
-        self.drive = drive.Drive()
-        self.vision = vision.Vision()
+        self.scheduler = CommandScheduler()
+
+        self.drive = drive.Drive(self.scheduler)
+        self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter([14, 7], 12)
 
         self.field_oriented_drive = True
 
-        self.scheduler = CommandScheduler()
-
     def robotPeriodic(self):
-        self.drive.odometry.update(self.drive.chassis)
-        self.vision.test()
+        self.scheduler.run()
 
     def autonomousInit(self):
         self.drive.odometry.reset()
@@ -43,7 +42,7 @@ class MyRobot(wpilib.TimedRobot):
         self.scheduler.schedule(dtp)
 
     def autonomousPeriodic(self):
-        self.scheduler.run()
+        pass
 
     def teleopInit(self):
         pass

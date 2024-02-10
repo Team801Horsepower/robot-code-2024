@@ -6,12 +6,14 @@ from photonlibpy.photonPoseEstimator import (
 )
 from wpimath.geometry import Transform3d, Rotation3d
 from wpimath import units
+from commands2 import Subsystem, CommandScheduler
 
 
-class Vision:
-    def __init__(self, camera_name="Camera_Module_v1"):
+class Vision(Subsystem):
+    def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
-        layout = AprilTagFieldLayout("crescendo-apriltags.fmap")
+
+        layout = AprilTagFieldLayout("/home/lvuser/py/crescendo-apriltags.json")
         strat = PoseStrategy.LOWEST_AMBIGUITY
         robot_to_cam = Transform3d(
             units.inchesToMeters(1.5),
@@ -21,7 +23,15 @@ class Vision:
         )
         self.estimator = PhotonPoseEstimator(layout, strat, self.camera, robot_to_cam)
 
-    def test(self):
+        self.current_pose = "periodic hasn't been called yet"
+
+        scheduler.registerSubsystem(self)
+
+    def periodic(self):
         result = self.camera.getLatestResult()
-        # self.estimator.update(result)
-        print(result.getTargets())
+        self.current_pose = self.estimator.update(result)
+        print(self.current_pose)
+
+    def test(self):
+        pass
+        # print(result.getTargets())
