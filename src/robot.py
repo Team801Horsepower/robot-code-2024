@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, gatherer, feeder, shooter
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 
 from wpilib import DriverStation
@@ -20,6 +20,7 @@ class MyRobot(wpilib.TimedRobot):
         self.driver_controller = wpilib.XboxController(0)
 
         self.drive = drive.Drive()
+        self.vision = vision.Vision()
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter([14, 7], 12)
@@ -30,6 +31,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def robotPeriodic(self):
         self.drive.odometry.update(self.drive.chassis)
+        self.vision.test()
 
     def autonomousInit(self):
         self.drive.odometry.reset()
