@@ -63,7 +63,7 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.drive(drive_input, self.field_oriented_drive)
 
         # Set swerves button
-        if self.driver_controller.getAButton():
+        if self.driver_controller.getAButtonPressed():
             self.drive.chassis.set_swerves()
         if self.driver_controller.getBButtonPressed():
             self.field_oriented_drive ^= True
