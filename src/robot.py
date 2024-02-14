@@ -6,10 +6,12 @@ from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from wpilib.event import EventLoop
+from utils.read_auto import read_auto
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
-from commands2 import CommandScheduler
+from commands2 import CommandScheduler, Command
+from functools import reduce
 
 from math import pi
 
@@ -35,17 +37,31 @@ class MyRobot(wpilib.TimedRobot):
         self.scheduler.run()
 
     def autonomousInit(self):
-        self.drive.odometry.reset()
-        # dtp = DriveToPose(
-        #     Pose2d(1, 0, 3 * pi / 2),
-        #     self.drive.odometry.pose,
-        #     self.drive.drive,
-        # )
-        # self.scheduler.schedule(dtp)
+        # self.drive.odometry.reset()
+        # # dtp = DriveToPose(
+        # #     Pose2d(1, 0, 3 * pi / 2),
+        # #     self.drive.odometry.pose,
+        # #     self.drive.drive,
+        # # )
+        # # self.scheduler.schedule(dtp)
 
-        aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
-        self.scheduler.schedule(aas)
+        # aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
+        # self.scheduler.schedule(aas)
+        self.drive.odometry.reset(Pose2d(2,7,0))
+        
+        pose_list = read_auto("/home/lvuser/py/autos/Biangle.json")
+        dtps = []
+        for pose in pose_list:
+            dtp = DriveToPose(
+                pose,
+                self.drive.odometry.pose,
+                self.drive.drive,
+            )
+            dtps.append(dtp)
+        
+        self.scheduler.schedule(reduce(Command.andThen, dtps))
 
+        
     def autonomousPeriodic(self):
         pass
 

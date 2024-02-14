@@ -1,13 +1,13 @@
 import json
 
 
-class Reader:
+class Converter:
     def __init__(self, path):
         self.path = path
         with open(path) as f:
             self.data = json.load(f)
 
-    def print_anchor(self):
+    def path_to_json(self):
         waypoint_list = []
         waypoint_num = 1
         for i in self.data["waypoints"]:
@@ -33,6 +33,6 @@ class Reader:
             json.dump(data, json_file, indent=4)
             
 
-reader = Reader(input("File Name: "))
-reader.print_anchor()
+converter = Converter(input("File Name: "))
+converter.path_to_json()
 
