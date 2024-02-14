@@ -35,7 +35,7 @@ class Odometry:
         count = 0
         total = Translation2d()
 
-        for swerve in chain(chassis.swerves_l, chassis.swerves_r):
+        for swerve in chassis.swerves:
             # Grab previous values and update immediately to prevent any loss of delta
             prev_drive = swerve.prev_drive_enc
             prev_turn = swerve.prev_rotation

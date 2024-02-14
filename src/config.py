@@ -33,9 +33,15 @@ wheel_diameter = units.inchesToMeters(3.965)
 drive_speed = 0.8
 turn_speed = 1.0
 
-abs_enc_vals = [
-    0.8576425,
-    0.4142499,
-    0.6548459,
-    0.2648037,
+# (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
+# All absolute encoder values are measured with the swerve wheel facing
+# RADIALLY OUTWARD with the gear of the wheel on the LEFT SIDE of the wheel.
+swerves = [
+    (12, 11, 0, 0.9826425),
+    (20, 19, 3, 0.7892499),
+    (10, 9, 1, 0.5298459),
+    (2, 1, 2, 0.8898037),
 ]
+
+# front left, back left, front right, back right
+swerve_ids = [0, 1, 2, 3]

@@ -20,28 +20,21 @@ from typing import List, Tuple
 # pylint: disable=missing-docstring, too-few-public-methods
 class Chassis:
     def __init__(self) -> None:
-        def make_swerve(t: Tuple[int, int, int]) -> Swerve:
-            drive_id, turn_id, turn_abs_enc_id = t
+        def make_swerve(t: Tuple[int, Tuple[int, int, int, float]]) -> Swerve:
+            i, (drive_id, turn_id, turn_abs_enc_id, abs_enc_val) = t
+            positional_offset = [1 / 8, 3 / 8, -1 / 8, -3 / 8][i]
             return Swerve(
                 CANSparkMax(drive_id, CANSparkMax.MotorType.kBrushless),
                 CANSparkMax(turn_id, CANSparkMax.MotorType.kBrushless),
                 AnalogEncoder(turn_abs_enc_id),
+                (abs_enc_val - positional_offset) % 1,
             )
 
-        #                                                    Swerve CAN IDs
-        # Old Chassis
-        # self.swerves_l = list(map(lambda t: make_swerve(*t), [(12, 11), (20, 19)]))
-        # self.swerves_r = list(map(lambda t: make_swerve(*t), [(9, 10), (2, 1)]))
-        # New Chassis
-        # self.swerves_l = list(map(lambda t: make_swerve(*t), [(8, 14, 2), (4, 7, 1)]))
-        # self.swerves_r = list(map(lambda t: make_swerve(*t), [(2, 15, 3), (1, 5, 0)]))
-        # Newer Chassis
-        self.swerves_l = list(map(make_swerve, [(12, 11, 0), (20, 19, 3)]))
-        self.swerves_r = list(map(make_swerve, [(10, 9, 1), (2, 1, 2)]))
+        self.swerves = list(
+            map(make_swerve, enumerate([config.swerves[i] for i in config.swerve_ids]))
+        )
 
-        for swerve, abs_enc_val in zip(
-            chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
-        ):
+        for swerve in self.swerves:
             swerve.drive_encoder.setPosition(0.0)
             swerve.turn_motor.setInverted(True)
 
@@ -49,13 +42,11 @@ class Chassis:
             swerve.turn_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
 
             print(swerve.turn_abs_encoder.getAbsolutePosition())
-            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
 
             # Makes turn encoders operate in radians
             swerve.turn_encoder.setPositionConversionFactor(
                 2 * pi / config.turn_gear_ratio
             )
-            swerve.turn_encoder.setPosition(2 * pi * cur_turn)
 
             # Makes drive encoders operate in m/s
             swerve.drive_encoder.setVelocityConversionFactor(
@@ -69,14 +60,12 @@ class Chassis:
             swerve.drive_pid.setP(0.15)
             swerve.turn_pid.setP(0.5)
 
+            # Prevs must be updated again after conversion factors were changed
             swerve.update_prevs()
 
     def set_swerves(self):
-        for swerve, abs_enc_val in zip(
-            chain(self.swerves_l, self.swerves_r), config.abs_enc_vals
-        ):
-            cur_turn = swerve.turn_abs_encoder.getAbsolutePosition() - abs_enc_val
-            swerve.turn_encoder.setPosition(2 * pi * cur_turn)
+        for swerve in self.swerves:
+            swerve.reset_from_abs_enc()
             swerve.turn_pid.setReference(
                 0.0, rev.CANSparkLowLevel.ControlType.kPosition
             )
@@ -91,14 +80,14 @@ class Chassis:
         vel *= 2.5
         # Equality check is fine here since the deadzone handles rounding to 0.
         if vel.rotation().degrees() == 0.0 and vel.translation().norm() == 0.0:
-            for swerve in chain(self.swerves_l, self.swerves_r):
+            for swerve in self.swerves:
                 swerve.drive_pid.setReference(
                     0.0, rev.CANSparkLowLevel.ControlType.kVelocity
                 )
             return
 
         swerves = zip(
-            chain(self.swerves_l, self.swerves_r),
+            self.swerves,
             [(1, 1), (-1, 1), (1, -1), (-1, -1)],
         )
         for swerve, pos in swerves:
@@ -148,7 +137,7 @@ class Chassis:
         movs = []
         rots = []
         swerves = zip(
-            chain(self.swerves_l, self.swerves_r),
+            self.swerves,
             [(1, 1), (-1, 1), (1, -1), (-1, -1)],
         )
         for swerve, pos in swerves:
