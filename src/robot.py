@@ -5,12 +5,6 @@ import wpimath
 from subsystems import chassis, drive
 from commands.drive_to_pose import DriveToPose
 
-from pathplannerlib.auto import AutoBuilder, PathPlannerAuto
-from pathplannerlib.config import (
-    HolonomicPathFollowerConfig,
-    ReplanningConfig,
-    PIDConstants,
-)
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
 from commands2 import CommandScheduler
