@@ -21,12 +21,12 @@ from typing import List, Tuple
 class Chassis:
     def __init__(self) -> None:
         def make_swerve(t: Tuple[int, Tuple[int, int, int, float]]) -> Swerve:
-            i, (drive_id, turn_id, turn_abs_enc_id, abs_enc_val) = t
+            i, (drive_id, turn_id, abs_enc_val) = t
             positional_offset = [1 / 8, 3 / 8, -1 / 8, -3 / 8][i]
             return Swerve(
                 CANSparkMax(drive_id, CANSparkMax.MotorType.kBrushless),
                 CANSparkMax(turn_id, CANSparkMax.MotorType.kBrushless),
-                AnalogEncoder(turn_abs_enc_id),
+                AnalogEncoder(i),
                 (abs_enc_val - positional_offset) % 1,
             )
 
