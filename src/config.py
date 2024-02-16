@@ -37,11 +37,11 @@ turn_speed = 1.0
 # All absolute encoder values are measured with the swerve wheel facing
 # RADIALLY OUTWARD with the gear of the wheel on the LEFT SIDE of the wheel.
 swerves = [
-    (4, 11, 2, 0.9826425),
-    (20, 19, 0, 0.7892499),
-    (10, 9, 1, 0.5298459),
-    (2, 1, 3, 0.8898037),
+    (2, 3, 0.7892499),
+    (8, 9, 0.5298459),
+    (18, 19, 0.9826425),
+    (10, 11, 0.8898037),
 ]
 
 # front left, back left, front right, back right
-swerve_ids = [1, 2, 0, 3]
+swerve_ids = [0, 1, 2, 3]
