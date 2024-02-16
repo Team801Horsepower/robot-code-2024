@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive
+from subsystems import chassis, drive, gatherer
 from commands.drive_to_pose import DriveToPose
 
 from wpilib import DriverStation
@@ -20,7 +20,7 @@ class MyRobot(wpilib.TimedRobot):
         self.driver_controller = wpilib.XboxController(0)
 
         self.drive = drive.Drive()
-        self.gatherer = gatherer.Gatherer(9999)
+        self.gatherer = gatherer.Gatherer(1)
 
         self.field_oriented_drive = True
 
@@ -65,7 +65,10 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
 
-        spin_speed = self.driver_controller.getRightTriggerAxis() - self.driver_controller.getLeftTriggerAxis()
+        spin_speed = (
+            self.driver_controller.getRightTriggerAxis()
+            - self.driver_controller.getLeftTriggerAxis()
+        )
         self.gatherer.spin_gatherer(spin_speed)
 
     def testInit(self):
