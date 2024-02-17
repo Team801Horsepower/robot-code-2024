@@ -30,14 +30,21 @@ class Shooter:
             motor.getPIDController() for motor in self.flywheel_motors
         ]
         for flywheel_pid in self.flywheel_pids:
-            flywheel_pid.setP(0.5)
+            flywheel_pid.setP(0.0005)
+            flywheel_pid.setD(0.01)
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
-        for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
-            motor.set(target)
+        # for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
+        #     motor.set(target)
+        if min(self.flywheel_targets) == 0:
+            for motor in self.flywheel_motors:
+                motor.set(0)
+        else:
+            for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
+                pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
         angle_offset = 4.163813417
@@ -54,7 +61,7 @@ class Shooter:
     def set_pitch(self, pitch: float):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
-        print("shooter at", units.radiansToDegrees(current_pitch))
+        # print("shooter at", units.radiansToDegrees(current_pitch))
         if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
@@ -74,7 +81,7 @@ class Shooter:
         self.set_pitch(self.get_pitch())
 
     def feed_power(self) -> float:
-        return 0.5 if self.should_feed else 0
+        return 1.0 if self.should_feed else 0
 
     def flywheels_ready(self) -> bool:
         return (
@@ -95,3 +102,4 @@ class Shooter:
         # self.set_pitch(pitch)
         # TODO: incorporate self.pitch_ready()
         self.should_feed = self.flywheels_ready() and abs(velocity) > 0
+        # self.should_feed = abs(velocity) > 0

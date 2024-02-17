@@ -74,7 +74,7 @@ class MyRobot(wpilib.TimedRobot):
             self.drive.odometry.reset()
         if self.driver_controller.getRightBumper():
             # 0.5 filler value for pitch. Pitching is currently disabled.
-            self.shooter.run_shooter(0.5, 1)
+            self.shooter.run_shooter(0.5, 5600)
         else:
             self.shooter.run_shooter(0.5, 0)
         dpad = self.driver_controller.getPOV()
@@ -101,6 +101,12 @@ class MyRobot(wpilib.TimedRobot):
 
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
         self.feeder.run(feed_power)
+
+        # if self.shooter.flywheels_ready():
+        #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+
+        
 
     def testInit(self):
         pass

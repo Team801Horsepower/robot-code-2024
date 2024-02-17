@@ -48,7 +48,7 @@ swerve_ids = [0, 1, 2, 3]
 
 # note_proximity_threshold = 1600
 note_proximity_threshold = 600
-flywheel_min_speed = 6000
+flywheel_min_speed = 4000
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)
@@ -72,3 +72,17 @@ speaker_height = units.inchesToMeters(100)
 
 # Height of the center of a speaker april tag
 speaker_tag_height = units.inchesToMeters(57.125)
+
+shooter_lookup_table = [ # position to angle; entries every three feet, starting from 6
+    units.degreesToRadians(48),
+    units.degreesToRadians(42),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    
+]
