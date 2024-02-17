@@ -46,6 +46,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopPeriodic(self):
+        print(self.shooter.get_pitch())
         def deadzone(activation: float) -> float:
             if abs(activation) < 0.14:
                 return 0.0
@@ -57,6 +58,9 @@ class MyRobot(wpilib.TimedRobot):
             config.turn_speed * deadzone(-self.driver_controller.getRightX()),
         )
         self.drive.drive(drive_input, self.field_oriented_drive)
+
+        self.shooter.set_pitch(0.3 * self.driver_controller.getRightY() + 0.3)
+        # self.shooter.set_pitch(0.3)
 
         # Set swerves button
         if self.driver_controller.getAButtonPressed():

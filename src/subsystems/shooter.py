@@ -10,7 +10,7 @@ from wpilib import DutyCycleEncoder
 class Shooter:
     def __init__(self, flywheel_motors: List[int], feeder_motor: int, pitch_motor: int):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
-        self.pitch_encoder = DutyCycleEncoder(9)
+        self.pitch_encoder = DutyCycleEncoder(0)
         self.pitch_target = 0.0
 
         self.feeder_motor = CANSparkMax(feeder_motor, CANSparkMax.MotorType.kBrushless)
@@ -40,8 +40,8 @@ class Shooter:
             motor.set(target)
 
     def get_pitch(self) -> float:
-        angle_offset = 0
-        angle = self.pitch_encoder.get() * 2.0 * pi + angle_offset
+        angle_offset = 0.718247042956176
+        angle = (self.pitch_encoder.get() - angle_offset) * 2.0 * pi
 
         while angle > pi:
             angle -= 2.0 * pi
@@ -56,10 +56,10 @@ class Shooter:
         current_pitch = self.get_pitch()
         if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
-        elif current_pitch > self.pitch_target:
-            self.pitch_motor.set(0.1)
-        elif current_pitch < self.pitch_target:
-            self.pitch_motor.set(-0.1)
+        elif current_pitch > self.pitch_target or current_pitch > 0.66:
+            self.pitch_motor.set(1.0)
+        elif current_pitch < self.pitch_target or current_pitch < 0.04:
+            self.pitch_motor.set(-1.0)
 
     def feed(self) -> None:
         self.feeder_target = True
