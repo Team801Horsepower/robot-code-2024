@@ -4,6 +4,8 @@ from typing import List
 from rev import CANSparkMax, SparkPIDController, ColorSensorV3
 from wpilib import DutyCycleEncoder
 
+import config
+
 # pylint: disable=too-many-instance-attributes
 
 
@@ -55,16 +57,12 @@ class Shooter:
             self.pitch_motor.set(-0.1)
 
     def feed_power(self) -> float:
-        if self.should_feed:
-            return 0.5
-        else:
-            return 0
+        return 0.5 if self.should_feed else 0
 
     def flywheels_ready(self) -> bool:
-        flywheel_min_speed = 6000
         return (
             min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
-            >= flywheel_min_speed
+            >= config.flywheel_min_speed
         )
 
     def pitch_ready(self) -> bool:
@@ -78,8 +76,5 @@ class Shooter:
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
         # self.set_pitch(pitch)
-        # if self.flywheels_ready() and self.pitch_ready():
-        if self.flywheels_ready() and abs(velocity) > 0:
-            self.should_feed = True
-        else:
-            self.should_feed = False
+        # TODO: incorporate self.pitch_ready()
+        self.should_feed = self.flywheels_ready() and abs(velocity) > 0:

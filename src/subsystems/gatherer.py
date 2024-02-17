@@ -23,10 +23,7 @@ class Gatherer:
             self.should_feed = True
 
     def feed_power(self) -> float:
-        if self.should_feed:
-            return 0.1
-        else:
-            return 0
+        return 0.1 if self.should_feed else 0
 
     def note_present(self) -> bool:
         return self.color_sensor.getProximity() > config.note_proximity_threshold

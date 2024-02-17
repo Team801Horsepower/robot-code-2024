@@ -47,3 +47,4 @@ swerves = [
 swerve_ids = [0, 1, 2, 3]
 
 note_proximity_threshold = 1600
+flywheel_min_speed = 6000
