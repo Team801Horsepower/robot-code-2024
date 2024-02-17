@@ -6,7 +6,9 @@ from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from wpilib.event import EventLoop
-from utils.read_auto import read_auto
+from commands.command_test_gather import Gather
+from commands.command_test_shoot import Shoot
+from utils.read_auto import read_auto, read_cmds
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
@@ -47,10 +49,15 @@ class MyRobot(wpilib.TimedRobot):
 
         # aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
         # self.scheduler.schedule(aas)
-        self.drive.odometry.reset(Pose2d(2,7,0))
-        
-        pose_list = read_auto("/home/lvuser/py/autos/Biangle.json")
+        self.drive.odometry.reset(Pose2d(2, 7, 0))
+        file_path = "/home/lvuser/py/autos/Biangle.json"
         dtps = []
+        auto_cmds = []
+        pose_list = read_auto(file_path)
+        cmd_list = read_cmds(file_path)
+
+        self.drive.odometry.reset(Pose2d())
+
         for pose in pose_list:
             dtp = DriveToPose(
                 pose,
@@ -58,10 +65,23 @@ class MyRobot(wpilib.TimedRobot):
                 self.drive.drive,
             )
             dtps.append(dtp)
-        
-        self.scheduler.schedule(reduce(Command.andThen, dtps))
 
-        
+        for i in range(len(dtps)):
+            gather = False
+            if bool(cmd_list[i]) == True:
+                for cmd in cmd_list[i]:
+                    if cmd == "g":
+                        gather = True
+                        auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
+                    elif cmd == "s":
+                        auto_cmds.append(Shoot(pose_list[i]))
+            if gather == True:
+                pass
+            else:
+                auto_cmds.append(dtps[i])
+
+        self.scheduler.schedule(reduce(Command.andThen, auto_cmds))
+
     def autonomousPeriodic(self):
         pass
 

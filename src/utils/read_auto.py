@@ -2,10 +2,11 @@ import json
 from wpimath import units
 from wpimath.geometry import Pose2d
 
+
 def read_auto(path):
     with open(path) as f:
         data = json.load(f)
-    
+
     waypoints = []
     for i in data["waypoints"]:
         # pose = (i["waypoints"]["x"], i["waypoints"]["y"], i["waypoints"]["r"])
@@ -13,4 +14,14 @@ def read_auto(path):
         waypoints.append(pose)
 
     return waypoints
-             
+
+
+def read_cmds(path):
+    with open(path) as f:
+        data = json.load(f)
+
+    cmds = []
+    for i in data["commands"]:
+        cmds.append(i)
+
+    return cmds

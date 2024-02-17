@@ -9,15 +9,20 @@ class Converter:
 
     def path_to_json(self):
         waypoint_list = []
+        command_run_list = []
         waypoint_num = 1
         for i in self.data["waypoints"]:
             rotation = input("input rotation at " + str(i["anchor"]) + " waypoint " + str(waypoint_num) + ": ")
+            print(rotation)
+            command_run = input("What cmds you want here anyway (gs) leave blank for none: ")
             waypoint_list.append({"x": i["anchor"]["x"], "y": i["anchor"]["y"], "r": int(rotation)}) 
+            command_run_list.append(command_run)
             waypoint_num += 1
  
         data = {
             "version": 1.18,
-            "waypoints":  waypoint_list
+            "waypoints": waypoint_list,
+            "commands": command_run_list
             
         }
 
