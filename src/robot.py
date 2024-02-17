@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive
+from subsystems import chassis, drive, gatherer, shooter
 from commands.drive_to_pose import DriveToPose
 
 from wpilib import DriverStation
@@ -20,10 +20,13 @@ class MyRobot(wpilib.TimedRobot):
         self.driver_controller = wpilib.XboxController(0)
 
         self.drive = drive.Drive()
+        self.gatherer = gatherer.Gatherer(1)
 
         self.field_oriented_drive = True
 
         self.scheduler = CommandScheduler()
+
+        self.shooter = shooter.Shooter([14, 7], 13, 12)
 
     def robotPeriodic(self):
         self.drive.odometry.update(self.drive.chassis)
@@ -63,6 +66,15 @@ class MyRobot(wpilib.TimedRobot):
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
+        if self.driver_controller.getYButtonPressed():
+            self.shooter.set_flywheels([-1.0, 1.0])
+            self.shooter.feed()
+
+        spin_speed = (
+            self.driver_controller.getRightTriggerAxis()
+            - self.driver_controller.getLeftTriggerAxis()
+        )
+        self.gatherer.spin_gatherer(spin_speed)
 
     def testInit(self):
         pass
