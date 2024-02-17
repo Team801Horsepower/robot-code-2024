@@ -3,6 +3,7 @@ from typing import List
 
 from rev import CANSparkMax, SparkPIDController, ColorSensorV3
 from wpilib import DutyCycleEncoder
+from wpimath import units
 
 import config
 
@@ -12,8 +13,12 @@ import config
 class Shooter:
     def __init__(self, flywheel_motors: List[int], pitch_motor: int):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
+        self.pitch_motor.setInverted(True)
         self.pitch_encoder = DutyCycleEncoder(0)
         self.pitch_target = 0.0
+
+        self.pitch_min = units.degreesToRadians(25.7)
+        self.pitch_max = units.degreesToRadians(57.8)
 
         self.should_feed = False
 
@@ -35,8 +40,8 @@ class Shooter:
             motor.set(target)
 
     def get_pitch(self) -> float:
-        angle_offset = 0.718247042956176
-        angle = (self.pitch_encoder.get() - angle_offset) * 2.0 * pi
+        angle_offset = 4.163813417
+        angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
         while angle > pi:
             angle -= 2.0 * pi
@@ -49,12 +54,15 @@ class Shooter:
     def set_pitch(self, pitch: float):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
+        print("shooter at", units.radiansToDegrees(current_pitch))
         if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
-        elif current_pitch > self.pitch_target or current_pitch > 0.66:
-            self.pitch_motor.set(1.0)
-        elif current_pitch < self.pitch_target or current_pitch < 0.04:
-            self.pitch_motor.set(-1.0)
+        elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
+            self.pitch_motor.set(-0.1)
+        elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
+            self.pitch_motor.set(0.1)
+        else:
+            self.pitch_motor.set(0)
 
     def pitch_up(self):
         self.set_pitch(self.get_pitch() + 0.06)

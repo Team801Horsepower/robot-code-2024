@@ -46,7 +46,8 @@ swerves = [
 # front left, back left, front right, back right
 swerve_ids = [0, 1, 2, 3]
 
-note_proximity_threshold = 1600
+# note_proximity_threshold = 1600
+note_proximity_threshold = 600
 flywheel_min_speed = 6000
 
 # Height of the *pivot* of the shooter
@@ -54,6 +55,8 @@ shooter_height = units.inchesToMeters(9.061)
 
 # Height of the camera
 camera_height = units.inchesToMeters(7.712)
+
+camera_angle = units.degreesToRadians(20)
 
 # Forward distance between camera and shooter *pivot*,
 # with positive for shooter behind camera
@@ -63,7 +66,9 @@ camera_shooter_distance = units.inchesToMeters(23.06)
 camera_left_offset = units.inchesToMeters(-7.917)
 
 # Speaker height to aim at
-speaker_height = units.inchesToMeters(81)
+# speaker_height = units.inchesToMeters(81)
+# speaker_height = units.inchesToMeters(90)
+speaker_height = units.inchesToMeters(100)
 
 # Height of the center of a speaker april tag
 speaker_tag_height = units.inchesToMeters(57.125)

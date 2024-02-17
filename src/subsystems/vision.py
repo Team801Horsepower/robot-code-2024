@@ -44,5 +44,8 @@ class Vision(Subsystem):
         result = self.camera.getLatestResult()
         for target in result.getTargets():
             if target.fiducialId in [4, 7]:
-                return (target.getPitch(), target.getYaw())
+                return (
+                    units.degreesToRadians(target.getPitch()),
+                    units.degreesToRadians(target.getYaw()),
+                )
         return None

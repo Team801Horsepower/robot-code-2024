@@ -5,6 +5,7 @@ import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
+from wpilib.event import EventLoop
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
@@ -42,7 +43,7 @@ class MyRobot(wpilib.TimedRobot):
         # )
         # self.scheduler.schedule(dtp)
 
-        aas = AimAtSpeaker(self.drive, self.vision)
+        aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
         self.scheduler.schedule(aas)
 
     def autonomousPeriodic(self):
@@ -83,6 +84,14 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.pitch_down()
         else:
             self.shooter.stop_pitch()
+
+        # self.driver_controller.leftBumper(
+        #     EventLoop().bind(
+        #         AimAtSpeaker(self.drive, self.vision, self.shooter).execute
+        #     )
+        # )
+
+        self.driver_controller.button
 
         gather_power = 0.5 * (
             self.driver_controller.getRightTriggerAxis()
