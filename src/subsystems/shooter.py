@@ -77,4 +77,4 @@ class Shooter:
         self.set_flywheels(flywheel_speeds)
         # self.set_pitch(pitch)
         # TODO: incorporate self.pitch_ready()
-        self.should_feed = self.flywheels_ready() and abs(velocity) > 0:
+        self.should_feed = self.flywheels_ready() and abs(velocity) > 0
