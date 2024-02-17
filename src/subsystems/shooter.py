@@ -18,9 +18,9 @@ class Shooter:
         self.feeder_pid.setP(0.5)
         self.feeder_target = False
 
-        self.color_sensor = ColorSensorV3(9999)
+        # self.color_sensor = ColorSensorV3(9999)
 
-        self.flywheel_motors: List[CANSparkMax] = [
+        self.flywheel_motors = [
             CANSparkMax(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
         ]
 
@@ -34,8 +34,10 @@ class Shooter:
 
     def set_flywheels(self, speeds: List[float]) -> None:
         self.flywheel_targets = speeds
-        for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
-            pid.setReference(target, CANSparkMax.ControlType.kVelocity)
+        # for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
+        #     pid.setReference(target, CANSparkMax.ControlType.kVelocity)
+        for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
+            motor.set(target)
 
     def get_pitch(self) -> float:
         angle_offset = 0
@@ -61,11 +63,13 @@ class Shooter:
 
     def feed(self) -> None:
         self.feeder_target = True
-        self.feeder_pid.setReference(0.5, CANSparkMax.ControlType.kVelocity)
+        # self.feeder_pid.setReference(0.5, CANSparkMax.ControlType.kVelocity)
+        self.feeder_motor.set(0.5)
 
     def stop_feed(self) -> None:
         self.feeder_target = False
-        self.feeder_pid.setReference(0, CANSparkMax.ControlType.kVelocity)
+        self.feeder_motor.set(0)
+        # self.feeder_pid.setReference(0, CANSparkMax.ControlType.kVelocity)
 
     def flywheels_ready(self) -> bool:
         flywheel_ok_threshold = 0.1
