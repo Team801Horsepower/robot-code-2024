@@ -7,6 +7,10 @@
 *.pyd
 *.pyo
 
+# Further modified for Python by Omkar Subramaniam on 2024-02-16
+
+__pycache__
+
 build/**/*.jar
 
 ### C++ ###
