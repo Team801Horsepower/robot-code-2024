@@ -1,7 +1,7 @@
 from math import pi
 from typing import List
 
-from rev import CANSparkMax, SparkPIDController, ColorSensorV3
+from rev import CANSparkMax, SparkPIDController, ColorSensorV3, CANSparkFlex
 from wpilib import DutyCycleEncoder
 
 # pylint: disable=too-many-instance-attributes
@@ -21,7 +21,7 @@ class Shooter:
         # self.color_sensor = ColorSensorV3(9999)
 
         self.flywheel_motors = [
-            CANSparkMax(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
+            CANSparkFlex(id, CANSparkFlex.MotorType.kBrushless) for id in flywheel_motors
         ]
 
         self.flywheel_pids: List[SparkPIDController] = [
