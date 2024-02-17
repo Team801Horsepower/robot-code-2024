@@ -30,20 +30,20 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
 
-        aas = AimAtSpeaker(self.vision, self.drive)
-        self.scheduler.schedule(aas)
-
     def robotPeriodic(self):
         self.scheduler.run()
 
     def autonomousInit(self):
         self.drive.odometry.reset()
-        dtp = DriveToPose(
-            Pose2d(1, 0, 3 * pi / 2),
-            self.drive.odometry.pose,
-            self.drive.drive,
-        )
-        self.scheduler.schedule(dtp)
+        # dtp = DriveToPose(
+        #     Pose2d(1, 0, 3 * pi / 2),
+        #     self.drive.odometry.pose,
+        #     self.drive.drive,
+        # )
+        # self.scheduler.schedule(dtp)
+
+        aas = AimAtSpeaker(self.drive, self.vision)
+        self.scheduler.schedule(aas)
 
     def autonomousPeriodic(self):
         pass
@@ -76,6 +76,13 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.run_shooter(0.5, 1)
         else:
             self.shooter.run_shooter(0.5, 0)
+        dpad = self.driver_controller.getPOV()
+        if dpad in [315, 0, 45]:
+            self.shooter.pitch_up()
+        elif dpad in [135, 180, 225]:
+            self.shooter.pitch_down()
+        else:
+            self.shooter.stop_pitch()
 
         gather_power = 0.5 * (
             self.driver_controller.getRightTriggerAxis()

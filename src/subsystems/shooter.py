@@ -56,6 +56,15 @@ class Shooter:
         elif current_pitch < self.pitch_target or current_pitch < 0.04:
             self.pitch_motor.set(-1.0)
 
+    def pitch_up(self):
+        self.set_pitch(self.get_pitch() + 0.06)
+
+    def pitch_down(self):
+        self.set_pitch(self.get_pitch() - 0.06)
+
+    def stop_pitch(self):
+        self.set_pitch(self.get_pitch())
+
     def feed_power(self) -> float:
         return 0.5 if self.should_feed else 0
 
