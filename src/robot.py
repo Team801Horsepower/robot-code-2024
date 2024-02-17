@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, gatherer, shooter
+from subsystems import chassis, drive, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 
 from wpilib import DriverStation
@@ -21,12 +21,12 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drive = drive.Drive()
         self.gatherer = gatherer.Gatherer(1)
+        self.feeder = feeder.Feeder(13)
+        self.shooter = shooter.Shooter([14, 7], 12)
 
         self.field_oriented_drive = True
 
         self.scheduler = CommandScheduler()
-
-        self.shooter = shooter.Shooter([14, 7], 13, 12)
 
     def robotPeriodic(self):
         self.drive.odometry.update(self.drive.chassis)
@@ -66,15 +66,26 @@ class MyRobot(wpilib.TimedRobot):
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
-        if self.driver_controller.getYButtonPressed():
+        if self.driver_controller.getRightBumper():
             self.shooter.set_flywheels([-1.0, 1.0])
-            self.shooter.feed()
+            # self.shooter._should_feed = True
+        else:
+            self.shooter.set_flywheels([0, 0])
+            self.shooter._should_feed = False
 
-        spin_speed = (
+        gather_power = (
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
         )
-        self.gatherer.spin_gatherer(spin_speed)
+        self.gatherer.spin_gatherer(gather_power)
+
+        if self.gatherer.should_feed() or self.shooter.should_feed():
+            self.feeder.run()
+        else:
+            self.feeder.stop()
+
+        if self.gatherer.note_present():
+            print("note detected")
 
     def testInit(self):
         pass
