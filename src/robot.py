@@ -4,6 +4,7 @@ import wpilib
 import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
+from commands.aim_at_speaker import AimAtSpeaker
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
@@ -28,6 +29,9 @@ class MyRobot(wpilib.TimedRobot):
         self.shooter = shooter.Shooter([14, 7], 12)
 
         self.field_oriented_drive = True
+
+        aas = AimAtSpeaker(self.vision, self.drive)
+        self.scheduler.schedule(aas)
 
     def robotPeriodic(self):
         self.scheduler.run()

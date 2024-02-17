@@ -48,3 +48,19 @@ swerve_ids = [0, 1, 2, 3]
 
 note_proximity_threshold = 1600
 flywheel_min_speed = 6000
+
+# Height of the *pivot* of the shooter
+shooter_height = units.inchesToMeters(8.825)
+
+# Height of the camera
+camera_height = units.inchesToMeters(8.25)
+
+# Forward distance between camera and shooter *pivot*,
+# with positive for shooter behind camera
+camera_shooter_distance = units.inchesToMeters(23.25)
+
+# Speaker height to aim at
+speaker_height = units.inchesToMeters(81)
+
+# Height of the center of a speaker april tag
+speaker_tag_height = units.inchesToMeters(57.125)

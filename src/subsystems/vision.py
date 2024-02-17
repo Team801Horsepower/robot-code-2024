@@ -7,6 +7,7 @@ from photonlibpy.photonPoseEstimator import (
 from wpimath.geometry import Transform3d, Rotation3d
 from wpimath import units
 from commands2 import Subsystem, CommandScheduler
+from typing import Tuple
 
 
 class Vision(Subsystem):
@@ -30,8 +31,18 @@ class Vision(Subsystem):
     def periodic(self):
         result = self.camera.getLatestResult()
         self.current_pose = self.estimator.update(result)
-        print(self.current_pose)
+        # print(self.current_pose)
 
     def test(self):
-        pass
+        # result = self.camera.getLatestResult()
+        # for target in result.getTargets():
+        #     target.getPitch()
         # print(result.getTargets())
+        pass
+
+    def cur_speaker_atag(self) -> Tuple[float, float]:
+        result = self.camera.getLatestResult()
+        for target in result.getTargets():
+            if target.fiducialId in [4, 7]:
+                return (target.getPitch(), target.getYaw())
+        return None
