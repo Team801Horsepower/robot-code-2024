@@ -13,13 +13,7 @@ class Shooter:
         self.pitch_encoder = DutyCycleEncoder(9)
         self.pitch_target = 0.0
 
-        # self.feeder_motor = CANSparkMax(feeder_motor, CANSparkMax.MotorType.kBrushless)
-        # self.feeder_pid = self.feeder_motor.getPIDController()
-        # self.feeder_pid.setP(0.5)
-        # self.feeder_target = False
-        self._should_feed = False
-
-        # self.color_sensor = ColorSensorV3(9999)
+        self.should_feed = False
 
         self.flywheel_motors = [
             CANSparkMax(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
@@ -35,8 +29,6 @@ class Shooter:
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
-        # for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
-        #     pid.setReference(target, CANSparkMax.ControlType.kVelocity)
         for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
             motor.set(target)
 
@@ -62,28 +54,17 @@ class Shooter:
         elif current_pitch < self.pitch_target:
             self.pitch_motor.set(-0.1)
 
-    # def feed(self):
-    #     self.feeder_target = True
-    #     # self.feeder_pid.setReference(0.5, CANSparkMax.ControlType.kVelocity)
-    #     self.feeder_motor.set(0.5)
-
-    # def stop_feed(self):
-    #     self.feeder_target = False
-    #     self.feeder_motor.set(0)
-    #     # self.feeder_pid.setReference(0, CANSparkMax.ControlType.kVelocity)
-
-    def should_feed(self) -> bool:
-        return self._should_feed
+    def feed_power(self) -> float:
+        if self.should_feed:
+            return 0.5
+        else:
+            return 0
 
     def flywheels_ready(self) -> bool:
-        flywheel_ok_threshold = 0.1
+        flywheel_min_speed = 6000
         return (
-            sum(
-                abs(self.flywheel_targets[i] - self.flywheel_encoders[i].getVelocity())
-                for i in range(len(self.flywheel_targets))
-            )
-            / len(self.flywheel_targets)
-            <= flywheel_ok_threshold
+            min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
+            >= flywheel_min_speed
         )
 
     def pitch_ready(self) -> bool:
@@ -94,12 +75,11 @@ class Shooter:
         return self.color_sensor.getProximity() >= 512
 
     def run_shooter(self, pitch: float, velocity: float, differential: float = 0):
-        flywheel_speeds = [velocity + differential, velocity - differential]
+        flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
-        self.set_pitch(pitch)
-        if self.flywheels_ready() and self.pitch_ready() and self.note_present():
-            # self.feed()
-            self._should_feed = True
+        # self.set_pitch(pitch)
+        # if self.flywheels_ready() and self.pitch_ready():
+        if self.flywheels_ready() and abs(velocity) > 0:
+            self.should_feed = True
         else:
-            # self.stop_feed()
-            self._should_feed = False
+            self.should_feed = False

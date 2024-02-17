@@ -7,8 +7,8 @@ class Feeder:
 
         self.motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
 
-    def run(self):
-        self.motor.set(0.2)
+    def run(self, power: float):
+        self.motor.set(power)
 
     def stop(self):
         self.motor.set(0)

@@ -67,25 +67,19 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
         if self.driver_controller.getRightBumper():
-            self.shooter.set_flywheels([-1.0, 1.0])
-            # self.shooter._should_feed = True
+            # 0.5 filler value for pitch. Pitching is currently disabled.
+            self.shooter.run_shooter(0.5, 1)
         else:
-            self.shooter.set_flywheels([0, 0])
-            self.shooter._should_feed = False
+            self.shooter.run_shooter(0.5, 0)
 
-        gather_power = (
+        gather_power = 0.5 * (
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
         )
         self.gatherer.spin_gatherer(gather_power)
 
-        if self.gatherer.should_feed() or self.shooter.should_feed():
-            self.feeder.run()
-        else:
-            self.feeder.stop()
-
-        if self.gatherer.note_present():
-            print("note detected")
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        self.feeder.run(feed_power)
 
     def testInit(self):
         pass

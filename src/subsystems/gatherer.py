@@ -11,19 +11,22 @@ class Gatherer:
 
         self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
 
-        self._should_feed = False
+        self.should_feed = False
 
     def spin_gatherer(self, spin_speed):
         # Deadzone for controller triggers/setting gather speed
         if abs(spin_speed) < 0.1 or self.note_present():
             self.motor.set(0.0)
-            self._should_feed = False
+            self.should_feed = False
         else:
             self.motor.set(spin_speed)
-            self._should_feed = True
+            self.should_feed = True
 
-    def should_feed(self) -> bool:
-        return self._should_feed and not self.note_present()
+    def feed_power(self) -> float:
+        if self.should_feed:
+            return 0.1
+        else:
+            return 0
 
     def note_present(self) -> bool:
         return self.color_sensor.getProximity() > config.note_proximity_threshold
