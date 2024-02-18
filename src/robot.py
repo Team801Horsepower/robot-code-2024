@@ -12,7 +12,7 @@ from utils.read_auto import read_auto, read_cmds
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
-from commands2 import CommandScheduler, Command
+from commands2 import CommandScheduler, Command, SequentialCommandGroup
 from functools import reduce
 
 from math import pi
@@ -49,12 +49,15 @@ class MyRobot(wpilib.TimedRobot):
 
         # aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
         # self.scheduler.schedule(aas)
-        self.drive.odometry.reset(Pose2d(2, 7, 0))
-        file_path = "/home/lvuser/py/autos/Biangle.json"
+        # self.drive.odometry.reset(Pose2d(2, 7, 0))
+        file_path = "/home/lvuser/py/autos/BackUp.json"
         dtps = []
-        auto_cmds = []
+        # auto_cmds = []
+        new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
+
+        self.drive.odometry.reset(pose_list[0])
 
         for pose in pose_list:
             dtp = DriveToPose(
@@ -63,26 +66,37 @@ class MyRobot(wpilib.TimedRobot):
                 self.drive.drive,
             )
             dtps.append(dtp)
+            new_cmds.append(dtp)
 
-        for i in range(len(dtps)):
-            gather = False
-            if bool(cmd_list[i]) == True:
-                for cmd in cmd_list[i]:
-                    if cmd == "g":
-                        gather = True
-                        # auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
-                        auto_cmds.append(dtps[i].deadlineWith(Gather(self.gatherer)))
-                    elif cmd == "s":
-                        auto_cmds.append(Shoot(self.drive, pose_list[i]))
-            if gather == True:
-                pass
-            else:
-                auto_cmds.append(dtps[i])
+        # for i in range(len(dtps)):
+        #     gather = False
+        #     if bool(cmd_list[i]) == True:
+        #         for cmd in cmd_list[i]:
+        #             if cmd == "g":
+        #                 gather = True
+        #                 # auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
+        #                 auto_cmds.append(dtps[i].deadlineWith(Gather(self.gatherer)))
+        #             elif cmd == "s":
+        #                 auto_cmds.append(Shoot(self.drive, pose_list[i]))
+        #     if gather == True:
+        #         pass
+        #     else:
+        #         auto_cmds.append(dtps[i])
+        for i in range(len(new_cmds)):
+            cmd = new_cmds[i]
+            for cmd_s in cmd_list[i]:
+                if cmd_s == "g":
+                    cmd = cmd.deadlineWith(Gather(self.gatherer))
+                elif cmd_s == "s":
+                    cmd = cmd.andThen(Shoot(self.shooter))
+            new_cmds[i] = cmd
 
-        self.scheduler.schedule(reduce(Command.andThen, auto_cmds))
+        # self.scheduler.schedule(reduce(Command.andThen, auto_cmds))
+        self.scheduler.schedule(reduce(Command.andThen, new_cmds))
 
     def autonomousPeriodic(self):
-        pass
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        self.feeder.run(feed_power)
 
     def teleopInit(self):
         pass
