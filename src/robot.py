@@ -56,8 +56,6 @@ class MyRobot(wpilib.TimedRobot):
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
 
-        self.drive.odometry.reset(Pose2d())
-
         for pose in pose_list:
             dtp = DriveToPose(
                 pose,
@@ -72,9 +70,10 @@ class MyRobot(wpilib.TimedRobot):
                 for cmd in cmd_list[i]:
                     if cmd == "g":
                         gather = True
-                        auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
+                        # auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
+                        auto_cmds.append(dtps[i].deadlineWith(Gather(self.gatherer)))
                     elif cmd == "s":
-                        auto_cmds.append(Shoot(pose_list[i]))
+                        auto_cmds.append(Shoot(self.drive, pose_list[i]))
             if gather == True:
                 pass
             else:
@@ -146,7 +145,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass

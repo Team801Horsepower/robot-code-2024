@@ -1,20 +1,22 @@
 from commands2 import Command
-from subsystems import gatherer
+from subsystems.gatherer import Gatherer
 
 from typing import Callable
 
 
 class Gather(Command):
-    def __init__(self, next_dtp):
-        self.finished = False
+    # def __init__(self, next_dtp):
+    def __init__(self, gatherer: Gatherer):
+        self.gatherer = gatherer
 
     def initialize(self):
         pass
 
     def execute(self):
-        if self.finished:
-            return
-        Gatherer(0.7)
+        self.gatherer.spin_gatherer(0.5)
 
     def isFinished(self):
-        return self.finished
+        return False
+
+    def end(self, interrupted):
+        self.gatherer.spin_gatherer(0)
