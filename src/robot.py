@@ -58,10 +58,14 @@ class MyRobot(wpilib.TimedRobot):
                 return 0.0
             return activation
 
+        def input_curve(input: float) -> float:
+            a = 0.2
+            return ((input * a) + input ** 3) / (1 + a) 
+
         drive_input = wpimath.geometry.Transform2d(
-            config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
-            config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
-            config.turn_speed * deadzone(-self.driver_controller.getRightX()),
+            config.drive_speed * input_curve(deadzone(-self.driver_controller.getLeftY())),
+            config.drive_speed * input_curve(deadzone(-self.driver_controller.getLeftX())),
+            config.turn_speed * input_curve(deadzone(-self.driver_controller.getRightX())),
         )
         self.drive.drive(drive_input, self.field_oriented_drive)
 

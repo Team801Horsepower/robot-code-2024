@@ -65,17 +65,17 @@ class Shooter:
         if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
-            self.pitch_motor.set(-0.1)
+            self.pitch_motor.set(-0.3)
         elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
-            self.pitch_motor.set(0.1)
+            self.pitch_motor.set(0.3)
         else:
             self.pitch_motor.set(0)
 
     def pitch_up(self):
-        self.set_pitch(self.get_pitch() + 0.06)
+        self.set_pitch(self.get_pitch() + 0.2)
 
     def pitch_down(self):
-        self.set_pitch(self.get_pitch() - 0.06)
+        self.set_pitch(self.get_pitch() - 0.2)
 
     def stop_pitch(self):
         self.set_pitch(self.get_pitch())
