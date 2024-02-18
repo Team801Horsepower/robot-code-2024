@@ -60,12 +60,15 @@ class MyRobot(wpilib.TimedRobot):
 
         def input_curve(input: float) -> float:
             a = 0.2
-            return ((input * a) + input ** 3) / (1 + a) 
+            return ((input * a) + input**3) / (1 + a)
 
         drive_input = wpimath.geometry.Transform2d(
-            config.drive_speed * input_curve(deadzone(-self.driver_controller.getLeftY())),
-            config.drive_speed * input_curve(deadzone(-self.driver_controller.getLeftX())),
-            config.turn_speed * input_curve(deadzone(-self.driver_controller.getRightX())),
+            config.drive_speed
+            * input_curve(deadzone(-self.driver_controller.getLeftY())),
+            config.drive_speed
+            * input_curve(deadzone(-self.driver_controller.getLeftX())),
+            config.turn_speed
+            * input_curve(deadzone(-self.driver_controller.getRightX())),
         )
         self.drive.drive(drive_input, self.field_oriented_drive)
 
@@ -77,10 +80,9 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
         if self.driver_controller.getRightBumper():
-            # 0.5 filler value for pitch. Pitching is currently disabled.
-            self.shooter.run_shooter(0.5, 5600)
+            self.shooter.run_shooter(5600)
         else:
-            self.shooter.run_shooter(0.5, 0)
+            self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()
         if dpad in [315, 0, 45]:
             self.shooter.pitch_up()
@@ -109,8 +111,6 @@ class MyRobot(wpilib.TimedRobot):
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
         print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-
-        
 
     def testInit(self):
         pass

@@ -96,10 +96,9 @@ class Shooter:
     def note_present(self) -> bool:
         return self.color_sensor.getProximity() >= 512
 
-    def run_shooter(self, pitch: float, velocity: float, differential: float = 0):
+    def run_shooter(self, velocity: float, differential: float = 0):
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
-        # self.set_pitch(pitch)
         # TODO: incorporate self.pitch_ready()
         self.should_feed = abs(velocity) > 0 and (
             self.flywheels_ready() or self.should_feed

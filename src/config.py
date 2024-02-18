@@ -73,7 +73,7 @@ speaker_height = units.inchesToMeters(100)
 # Height of the center of a speaker april tag
 speaker_tag_height = units.inchesToMeters(57.125)
 
-shooter_lookup_table = [ # position to angle; entries every three feet, starting from 6
+shooter_lookup_table = [  # position to angle; entries every three feet, starting from 6
     units.degreesToRadians(48),
     units.degreesToRadians(42),
     units.degreesToRadians(0),
@@ -84,5 +84,4 @@ shooter_lookup_table = [ # position to angle; entries every three feet, starting
     units.degreesToRadians(0),
     units.degreesToRadians(0),
     units.degreesToRadians(0),
-    
 ]
