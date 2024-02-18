@@ -4,6 +4,8 @@ from wpimath.controller import PIDController
 from math import pi
 from typing import Callable
 
+from subsystems.drive import Drive
+
 import config
 
 
@@ -11,16 +13,18 @@ class DriveToPose(Command):
     def __init__(
         self,
         target: Pose2d,
-        get_pose_method: Callable[[], Pose2d],
-        drive_method: Callable[[Transform2d, bool], None],
+        # get_pose_method: Callable[[], Pose2d],
+        # drive_method: Callable[[Transform2d, bool], None],
+        drive: Drive,
     ):
         self.target = target
-        self.get_pose = get_pose_method
-        self.drive = drive_method
+        # self.get_pose = get_pose_method
+        # self.drive = drive_method
+        self.drive = drive
 
         self.x_pid = PIDController(5.0, 0, 0)
         self.y_pid = PIDController(5.0, 0, 0)
-        self.theta_pid = PIDController(3.0, 0, 0)
+        self.theta_pid = PIDController(5.0, 0, 0)
 
         self.pos_tolerance = 0.1
         self.theta_tolerance = 0.1
@@ -34,7 +38,7 @@ class DriveToPose(Command):
         if self.finished:
             return
 
-        current_pose = self.get_pose()
+        current_pose = self.drive.odometry.pose()
 
         rot = current_pose.rotation().radians()
         target_rot = self.target.rotation().radians()
@@ -64,14 +68,14 @@ class DriveToPose(Command):
             omega = 0
 
         drive_input = Transform2d(drive_vel, Rotation2d(omega))
-        self.drive(drive_input, True)
+        self.drive.drive(drive_input, True)
 
         # pos_error = (self.target.translation() - current_pose.translation()).norm()
         # theta_error = abs(rot - target_rot)
 
         # if pos_error < self.pos_tolerance and theta_error < self.theta_tolerance:
         if drive_vel.norm() < self.pos_tolerance and abs(omega) < self.theta_tolerance:
-            self.drive(Transform2d())
+            self.drive.drive(Transform2d())
             self.finished = True
 
     def isFinished(self):

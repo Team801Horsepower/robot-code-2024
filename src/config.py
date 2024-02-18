@@ -31,7 +31,7 @@ turn_gear_ratio = 150.0 / 7.0
 wheel_diameter = units.inchesToMeters(3.965)
 
 drive_speed = 1.5
-turn_speed = 1.0
+turn_speed = 3.0
 
 # (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
 # All absolute encoder values are measured with the swerve wheel facing
