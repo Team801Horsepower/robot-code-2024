@@ -58,16 +58,16 @@ class Shooter:
 
         return angle
 
-    def set_pitch(self, pitch: float):
+    def set_pitch(self, pitch: float, speed: float = 0.5):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         # print("shooter at", units.radiansToDegrees(current_pitch))
         if abs(current_pitch - self.pitch_target) < 0.05:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
-            self.pitch_motor.set(-0.3)
+            self.pitch_motor.set(-speed)
         elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
-            self.pitch_motor.set(0.3)
+            self.pitch_motor.set(speed)
         else:
             self.pitch_motor.set(0)
 
