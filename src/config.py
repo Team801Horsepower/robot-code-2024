@@ -85,3 +85,5 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
     units.degreesToRadians(0),
     units.degreesToRadians(0),
 ]
+
+amp_flipper_up_value = 5.28

@@ -27,7 +27,7 @@ class MyRobot(wpilib.TimedRobot):
         self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter([14, 7], 12)
+        self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
 
         self.field_oriented_drive = True
 
@@ -79,6 +79,16 @@ class MyRobot(wpilib.TimedRobot):
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
+        if self.driver_controller.getStartButton():
+            # self.shooter.amp_scorer.set_flip_power(0.2)
+            self.shooter.amp_scorer.is_up = True
+            # self.shooter.amp_scorer.flip_up()
+        elif self.driver_controller.getBackButton():
+            # self.shooter.amp_scorer.set_flip_power(-0.2)
+            self.shooter.amp_scorer.is_up = False
+            # self.shooter.amp_scorer.test()
+            # self.shooter.amp_scorer.flip_down()
+        self.shooter.amp_scorer.update()
         if self.driver_controller.getRightBumper():
             self.shooter.run_shooter(5600)
         else:
@@ -110,7 +120,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass

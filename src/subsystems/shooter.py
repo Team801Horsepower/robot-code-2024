@@ -5,13 +5,20 @@ from rev import CANSparkMax, SparkPIDController, ColorSensorV3
 from wpilib import DutyCycleEncoder
 from wpimath import units
 
+from subsystems.amp_scorer import AmpScorer
 import config
 
 # pylint: disable=too-many-instance-attributes
 
 
 class Shooter:
-    def __init__(self, flywheel_motors: List[int], pitch_motor: int):
+    def __init__(
+        self,
+        flywheel_motors: List[int],
+        pitch_motor: int,
+        amp_flipper: int,
+        amp_scorer: int,
+    ):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
         self.pitch_motor.setInverted(True)
         self.pitch_encoder = DutyCycleEncoder(0)
@@ -34,6 +41,8 @@ class Shooter:
             flywheel_pid.setD(0.01)
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
+
+        self.amp_scorer = AmpScorer(amp_flipper, amp_scorer)
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
@@ -97,9 +106,17 @@ class Shooter:
         return self.color_sensor.getProximity() >= 512
 
     def run_shooter(self, velocity: float, differential: float = 0):
+        if self.amp_scorer.is_up and velocity > 0:
+            velocity *= 0.1
+            self.amp_scorer.set_scorer(0.1)
+        else:
+            self.amp_scorer.set_scorer(0)
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
         # TODO: incorporate self.pitch_ready()
-        self.should_feed = abs(velocity) > 0 and (
-            self.flywheels_ready() or self.should_feed
-        )
+        if self.amp_scorer.is_up and velocity > 0:
+            self.should_feed = True
+        else:
+            self.should_feed = abs(velocity) > 0 and (
+                self.flywheels_ready() or self.should_feed
+            )
