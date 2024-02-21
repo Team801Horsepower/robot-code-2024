@@ -90,7 +90,14 @@ class Shooter:
         self.set_pitch(self.get_pitch())
 
     def feed_power(self) -> float:
-        return 1.0 if self.should_feed else 0
+        # return 1.0 if self.should_feed else 0
+        if self.should_feed:
+            if self.amp_scorer.is_up:
+                return 0.3
+            else:
+                return 1.0
+        else:
+            return 0
 
     def flywheels_ready(self) -> bool:
         return (
@@ -108,7 +115,7 @@ class Shooter:
     def run_shooter(self, velocity: float, differential: float = 0):
         if self.amp_scorer.is_up and velocity > 0:
             velocity *= 0.1
-            self.amp_scorer.set_scorer(0.1)
+            self.amp_scorer.set_scorer(0.5)
         else:
             self.amp_scorer.set_scorer(0)
         flywheel_speeds = [-(velocity + differential), velocity - differential]
