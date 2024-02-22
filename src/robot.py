@@ -158,7 +158,7 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset(Pose2d(0, 0, pi))
         if self.driver_controller.getRightBumper():
-            self.shooter.run_shooter(5600)
+            self.shooter.run_shooter(config.shooter_speed)
         else:
             self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()

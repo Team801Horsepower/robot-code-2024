@@ -49,7 +49,7 @@ swerve_ids = [0, 1, 2, 3]
 # note_proximity_threshold = 1600
 # note_proximity_threshold = 600
 note_proximity_threshold = 1000
-flywheel_min_speed = 4000
+shooter_speed = 5600
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)

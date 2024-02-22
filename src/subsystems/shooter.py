@@ -86,7 +86,7 @@ class Shooter:
     def flywheels_ready(self) -> bool:
         return (
             min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
-            >= config.flywheel_min_speed
+            >= config.shooter_speed
         )
 
     def pitch_ready(self) -> bool:
