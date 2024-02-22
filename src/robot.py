@@ -5,6 +5,7 @@ import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
+from commands.aim_at_pitch import AimAtPitch
 from wpilib.event import EventLoop
 from commands.command_test_gather import Gather
 from commands.command_test_shoot import Shoot
@@ -12,6 +13,7 @@ from utils.read_auto import read_auto, read_cmds
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
+from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
 from functools import reduce
 
@@ -37,6 +39,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def robotPeriodic(self):
         self.scheduler.run()
+        # print(self.gatherer.color_sensor.getProximity())
 
     def autonomousInit(self):
         # self.drive.odometry.reset()
@@ -56,10 +59,11 @@ class MyRobot(wpilib.TimedRobot):
         new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
+        new_new_cmds = []
 
-        self.drive.odometry.reset(pose_list[0])
+        self.drive.odometry.reset(pose_list[0][0])
 
-        for pose in pose_list:
+        for pose, pitch in pose_list:
             # dtp = DriveToPose(
             #     pose,
             #     self.drive.odometry.pose,
@@ -70,7 +74,8 @@ class MyRobot(wpilib.TimedRobot):
                 self.drive,
             )
             dtps.append(dtp)
-            new_cmds.append(dtp)
+            # new_cmds.append(dtp.alongWith(AimAtPitch(self.shooter, pitch)))
+            new_cmds.append((dtp, AimAtPitch(self.shooter, pitch)))
 
         # for i in range(len(dtps)):
         #     gather = False
@@ -87,27 +92,36 @@ class MyRobot(wpilib.TimedRobot):
         #     else:
         #         auto_cmds.append(dtps[i])
         for i in range(len(new_cmds)):
-            cmd = new_cmds[i]
+            cmd, aap = new_cmds[i]
             target_pose = cmd.target
+            cmd = cmd.alongWith(aap)
             for cmd_s in cmd_list[i]:
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s == "s":
                     # cmd = cmd.andThen(Shoot(self.shooter))
-                    speaker_pos = Translation2d(0, 5.5)
+                    # speaker_pos = Translation2d(0, 5.5)
+                    speaker_pos = Translation2d(0.5, 5.5)
                     aim_rotation = (speaker_pos - target_pose.translation()).angle()
                     aim_dtp = DriveToPose(
                         Pose2d(target_pose.translation(), aim_rotation), self.drive
                     )
                     # TODO: Use AimAtSpeaker
-                    cmd = cmd.andThen(
-                        aim_dtp.deadlineWith(Gather(self.gatherer))
-                        # We might want to remove this deadline with because of that "sg" vs "gs" issue
-                    ).andThen(Shoot(self.shooter).deadlineWith(Gather(self.gatherer)))
-            new_cmds[i] = cmd
+                    cmd = (
+                        cmd.andThen(
+                            aim_dtp.deadlineWith(Gather(self.gatherer))
+                            # We might want to remove this deadline with because of that "sg" vs "gs" issue
+                            # ).andThen(Shoot(self.shooter).deadlineWith(Gather(self.gatherer)))
+                        )
+                        # .andThen(AimAtSpeaker(self.drive, self.vision, self.shooter))
+                        .andThen(Shoot(self.shooter))
+                    )
+            # new_cmds[i] = cmd
+            new_new_cmds.append(cmd)
 
         # self.scheduler.schedule(reduce(Command.andThen, auto_cmds))
-        self.scheduler.schedule(reduce(Command.andThen, new_cmds))
+        # self.scheduler.schedule(reduce(Command.andThen, new_cmds))
+        self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
     def autonomousPeriodic(self):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
@@ -175,6 +189,8 @@ class MyRobot(wpilib.TimedRobot):
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
         # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+
+        print(units.radiansToDegrees(self.shooter.get_pitch()))
 
     def testInit(self):
         pass

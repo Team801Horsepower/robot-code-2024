@@ -62,12 +62,12 @@ class Shooter:
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         # print("shooter at", units.radiansToDegrees(current_pitch))
-        if abs(current_pitch - self.pitch_target) < 0.05:
+        if abs(current_pitch - self.pitch_target) < 0.04:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
-            self.pitch_motor.set(-0.3)
+            self.pitch_motor.set(-0.7)
         elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
-            self.pitch_motor.set(0.3)
+            self.pitch_motor.set(0.7)
         else:
             self.pitch_motor.set(0)
 
@@ -90,7 +90,7 @@ class Shooter:
         )
 
     def pitch_ready(self) -> bool:
-        pitch_ok_threshold = 0.1
+        pitch_ok_threshold = 0.04
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def note_present(self) -> bool:

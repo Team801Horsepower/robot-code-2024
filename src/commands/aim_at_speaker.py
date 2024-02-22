@@ -49,7 +49,7 @@ class AimAtSpeaker(Command):
         )
 
         self.shooter.set_pitch(shooter_pitch)
-        print("aiming for", units.radiansToDegrees(shooter_pitch))
+        # print("aiming for", units.radiansToDegrees(shooter_pitch))
 
         if abs(yaw_power) < self.yaw_power_threshold and self.shooter.pitch_ready():
             self.finished = True

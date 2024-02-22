@@ -2,6 +2,7 @@ from commands2 import Command
 from subsystems.shooter import Shooter
 import time
 
+
 class Shoot(Command):
     def __init__(self, shooter: Shooter):
         self.shooter = shooter
@@ -30,7 +31,7 @@ class Shoot(Command):
         self.shooter.run_shooter(5600)
 
     def isFinished(self):
-        return time.time() - self.start_time > 1.5
+        return time.time() - self.start_time > 1.25
 
     def end(self, interrupted: bool):
         self.shooter.run_shooter(0)
