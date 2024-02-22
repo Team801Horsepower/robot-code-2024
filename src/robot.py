@@ -7,8 +7,8 @@ from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from wpilib.event import EventLoop
-from commands.command_test_gather import Gather
-from commands.command_test_shoot import Shoot
+from commands.gather import Gather
+from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
 from wpilib import DriverStation
