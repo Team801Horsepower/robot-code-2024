@@ -30,8 +30,8 @@ turn_gear_ratio = 150.0 / 7.0
 # wheel_diameter = units.inchesToMeters(4.5)
 wheel_diameter = units.inchesToMeters(3.965)
 
-drive_speed = 0.8
-turn_speed = 1.0
+drive_speed = 4
+turn_speed = 4.0
 
 # (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
 # All absolute encoder values are measured with the swerve wheel facing
@@ -45,3 +45,43 @@ swerves = [
 
 # front left, back left, front right, back right
 swerve_ids = [0, 1, 2, 3]
+
+# note_proximity_threshold = 1600
+note_proximity_threshold = 600
+flywheel_min_speed = 4000
+
+# Height of the *pivot* of the shooter
+shooter_height = units.inchesToMeters(9.061)
+
+# Height of the camera
+camera_height = units.inchesToMeters(7.633)
+
+camera_angle = units.degreesToRadians(30)
+
+# Forward distance between camera and shooter *pivot*,
+# with positive for shooter behind camera
+camera_shooter_distance = units.inchesToMeters(22.719)
+
+# Distance of the camera left of the center of the robot
+camera_left_offset = units.inchesToMeters(0)
+
+# Speaker height to aim at
+# speaker_height = units.inchesToMeters(81)
+# speaker_height = units.inchesToMeters(90)
+speaker_height = units.inchesToMeters(100)
+
+# Height of the center of a speaker april tag
+speaker_tag_height = units.inchesToMeters(57.125)
+
+shooter_lookup_table = [  # position to angle; entries every three feet, starting from 6
+    units.degreesToRadians(48),
+    units.degreesToRadians(42),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+    units.degreesToRadians(0),
+]

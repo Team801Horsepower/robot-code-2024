@@ -2,14 +2,16 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter
 from commands.drive_to_pose import DriveToPose
+from commands.aim_at_speaker import AimAtSpeaker
+from wpilib.event import EventLoop
 
 from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
 from commands2 import CommandScheduler
 
-from math import pi
+from math import pi, sqrt
 
 import config
 
@@ -19,26 +21,33 @@ class MyRobot(wpilib.TimedRobot):
         # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
 
-        self.drive = drive.Drive()
+        self.scheduler = CommandScheduler()
+
+        self.drive = drive.Drive(self.scheduler)
+        self.vision = vision.Vision(self.scheduler)
+        self.gatherer = gatherer.Gatherer(1)
+        self.feeder = feeder.Feeder(13)
+        self.shooter = shooter.Shooter([14, 7], 12)
 
         self.field_oriented_drive = True
 
-        self.scheduler = CommandScheduler()
-
     def robotPeriodic(self):
-        self.drive.odometry.update(self.drive.chassis)
+        self.scheduler.run()
 
     def autonomousInit(self):
         self.drive.odometry.reset()
-        dtp = DriveToPose(
-            Pose2d(1, 0, 3 * pi / 2),
-            self.drive.odometry.pose,
-            self.drive.drive,
-        )
-        self.scheduler.schedule(dtp)
+        # dtp = DriveToPose(
+        #     Pose2d(1, 0, 3 * pi / 2),
+        #     self.drive.odometry.pose,
+        #     self.drive.drive,
+        # )
+        # self.scheduler.schedule(dtp)
+
+        aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
+        self.scheduler.schedule(aas)
 
     def autonomousPeriodic(self):
-        self.scheduler.run()
+        pass
 
     def teleopInit(self):
         pass
@@ -49,10 +58,17 @@ class MyRobot(wpilib.TimedRobot):
                 return 0.0
             return activation
 
+        def input_curve(input: float) -> float:
+            a = 0.2
+            return ((input * a) + input**3) / (1 + a)
+
         drive_input = wpimath.geometry.Transform2d(
-            config.drive_speed * deadzone(-self.driver_controller.getLeftY()),
-            config.drive_speed * deadzone(-self.driver_controller.getLeftX()),
-            config.turn_speed * deadzone(-self.driver_controller.getRightX()),
+            config.drive_speed
+            * input_curve(deadzone(-self.driver_controller.getLeftY())),
+            config.drive_speed
+            * input_curve(deadzone(-self.driver_controller.getLeftX())),
+            config.turn_speed
+            * input_curve(deadzone(-self.driver_controller.getRightX())),
         )
         self.drive.drive(drive_input, self.field_oriented_drive)
 
@@ -63,6 +79,42 @@ class MyRobot(wpilib.TimedRobot):
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
+        if self.driver_controller.getRightBumper():
+            self.shooter.run_shooter(5600)
+        else:
+            self.shooter.run_shooter(0)
+        dpad = self.driver_controller.getPOV()
+        speed =  self.drive.chassis.chassis_speeds()
+        if sqrt(speed.vx ** 2 + speed.vy ** 2) < 1.0:
+            if dpad in [315, 0, 45]:
+                self.shooter.pitch_up()
+            elif dpad in [135, 180, 225]:
+                self.shooter.pitch_down()
+            else:
+                self.shooter.stop_pitch()
+        else:
+            self.shooter.set_pitch(0.4, speed=1)
+
+        # self.driver_controller.leftBumper(
+        #     EventLoop().bind(
+        #         AimAtSpeaker(self.drive, self.vision, self.shooter).execute
+        #     )
+        # )
+
+        self.driver_controller.button
+
+        gather_power = 0.5 * (
+            self.driver_controller.getRightTriggerAxis()
+            - self.driver_controller.getLeftTriggerAxis()
+        )
+        self.gatherer.spin_gatherer(gather_power)
+
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        self.feeder.run(feed_power)
+
+        # if self.shooter.flywheels_ready():
+        #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass
