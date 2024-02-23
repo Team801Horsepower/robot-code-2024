@@ -54,16 +54,16 @@ flywheel_min_speed = 4000
 shooter_height = units.inchesToMeters(9.061)
 
 # Height of the camera
-camera_height = units.inchesToMeters(7.712)
+camera_height = units.inchesToMeters(7.633)
 
-camera_angle = units.degreesToRadians(20)
+camera_angle = units.degreesToRadians(30)
 
 # Forward distance between camera and shooter *pivot*,
 # with positive for shooter behind camera
-camera_shooter_distance = units.inchesToMeters(23.06)
+camera_shooter_distance = units.inchesToMeters(22.719)
 
 # Distance of the camera left of the center of the robot
-camera_left_offset = units.inchesToMeters(-7.917)
+camera_left_offset = units.inchesToMeters(0)
 
 # Speaker height to aim at
 # speaker_height = units.inchesToMeters(81)
