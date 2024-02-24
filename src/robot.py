@@ -116,9 +116,13 @@ class MyRobot(wpilib.TimedRobot):
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
         )
-        self.gatherer.spin_gatherer(gather_power)
+        should_rumble = self.gatherer.spin_gatherer(gather_power)
+        rumble = 0.3 if should_rumble else 0
+        self.driver_controller.setRumble(
+            wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
+        )
 
-        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
 
         # if self.shooter.flywheels_ready():

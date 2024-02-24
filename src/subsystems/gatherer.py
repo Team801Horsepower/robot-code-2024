@@ -1,6 +1,8 @@
 from rev import CANSparkMax, SparkMaxPIDController, ColorSensorV3
 from wpilib import I2C, DigitalInput
 
+from math import copysign
+
 import config
 
 
@@ -13,18 +15,32 @@ class Gatherer:
         self.beam_break_bottom = DigitalInput(1)
 
         self.should_feed = False
+        self.feed_val = 0
 
-    def spin_gatherer(self, spin_speed):
+    # Returns whether the controller should rumble
+    def spin_gatherer(self, spin_speed) -> bool:
         # Deadzone for controller triggers/setting gather speed
-        if abs(spin_speed) < 0.1 or self.note_present():
-            self.motor.set(0.0)
-            self.should_feed = False
+        deadzone = 0.1
+        should_rumble = False
+        if abs(spin_speed) < deadzone:
+            self.motor.set(0)
+            self.feed_val = 0
+            should_rumble = False
         else:
-            self.motor.set(spin_speed)
-            self.should_feed = True
+            if spin_speed < -deadzone or not self.note_present():
+                self.motor.set(spin_speed)
+                should_rumble = False
+            else:
+                self.motor.set(0)
+                should_rumble = True
+            if self.note_present():
+                self.feed_val = 0
+            else:
+                self.feed_val = copysign(1, spin_speed)
+        return should_rumble
 
     def feed_power(self) -> float:
-        return 0.1 if self.should_feed else 0
+        return 0.1 * self.feed_val
 
     def note_present(self) -> bool:
         # return self.color_sensor.getProximity() > config.note_proximity_threshold
