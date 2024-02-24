@@ -97,15 +97,10 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.set_pitch(0.4, speed=1)
 
         if self.driver_controller.getStartButton():
-            # self.shooter.amp_scorer.set_flip_power(0.2)
             self.shooter.amp_scorer.is_up = True
             self.shooter.set_pitch(config.amp_shooter_pitch)
-            # self.shooter.amp_scorer.flip_up()
         elif self.driver_controller.getBackButton():
-            # self.shooter.amp_scorer.set_flip_power(-0.2)
             self.shooter.amp_scorer.is_up = False
-            # self.shooter.amp_scorer.test()
-            # self.shooter.amp_scorer.flip_down()
         self.shooter.amp_scorer.update()
 
         # self.driver_controller.leftBumper(
