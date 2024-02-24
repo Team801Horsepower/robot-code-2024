@@ -31,7 +31,7 @@ class AimAtSpeaker(Command):
         if sp_atag is None:
             return
         atag_pitch, atag_yaw = sp_atag
-        print("tag pitch:", atag_pitch)
+        # print("tag pitch:", atag_pitch)
 
         cam_dist = (config.speaker_tag_height - config.camera_height) / tan(
             atag_pitch + config.camera_angle
@@ -49,7 +49,7 @@ class AimAtSpeaker(Command):
         )
 
         self.shooter.set_pitch(shooter_pitch)
-        print("aiming for", units.radiansToDegrees(shooter_pitch))
+        # print("aiming for", units.radiansToDegrees(shooter_pitch))
 
         if abs(yaw_power) < self.yaw_power_threshold and self.shooter.pitch_ready():
             self.finished = True

@@ -11,7 +11,7 @@ from wpilib import DriverStation
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
 from commands2 import CommandScheduler
 
-from math import pi
+from math import pi, sqrt
 
 import config
 
@@ -85,12 +85,17 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()
-        if dpad in [315, 0, 45]:
-            self.shooter.pitch_up()
-        elif dpad in [135, 180, 225]:
-            self.shooter.pitch_down()
+        speed = self.drive.chassis.chassis_speeds()
+        if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
+            if dpad in [315, 0, 45]:
+                self.shooter.pitch_up()
+            elif dpad in [135, 180, 225]:
+                self.shooter.pitch_down()
+            else:
+                self.shooter.stop_pitch()
         else:
-            self.shooter.stop_pitch()
+            self.shooter.set_pitch(0.4, speed=1)
+
         if self.driver_controller.getStartButton():
             # self.shooter.amp_scorer.set_flip_power(0.2)
             self.shooter.amp_scorer.is_up = True
