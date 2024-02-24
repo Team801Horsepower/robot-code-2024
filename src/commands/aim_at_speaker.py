@@ -31,7 +31,7 @@ class AimAtSpeaker(Command):
         if sp_atag is None:
             return
         atag_pitch, atag_yaw = sp_atag
-        print("tag pitch:", atag_pitch)
+        # print("tag pitch:", atag_pitch)
 
         cam_dist = (config.speaker_tag_height - config.camera_height) / tan(
             atag_pitch + config.camera_angle

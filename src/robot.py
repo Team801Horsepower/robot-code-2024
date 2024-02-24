@@ -17,7 +17,7 @@ from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
 from functools import reduce
 
-from math import pi
+from math import pi, sqrt
 
 import config
 
@@ -33,14 +33,22 @@ class MyRobot(wpilib.TimedRobot):
         self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter([14, 7], 12)
+        self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
 
         self.field_oriented_drive = True
 
         self.is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
+        
+        SmartDashboard.putNumber("speaker distance", -1)
+        SmartDashboard.putNumber("shooter pitch", -1)
 
     def robotPeriodic(self):
         self.scheduler.run()
+
+        SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
+        SmartDashboard.putNumber(
+            "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
+        )
 
     def autonomousInit(self):
         # self.drive.odometry.reset()
@@ -128,33 +136,49 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getBButtonPressed():
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
-            self.drive.odometry.reset(Pose2d(0, 0, pi))
+            self.drive.odometry.reset()
+
         if self.driver_controller.getRightBumper():
-            self.shooter.run_shooter(config.shooter_speed)
+            self.shooter.run_shooter(config.flywheel_setpoint)
         else:
             self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()
-        if dpad in [315, 0, 45]:
-            self.shooter.pitch_up()
-        elif dpad in [135, 180, 225]:
-            self.shooter.pitch_down()
+        speed = self.drive.chassis.chassis_speeds()
+        if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
+            if dpad in [315, 0, 45]:
+                self.shooter.pitch_up()
+            elif dpad in [135, 180, 225]:
+                self.shooter.pitch_down()
+            else:
+                self.shooter.stop_pitch()
         else:
-            self.shooter.stop_pitch()
+            self.shooter.set_pitch(0.4, speed=1)
 
-        gather_power = 0.5 * (
+        if self.driver_controller.getStartButton():
+            self.shooter.amp_scorer.is_up = True
+            self.shooter.set_pitch(config.amp_shooter_pitch)
+        elif self.driver_controller.getBackButton():
+            self.shooter.amp_scorer.is_up = False
+        self.shooter.amp_scorer.update()
+
+        gather_power = (
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
         )
-        self.gatherer.spin_gatherer(gather_power)
+        should_rumble = self.gatherer.spin_gatherer(gather_power)
+        rumble = 0.3 if should_rumble else 0
+        self.driver_controller.setRumble(
+            wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
+        )
 
-        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
 
     def testInit(self):
         pass
 
     def testPeriodic(self):
-        pass
+        print(self.gatherer.note_present())
 
 
 if __name__ == "__main__":
