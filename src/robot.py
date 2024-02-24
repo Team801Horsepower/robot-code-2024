@@ -84,8 +84,8 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()
-        speed =  self.drive.chassis.chassis_speeds()
-        if sqrt(speed.vx ** 2 + speed.vy ** 2) < 1.0:
+        speed = self.drive.chassis.chassis_speeds()
+        if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
             if dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
             elif dpad in [135, 180, 225]:
@@ -114,7 +114,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass
