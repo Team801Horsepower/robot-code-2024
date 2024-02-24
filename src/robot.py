@@ -28,7 +28,7 @@ class MyRobot(wpilib.TimedRobot):
         self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter([14, 7], 12)
+        self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
 
         self.field_oriented_drive = True
 
@@ -88,6 +88,7 @@ class MyRobot(wpilib.TimedRobot):
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
+        print(self.shooter.get_pitch())
         if self.driver_controller.getRightBumper():
             self.shooter.run_shooter(config.flywheel_setpoint)
         else:
@@ -104,7 +105,12 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.shooter.set_pitch(0.4, speed=1)
 
-        self.driver_controller.button
+        if self.driver_controller.getStartButton():
+            self.shooter.amp_scorer.is_up = True
+            self.shooter.set_pitch(config.amp_shooter_pitch)
+        elif self.driver_controller.getBackButton():
+            self.shooter.amp_scorer.is_up = False
+        self.shooter.amp_scorer.update()
 
         gather_power = (
             self.driver_controller.getRightTriggerAxis()
