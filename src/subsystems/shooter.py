@@ -1,8 +1,9 @@
 from math import pi
 from typing import List
+from functools import reduce
 
 from rev import CANSparkMax, SparkPIDController, ColorSensorV3
-from wpilib import DutyCycleEncoder
+from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
 
 import config
@@ -30,7 +31,8 @@ class Shooter:
             motor.getPIDController() for motor in self.flywheel_motors
         ]
         for flywheel_pid in self.flywheel_pids:
-            flywheel_pid.setP(0.0005)
+            flywheel_pid.setP(0.0009)
+            flywheel_pid.setI(0)
             flywheel_pid.setD(0.01)
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
@@ -84,17 +86,21 @@ class Shooter:
         return 1.0 if self.should_feed else 0
 
     def flywheels_ready(self) -> bool:
-        return (
-            min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
-            >= config.flywheel_min_speed
+        # return (
+        #     min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
+        #     >= config.flywheel_min_speed
+        # )
+        return reduce(
+            bool.__and__,
+            map(
+                lambda e: abs(abs(e.getVelocity()) - config.flywheel_speed) < 100,
+                self.flywheel_encoders,
+            ),
         )
 
     def pitch_ready(self) -> bool:
         pitch_ok_threshold = 0.1
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
-
-    def note_present(self) -> bool:
-        return self.color_sensor.getProximity() >= 512
 
     def run_shooter(self, velocity: float, differential: float = 0):
         flywheel_speeds = [-(velocity + differential), velocity - differential]
@@ -103,3 +109,5 @@ class Shooter:
         self.should_feed = abs(velocity) > 0 and (
             self.flywheels_ready() or self.should_feed
         )
+        dbg = list(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
+        SmartDashboard.putNumberArray("flywheel speeds", dbg)

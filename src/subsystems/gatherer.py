@@ -9,7 +9,6 @@ class Gatherer:
         self.motor = CANSparkMax(motor_id, CANSparkMax.MotorType.kBrushless)
         self.motor.setInverted(True)
 
-        # self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
         self.beam_break_top = DigitalInput(2)
         self.beam_break_bottom = DigitalInput(1)
 

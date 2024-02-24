@@ -7,8 +7,9 @@ from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from wpilib.event import EventLoop
 
-from wpilib import DriverStation
+from wpilib import DriverStation, SmartDashboard
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d
+from wpimath import units
 from commands2 import CommandScheduler
 
 from math import pi, sqrt
@@ -31,8 +32,16 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
 
+        SmartDashboard.putNumber("speaker distance", -1)
+        SmartDashboard.putNumber("shooter pitch", -1)
+
     def robotPeriodic(self):
         self.scheduler.run()
+
+        SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
+        SmartDashboard.putNumber(
+            "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
+        )
 
     def autonomousInit(self):
         self.drive.odometry.reset()
@@ -80,12 +89,12 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getXButtonPressed():
             self.drive.odometry.reset()
         if self.driver_controller.getRightBumper():
-            self.shooter.run_shooter(5600)
+            self.shooter.run_shooter(config.flywheel_setpoint)
         else:
             self.shooter.run_shooter(0)
         dpad = self.driver_controller.getPOV()
-        speed =  self.drive.chassis.chassis_speeds()
-        if sqrt(speed.vx ** 2 + speed.vy ** 2) < 1.0:
+        speed = self.drive.chassis.chassis_speeds()
+        if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
             if dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
             elif dpad in [135, 180, 225]:
