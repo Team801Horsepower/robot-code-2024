@@ -5,7 +5,6 @@ from typing import Callable
 
 
 class Gather(Command):
-    # def __init__(self, next_dtp):
     def __init__(self, gatherer: Gatherer):
         self.gatherer = gatherer
 

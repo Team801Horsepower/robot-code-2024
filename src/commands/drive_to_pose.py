@@ -13,13 +13,9 @@ class DriveToPose(Command):
     def __init__(
         self,
         target: Pose2d,
-        # get_pose_method: Callable[[], Pose2d],
-        # drive_method: Callable[[Transform2d, bool], None],
         drive: Drive,
     ):
         self.target = target
-        # self.get_pose = get_pose_method
-        # self.drive = drive_method
         self.drive = drive
 
         self.x_pid = PIDController(5.0, 0, 0)

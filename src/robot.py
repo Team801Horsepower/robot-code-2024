@@ -41,7 +41,6 @@ class MyRobot(wpilib.TimedRobot):
 
     def robotPeriodic(self):
         self.scheduler.run()
-        # print(self.gatherer.color_sensor.getProximity())
 
     def autonomousInit(self):
         # self.drive.odometry.reset()
@@ -59,8 +58,6 @@ class MyRobot(wpilib.TimedRobot):
             file_path = "/home/lvuser/py/autos/Gollum'sEvenRedderQuest.json"
         else:
             file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
-        dtps = []
-        # auto_cmds = []
         new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
@@ -69,43 +66,19 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.odometry.reset(pose_list[0][0])
 
         for pose, pitch in pose_list:
-            # dtp = DriveToPose(
-            #     pose,
-            #     self.drive.odometry.pose,
-            #     self.drive.drive,
-            # )
             dtp = DriveToPose(
                 pose,
                 self.drive,
             )
-            dtps.append(dtp)
-            # new_cmds.append(dtp.alongWith(AimAtPitch(self.shooter, pitch)))
             new_cmds.append((dtp, AimAtPitch(self.shooter, pitch)))
 
-        # for i in range(len(dtps)):
-        #     gather = False
-        #     if bool(cmd_list[i]) == True:
-        #         for cmd in cmd_list[i]:
-        #             if cmd == "g":
-        #                 gather = True
-        #                 # auto_cmds.append(eval("dtps[i] Command.deadlineWith Gather()"))
-        #                 auto_cmds.append(dtps[i].deadlineWith(Gather(self.gatherer)))
-        #             elif cmd == "s":
-        #                 auto_cmds.append(Shoot(self.drive, pose_list[i]))
-        #     if gather == True:
-        #         pass
-        #     else:
-        #         auto_cmds.append(dtps[i])
-        for i in range(len(new_cmds)):
-            cmd, aap = new_cmds[i]
+        for cmd, aap in new_cmds:
             target_pose = cmd.target
             cmd = cmd.alongWith(aap)
             for cmd_s in cmd_list[i]:
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s == "s":
-                    # cmd = cmd.andThen(Shoot(self.shooter))
-                    # speaker_pos = Translation2d(0, 5.5)
                     if self.is_red:
                         speaker_pos = Translation2d(16, 5.5)
                     else:
@@ -115,20 +88,11 @@ class MyRobot(wpilib.TimedRobot):
                         Pose2d(target_pose.translation(), aim_rotation), self.drive
                     )
                     # TODO: Use AimAtSpeaker
-                    cmd = (
-                        cmd.andThen(
-                            aim_dtp.deadlineWith(Gather(self.gatherer))
-                            # We might want to remove this deadline with because of that "sg" vs "gs" issue
-                            # ).andThen(Shoot(self.shooter).deadlineWith(Gather(self.gatherer)))
-                        )
-                        # .andThen(AimAtSpeaker(self.drive, self.vision, self.shooter))
-                        .andThen(Shoot(self.shooter))
-                    )
-            # new_cmds[i] = cmd
+                    cmd = cmd.andThen(
+                        aim_dtp.deadlineWith(Gather(self.gatherer))
+                    ).andThen(Shoot(self.shooter))
             new_new_cmds.append(cmd)
 
-        # self.scheduler.schedule(reduce(Command.andThen, auto_cmds))
-        # self.scheduler.schedule(reduce(Command.andThen, new_cmds))
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
     def autonomousPeriodic(self):
@@ -177,14 +141,6 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.shooter.stop_pitch()
 
-        # self.driver_controller.leftBumper(
-        #     EventLoop().bind(
-        #         AimAtSpeaker(self.drive, self.vision, self.shooter).execute
-        #     )
-        # )
-
-        self.driver_controller.button
-
         gather_power = 0.5 * (
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
@@ -193,12 +149,6 @@ class MyRobot(wpilib.TimedRobot):
 
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
         self.feeder.run(feed_power)
-
-        # if self.shooter.flywheels_ready():
-        #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-
-        print(units.radiansToDegrees(self.shooter.get_pitch()))
 
     def testInit(self):
         pass
