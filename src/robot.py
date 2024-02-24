@@ -103,7 +103,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.driver_controller.button
 
-        gather_power = 0.5 * (
+        gather_power = (
             self.driver_controller.getRightTriggerAxis()
             - self.driver_controller.getLeftTriggerAxis()
         )
@@ -114,13 +114,13 @@ class MyRobot(wpilib.TimedRobot):
 
         # if self.shooter.flywheels_ready():
         #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
+        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass
 
     def testPeriodic(self):
-        pass
+        print(self.gatherer.note_present())
 
 
 if __name__ == "__main__":

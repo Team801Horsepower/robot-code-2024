@@ -1,5 +1,5 @@
 from rev import CANSparkMax, SparkMaxPIDController, ColorSensorV3
-from wpilib import I2C
+from wpilib import I2C, DigitalInput
 
 import config
 
@@ -9,7 +9,9 @@ class Gatherer:
         self.motor = CANSparkMax(motor_id, CANSparkMax.MotorType.kBrushless)
         self.motor.setInverted(True)
 
-        self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
+        # self.color_sensor = ColorSensorV3(I2C.Port.kOnboard)
+        self.beam_break_top = DigitalInput(2)
+        self.beam_break_bottom = DigitalInput(1)
 
         self.should_feed = False
 
@@ -26,4 +28,6 @@ class Gatherer:
         return 0.1 if self.should_feed else 0
 
     def note_present(self) -> bool:
-        return self.color_sensor.getProximity() > config.note_proximity_threshold
+        # return self.color_sensor.getProximity() > config.note_proximity_threshold
+        # return not (self.beam_break_top.get() and self.beam_break_bottom.get())
+        return not self.beam_break_top.get()
