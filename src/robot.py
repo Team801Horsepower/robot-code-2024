@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
@@ -26,6 +26,7 @@ class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
         # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
+        self.manip_controller = wpilib.XboxController(1)
 
         self.scheduler = CommandScheduler()
 
@@ -34,6 +35,7 @@ class MyRobot(wpilib.TimedRobot):
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
+        self.climber = climber.Climber(6, 15)
 
         self.field_oriented_drive = True
 
@@ -142,7 +144,7 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.run_shooter(config.flywheel_setpoint)
         else:
             self.shooter.run_shooter(0)
-        dpad = self.driver_controller.getPOV()
+        dpad = self.manip_controller.getPOV()
         speed = self.drive.chassis.chassis_speeds()
         if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
             if dpad in [315, 0, 45]:
@@ -174,6 +176,9 @@ class MyRobot(wpilib.TimedRobot):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
 
+        self.climber.run(
+            (-self.manip_controller.getLeftY(), self.manip_controller.getRightY())
+        )
     def testInit(self):
         pass
 
