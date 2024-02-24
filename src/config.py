@@ -47,6 +47,7 @@ swerves = [
 swerve_ids = [0, 1, 2, 3]
 
 # note_proximity_threshold = 1600
+
 note_proximity_threshold = 600
 flywheel_speed = 4200
 # Weird PID offset thing (we haven't figured out why we have to do this)
