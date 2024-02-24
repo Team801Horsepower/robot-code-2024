@@ -43,6 +43,4 @@ class Gatherer:
         return 0.1 * self.feed_val
 
     def note_present(self) -> bool:
-        # return self.color_sensor.getProximity() > config.note_proximity_threshold
-        # return not (self.beam_break_top.get() and self.beam_break_bottom.get())
         return not self.beam_break_top.get()

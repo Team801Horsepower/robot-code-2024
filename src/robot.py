@@ -104,12 +104,6 @@ class MyRobot(wpilib.TimedRobot):
         else:
             self.shooter.set_pitch(0.4, speed=1)
 
-        # self.driver_controller.leftBumper(
-        #     EventLoop().bind(
-        #         AimAtSpeaker(self.drive, self.vision, self.shooter).execute
-        #     )
-        # )
-
         self.driver_controller.button
 
         gather_power = (
@@ -124,10 +118,6 @@ class MyRobot(wpilib.TimedRobot):
 
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
-
-        # if self.shooter.flywheels_ready():
-        #     print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
-        # print([encoder.getVelocity() for encoder in self.shooter.flywheel_encoders])
 
     def testInit(self):
         pass
