@@ -47,23 +47,26 @@ swerves = [
 swerve_ids = [0, 1, 2, 3]
 
 # note_proximity_threshold = 1600
+
 note_proximity_threshold = 600
-flywheel_min_speed = 4000
+flywheel_speed = 4200
+# Weird PID offset thing (we haven't figured out why we have to do this)
+flywheel_setpoint = flywheel_speed + 700
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)
 
 # Height of the camera
-camera_height = units.inchesToMeters(7.712)
+camera_height = units.inchesToMeters(7.633)
 
-camera_angle = units.degreesToRadians(20)
+camera_angle = units.degreesToRadians(30)
 
 # Forward distance between camera and shooter *pivot*,
 # with positive for shooter behind camera
-camera_shooter_distance = units.inchesToMeters(23.06)
+camera_shooter_distance = units.inchesToMeters(22.719)
 
 # Distance of the camera left of the center of the robot
-camera_left_offset = units.inchesToMeters(-7.917)
+camera_left_offset = units.inchesToMeters(0)
 
 # Speaker height to aim at
 # speaker_height = units.inchesToMeters(81)
@@ -85,3 +88,6 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
     units.degreesToRadians(0),
     units.degreesToRadians(0),
 ]
+
+amp_flipper_up_value = 5.28
+amp_shooter_pitch = 0.77

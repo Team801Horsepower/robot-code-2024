@@ -1,9 +1,15 @@
 from math import pi
 from typing import List
+from functools import reduce
 
 from rev import CANSparkMax, SparkPIDController, ColorSensorV3
-from wpilib import DutyCycleEncoder
+from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
+
+from subsystems.amp_scorer import AmpScorer
+
+import time
+
 
 import config
 
@@ -11,7 +17,13 @@ import config
 
 
 class Shooter:
-    def __init__(self, flywheel_motors: List[int], pitch_motor: int):
+    def __init__(
+        self,
+        flywheel_motors: List[int],
+        pitch_motor: int,
+        amp_flipper: int,
+        amp_scorer: int,
+    ):
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
         self.pitch_motor.setInverted(True)
         self.pitch_encoder = DutyCycleEncoder(0)
@@ -30,10 +42,17 @@ class Shooter:
             motor.getPIDController() for motor in self.flywheel_motors
         ]
         for flywheel_pid in self.flywheel_pids:
-            flywheel_pid.setP(0.0005)
+            flywheel_pid.setP(0.0009)
+            flywheel_pid.setI(0)
             flywheel_pid.setD(0.01)
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
+
+
+        self.amp_scorer = AmpScorer(amp_flipper, amp_scorer)
+
+        self.flywheels_ready_time = time.time()
+
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
@@ -62,7 +81,7 @@ class Shooter:
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         # print("shooter at", units.radiansToDegrees(current_pitch))
-        if abs(current_pitch - self.pitch_target) < 0.05:
+        if abs(current_pitch - self.pitch_target) < 0.04:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
             self.pitch_motor.set(-speed)
@@ -81,25 +100,52 @@ class Shooter:
         self.set_pitch(self.get_pitch())
 
     def feed_power(self) -> float:
-        return 1.0 if self.should_feed else 0
+        # return 1.0 if self.should_feed else 0
+        if self.should_feed:
+            if self.amp_scorer.is_up:
+                return 0.3
+            else:
+                return 1.0
+        else:
+            return 0
 
     def flywheels_ready(self) -> bool:
-        return (
-            min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
-            >= config.flywheel_min_speed
+        # return (
+        #     min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
+        #     >= config.flywheel_min_speed
+        # )
+        ready = reduce(
+            bool.__and__,
+            map(
+                lambda e: abs(abs(e.getVelocity()) - config.flywheel_speed) < 100,
+                self.flywheel_encoders,
+            ),
         )
+        now = time.time()
+        if not ready:
+            self.flywheels_ready_time = now
+        return now - self.flywheels_ready_time > 0.1
 
     def pitch_ready(self) -> bool:
-        pitch_ok_threshold = 0.1
+        pitch_ok_threshold = 0.04
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
-    def note_present(self) -> bool:
-        return self.color_sensor.getProximity() >= 512
-
     def run_shooter(self, velocity: float, differential: float = 0):
+        if self.amp_scorer.is_up and velocity > 0:
+            velocity *= 0.1
+            self.amp_scorer.set_scorer(0.5)
+        else:
+            self.amp_scorer.set_scorer(0)
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
         # TODO: incorporate self.pitch_ready()
-        self.should_feed = abs(velocity) > 0 and (
-            self.flywheels_ready() or self.should_feed
-        )
+
+        if self.amp_scorer.is_up and velocity > 0:
+            self.should_feed = True
+        else:
+            self.should_feed = abs(velocity) > 0 and (
+                self.flywheels_ready() or self.should_feed
+            )
+
+        dbg = list(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
+        SmartDashboard.putNumberArray("flywheel speeds", dbg)
