@@ -6,6 +6,8 @@ from rev import CANSparkMax, SparkPIDController, ColorSensorV3
 from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
 
+import time
+
 import config
 
 # pylint: disable=too-many-instance-attributes
@@ -36,6 +38,8 @@ class Shooter:
             flywheel_pid.setD(0.01)
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
+
+        self.flywheels_ready_time = time.time()
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
@@ -90,13 +94,17 @@ class Shooter:
         #     min(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
         #     >= config.flywheel_min_speed
         # )
-        return reduce(
+        ready = reduce(
             bool.__and__,
             map(
                 lambda e: abs(abs(e.getVelocity()) - config.flywheel_speed) < 100,
                 self.flywheel_encoders,
             ),
         )
+        now = time.time()
+        if not ready:
+            self.flywheels_ready_time = now
+        return now - self.flywheels_ready_time > 0.1
 
     def pitch_ready(self) -> bool:
         pitch_ok_threshold = 0.1
