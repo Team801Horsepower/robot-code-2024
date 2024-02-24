@@ -9,6 +9,10 @@ from wpimath import units
 from commands2 import Subsystem, CommandScheduler
 from typing import Tuple
 
+from math import tan
+
+import config
+
 
 class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
@@ -49,3 +53,13 @@ class Vision(Subsystem):
                     units.degreesToRadians(target.getYaw()),
                 )
         return None
+
+    def speaker_dist(self) -> float | None:
+        sp_atag = self.cur_speaker_atag()
+        if sp_atag is None:
+            return -1
+        atag_pitch, atag_yaw = sp_atag
+
+        return (config.speaker_tag_height - config.camera_height) / tan(
+            atag_pitch + config.camera_angle
+        )
