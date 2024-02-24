@@ -37,6 +37,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
 
+        self.is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
+
     def robotPeriodic(self):
         self.scheduler.run()
         # print(self.gatherer.color_sensor.getProximity())
@@ -53,7 +55,10 @@ class MyRobot(wpilib.TimedRobot):
         # aas = AimAtSpeaker(self.drive, self.vision, self.shooter)
         # self.scheduler.schedule(aas)
         # self.drive.odometry.reset(Pose2d(2, 7, 0))
-        file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
+        if self.is_red:
+            file_path = "/home/lvuser/py/autos/Gollum'sEvenRedderQuest.json"
+        else:
+            file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
         dtps = []
         # auto_cmds = []
         new_cmds = []
@@ -101,7 +106,10 @@ class MyRobot(wpilib.TimedRobot):
                 elif cmd_s == "s":
                     # cmd = cmd.andThen(Shoot(self.shooter))
                     # speaker_pos = Translation2d(0, 5.5)
-                    speaker_pos = Translation2d(0.5, 5.5)
+                    if self.is_red:
+                        speaker_pos = Translation2d(16, 5.5)
+                    else:
+                        speaker_pos = Translation2d(0.5, 5.5)
                     aim_rotation = (speaker_pos - target_pose.translation()).angle()
                     aim_dtp = DriveToPose(
                         Pose2d(target_pose.translation(), aim_rotation), self.drive
