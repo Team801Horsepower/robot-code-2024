@@ -13,10 +13,10 @@ class Shoot(Command):
         self.start_time = time.time()
 
     def execute(self):
-        self.shooter.run_shooter(config.shooter_speed)
+        self.shooter.run_shooter(config.flywheel_setpoint)
 
     def isFinished(self):
-        return time.time() - self.start_time > 1.25
+        return time.time() - self.start_time > 1.5
 
     def end(self, interrupted: bool):
         self.shooter.run_shooter(0)
