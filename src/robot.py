@@ -39,6 +39,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
+        # With this enabled, the position of the turn joystick directly translates to robot heading
         self.special_turning = False
         self.turn_setpoint = 0
 
