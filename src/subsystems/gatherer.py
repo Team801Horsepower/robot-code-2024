@@ -1,4 +1,4 @@
-from rev import CANSparkMax, SparkMaxPIDController, ColorSensorV3
+from rev import CANSparkMax, SparkMaxPIDController
 from wpilib import I2C, DigitalInput
 
 from math import copysign

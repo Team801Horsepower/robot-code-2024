@@ -2,7 +2,7 @@ from math import pi
 from typing import List
 from functools import reduce
 
-from rev import CANSparkMax, SparkPIDController, ColorSensorV3
+from rev import CANSparkMax, CANSparkFlex, SparkPIDController
 from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
 
@@ -35,7 +35,7 @@ class Shooter:
         self.should_feed = False
 
         self.flywheel_motors = [
-            CANSparkMax(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
+            CANSparkFlex(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
         ]
 
         self.flywheel_pids: List[SparkPIDController] = [
@@ -48,11 +48,9 @@ class Shooter:
         self.flywheel_encoders = [motor.getEncoder() for motor in self.flywheel_motors]
         self.flywheel_targets = [0.0 for flywheel in self.flywheel_pids]
 
-
         self.amp_scorer = AmpScorer(amp_flipper, amp_scorer)
 
         self.flywheels_ready_time = time.time()
-
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
@@ -77,7 +75,7 @@ class Shooter:
 
         return angle
 
-    def set_pitch(self, pitch: float, speed: float = 0.5):
+    def set_pitch(self, pitch: float, speed: float = 0.8):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         # print("shooter at", units.radiansToDegrees(current_pitch))
@@ -131,21 +129,37 @@ class Shooter:
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def run_shooter(self, velocity: float, differential: float = 0):
-        if self.amp_scorer.is_up and velocity > 0:
-            velocity *= 0.1
-            self.amp_scorer.set_scorer(0.5)
-        else:
-            self.amp_scorer.set_scorer(0)
+        # if self.amp_scorer.is_up and velocity > 0:
+        #     # velocity *= 0.1
+        #     self.amp_scorer.set_scorer(0.5)
+        # else:
+        #     self.amp_scorer.set_scorer(0)
+        if self.amp_scorer.is_up:
+            if velocity > 0:
+                self.should_feed = True
+                for whl, mul in zip(self.flywheel_motors, [-1, 1]):
+                    whl.set(0.1 * mul)
+                self.amp_scorer.set_scorer(0.5)
+            else:
+                self.should_feed = False
+                for whl in self.flywheel_motors:
+                    whl.set(0)
+                self.amp_scorer.set_scorer(0)
+            return
+        self.amp_scorer.set_scorer(0)
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
         # TODO: incorporate self.pitch_ready()
 
-        if self.amp_scorer.is_up and velocity > 0:
-            self.should_feed = True
-        else:
-            self.should_feed = abs(velocity) > 0 and (
-                self.flywheels_ready() or self.should_feed
-            )
+        # if self.amp_scorer.is_up and velocity > 0:
+        #     self.should_feed = True
+        # else:
+        #     self.should_feed = abs(velocity) > 0 and (
+        #         self.flywheels_ready() or self.should_feed
+        #     )
+        self.should_feed = abs(velocity) > 0 and (
+            self.flywheels_ready() or self.should_feed
+        )
 
         dbg = list(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
         SmartDashboard.putNumberArray("flywheel speeds", dbg)
