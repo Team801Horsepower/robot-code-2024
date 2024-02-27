@@ -114,7 +114,7 @@ class MyRobot(wpilib.TimedRobot):
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
-            if abs(activation) < 0.05:
+            if abs(activation) < 0.01:
                 return 0.0
             return activation
 
