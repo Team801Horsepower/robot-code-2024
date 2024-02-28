@@ -212,7 +212,7 @@ class MyRobot(wpilib.TimedRobot):
             - self.driver_controller.getLeftTriggerAxis()
         )
         should_rumble = self.gatherer.spin_gatherer(gather_power)
-        rumble = 0.3 if should_rumble else 0
+        rumble = 1.0 if should_rumble else 0
         self.driver_controller.setRumble(
             wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
         )
