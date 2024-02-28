@@ -201,7 +201,9 @@ class MyRobot(wpilib.TimedRobot):
             elif self.manip_controller.getAButton():
                 self.shooter.set_pitch(0.69, speed=1)
             elif self.manip_controller.getLeftBumper():
-                pass
+                pitch = self.vision.vision_pitch()
+                if pitch is not None:
+                    self.shooter.set_pitch(pitch)
             else:
                 self.shooter.stop_pitch()
 
