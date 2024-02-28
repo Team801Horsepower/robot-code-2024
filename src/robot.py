@@ -41,7 +41,8 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.odometry.reset()
         # With this enabled, the position of the turn joystick directly translates to robot heading
         self.special_turning = False
-        self.turn_setpoint = 0
+        self.use_yaw_setpoint = False
+        self.yaw_setpoint = 0
 
         self.drive.chassis.set_swerves()
         for swerve in self.drive.chassis.swerves:
@@ -136,13 +137,13 @@ class MyRobot(wpilib.TimedRobot):
                 -self.driver_controller.getRightY(), -self.driver_controller.getRightX()
             )
             if stick_inp.norm() >= 0.8:
-                self.turn_setpoint = stick_inp.angle().radians()
+                self.yaw_setpoint = stick_inp.angle().radians()
             cur_angle = self.drive.odometry.pose().rotation().radians()
-            while self.turn_setpoint - cur_angle > pi:
-                self.turn_setpoint -= 2 * pi
-            while cur_angle - self.turn_setpoint > pi:
-                self.turn_setpoint += 2 * pi
-            diff = self.turn_setpoint - cur_angle
+            while self.yaw_setpoint - cur_angle > pi:
+                self.yaw_setpoint -= 2 * pi
+            while cur_angle - self.yaw_setpoint > pi:
+                self.yaw_setpoint += 2 * pi
+            diff = self.yaw_setpoint - cur_angle
             turn_speed = min(5 * diff, copysign(config.turn_speed, diff), key=abs)
         else:
             turn_speed = config.turn_speed * input_curve(
@@ -159,13 +160,13 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.drive(drive_input, self.field_oriented_drive)
 
         # Set swerves button
-        if self.driver_controller.getAButtonPressed():
+        if self.driver_controller.getBackButtonPressed():
             self.drive.chassis.zero_swerves()
-        if self.driver_controller.getBButtonPressed():
+        if self.driver_controller.getLeftStickButtonPressed():
             self.field_oriented_drive ^= True
-        if self.driver_controller.getXButtonPressed():
+        if self.driver_controller.getStartButtonPressed():
             self.drive.odometry.reset()
-            self.turn_setpoint = 0
+            self.yaw_setpoint = 0
 
         if self.driver_controller.getRightBumper():
             self.shooter.run_shooter(config.flywheel_setpoint)
