@@ -44,7 +44,7 @@ class Vision(Subsystem):
         # print(result.getTargets())
         pass
 
-    def cur_speaker_atag(self) -> Tuple[float, float]:
+    def cur_speaker_atag(self) -> Tuple[float, float] | None:
         result = self.camera.getLatestResult()
         for target in result.getTargets():
             if target.fiducialId in [4, 7]:
@@ -54,7 +54,7 @@ class Vision(Subsystem):
                 )
         return None
 
-    def speaker_dist(self) -> float | None:
+    def speaker_dist(self) -> float:
         sp_atag = self.cur_speaker_atag()
         if sp_atag is None:
             return -1
@@ -62,4 +62,17 @@ class Vision(Subsystem):
 
         return (config.speaker_tag_height - config.camera_height) / tan(
             atag_pitch + config.camera_angle
+        )
+
+    def vision_pitch(self) -> float | None:
+        x = self.speaker_dist()
+        if x == -1:
+            return None
+        return units.degreesToRadians(
+            # Polynomial interpolation of four lookup table values
+            # Actual lookup table in Google Sheet
+            5.47632 * x * x * x
+            - 24.3666 * x * x
+            + 22.5556 * x
+            + 49.0865
         )

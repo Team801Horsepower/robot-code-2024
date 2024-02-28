@@ -181,6 +181,7 @@ class MyRobot(wpilib.TimedRobot):
         # if sqrt(speed.vx**2 + speed.vy**2) >= 1.0:
         #     self.shooter.set_pitch(0.4, speed=1)
         # elif self.manip_controller.getStartButton():
+        manip_rumble = 0
         if self.manip_controller.getStartButton():
             self.shooter.amp_scorer.is_up = True
             self.shooter.set_pitch(config.amp_shooter_pitch)
@@ -201,11 +202,21 @@ class MyRobot(wpilib.TimedRobot):
             elif self.manip_controller.getAButton():
                 self.shooter.set_pitch(0.69, speed=1)
             elif self.manip_controller.getLeftBumper():
-                pass
+                pitch = self.vision.vision_pitch()
+                if pitch is not None:
+                    self.shooter.set_pitch(pitch)
             else:
                 self.shooter.stop_pitch()
+                manip_rumble = -1
+
+        if self.shooter.pitch_ready() and manip_rumble != -1:
+            manip_rumble = 1.0
+        manip_rumble = max(0, manip_rumble)
 
         self.shooter.amp_scorer.update()
+        self.manip_controller.setRumble(
+            wpilib.interfaces.GenericHID.RumbleType.kLeftRumble, manip_rumble
+        )
 
         gather_power = (
             self.driver_controller.getRightTriggerAxis()
