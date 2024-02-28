@@ -12,10 +12,10 @@ class Gather(Command):
         pass
 
     def execute(self):
-        self.gatherer.spin_gatherer(0.5)
+        self.gatherer.spin_gatherer(1)
 
     def isFinished(self):
-        return False
+        return self.gatherer.note_present()
 
     def end(self, interrupted):
         self.gatherer.spin_gatherer(0)

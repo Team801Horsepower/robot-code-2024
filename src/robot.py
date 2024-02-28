@@ -64,7 +64,7 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.chassis.set_swerves()
 
         # TODO: Enable side checking and auto selection
-        file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
+        file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
         # if self.is_red:
         #     file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
         #     # file_path = "/home/lvuser/py/autos/Gollum'sSideQuest.json"
@@ -91,7 +91,10 @@ class MyRobot(wpilib.TimedRobot):
             for cmd_s in loc_cmds:
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
-                elif cmd_s == "s":
+                elif cmd_s == "G":
+                    cmd = cmd.raceWith(Gather(self.gatherer))
+                elif cmd_s == "s" or cmd_s == "S":
+                    keep_spin = cmd_s == "S"
                     # TODO: Enable side checking
                     speaker_pos = Translation2d(0.5, 5.5)
                     # if self.is_red:
@@ -105,7 +108,7 @@ class MyRobot(wpilib.TimedRobot):
                     # TODO: Use AimAtSpeaker
                     cmd = cmd.andThen(
                         aim_dtp.deadlineWith(Gather(self.gatherer))
-                    ).andThen(Shoot(self.shooter))
+                    ).andThen(Shoot(self.shooter, self.gatherer, keep_spin))
             new_new_cmds.append(cmd)
 
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
@@ -116,6 +119,7 @@ class MyRobot(wpilib.TimedRobot):
 
     def teleopInit(self):
         self.drive.chassis.set_swerves()
+        self.shooter.set_feed_override(False)
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:

@@ -33,6 +33,7 @@ class Shooter:
         self.pitch_max = units.degreesToRadians(57.8)
 
         self.should_feed = False
+        self.feed_override = False
 
         self.flywheel_motors = [
             CANSparkFlex(id, CANSparkMax.MotorType.kBrushless) for id in flywheel_motors
@@ -76,10 +77,11 @@ class Shooter:
         return angle
 
     def set_pitch(self, pitch: float, speed: float = 0.8):
+        pitch = min(self.pitch_max, max(self.pitch_min, pitch))
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         # print("shooter at", units.radiansToDegrees(current_pitch))
-        if abs(current_pitch - self.pitch_target) < 0.04:
+        if abs(current_pitch - self.pitch_target) < 0.02:
             self.pitch_motor.set(0)
         elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
             self.pitch_motor.set(-speed)
@@ -99,7 +101,7 @@ class Shooter:
 
     def feed_power(self) -> float:
         # return 1.0 if self.should_feed else 0
-        if self.should_feed:
+        if self.should_feed and not self.feed_override:
             if self.amp_scorer.is_up:
                 return 0.3
             else:
@@ -163,3 +165,6 @@ class Shooter:
 
         dbg = list(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
         SmartDashboard.putNumberArray("flywheel speeds", dbg)
+
+    def set_feed_override(self, override: bool):
+        self.feed_override = override

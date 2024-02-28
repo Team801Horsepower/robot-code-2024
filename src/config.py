@@ -30,8 +30,11 @@ turn_gear_ratio = 150.0 / 7.0
 # wheel_diameter = units.inchesToMeters(4.5)
 wheel_diameter = units.inchesToMeters(3.965)
 
-drive_speed = 4
-turn_speed = 4.0
+# TODO: Create separate speed configs for teleop and auto
+# drive_speed = 4
+# turn_speed = 4
+drive_speed = 2
+turn_speed = 3
 
 # (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
 # All absolute encoder values are measured with the swerve wheel facing
