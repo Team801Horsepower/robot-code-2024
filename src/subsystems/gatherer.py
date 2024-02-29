@@ -44,3 +44,6 @@ class Gatherer:
 
     def note_present(self) -> bool:
         return not self.beam_break_top.get()
+
+    def note_seen(self) -> bool:
+        return not self.beam_break_bottom.get()

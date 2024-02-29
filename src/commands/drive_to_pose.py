@@ -20,9 +20,9 @@ class DriveToPose(Command):
 
         self.x_pid = PIDController(5.0, 0, 0)
         self.y_pid = PIDController(5.0, 0, 0)
-        self.theta_pid = PIDController(7.0, 0, 0.03)
+        self.theta_pid = PIDController(5.0, 0, 0.03)
 
-        self.pos_tolerance = 0.1
+        self.pos_tolerance = 0.05
         self.theta_tolerance = 0.1
 
         self.finished = False
