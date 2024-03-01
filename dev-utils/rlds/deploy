@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -e
+PATH="$PATH:/usr/local/frc/bin:/usr/local/natinst/bin"
+cd /home/lvuser/rlds/tree
+# We use `git checkout` instead of `git switch` because the newest version of
+# git available for the RoboRIO operating system, 2.16, does not have `switch`.
+git checkout deploy
+git pull
+echo 'env LD_LIBRARY_PATH=/usr/local/frc/lib/ /usr/local/bin/python3 -u -O -m robotpy --main /home/lvuser/rlds/tree/src/robot.py run' > /home/lvuser/robotCommand
+/usr/local/frc/bin/frcKillRobot.sh -tr
+echo "\x1b[1;32mRLDS deploy successful\x1b[0m"
