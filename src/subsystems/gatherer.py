@@ -40,7 +40,10 @@ class Gatherer:
         return should_rumble
 
     def feed_power(self) -> float:
-        return 0.1 * self.feed_val
+        return 0.2 * self.feed_val
 
     def note_present(self) -> bool:
         return not self.beam_break_top.get()
+
+    def note_seen(self) -> bool:
+        return not self.beam_break_bottom.get()
