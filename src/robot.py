@@ -5,6 +5,7 @@ import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
+from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from wpilib.event import EventLoop
 from commands.gather import Gather
@@ -47,6 +48,8 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.chassis.set_swerves()
         for swerve in self.drive.chassis.swerves:
             swerve.turn_motor.set(0)
+
+        self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
 
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
@@ -116,6 +119,7 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.chassis.set_swerves()
         self.shooter.set_feed_override(False)
         self.use_yaw_setpoint = False
+        self.aas_command.initialize()
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
@@ -170,14 +174,18 @@ class MyRobot(wpilib.TimedRobot):
         else:
             turn_speed = config.turn_speed * input_curve(turn_input)
 
-        drive_input = wpimath.geometry.Transform2d(
-            config.drive_speed
-            * input_curve(deadzone(-self.driver_controller.getLeftY())),
-            config.drive_speed
-            * input_curve(deadzone(-self.driver_controller.getLeftX())),
-            turn_speed,
-        )
-        self.drive.drive(drive_input, self.field_oriented_drive)
+        self.aas_command.should_run = self.driver_controller.getLeftBumper()
+        self.aas_command.execute()
+
+        if not self.aas_command.should_run:
+            drive_input = wpimath.geometry.Transform2d(
+                config.drive_speed
+                * input_curve(deadzone(-self.driver_controller.getLeftY())),
+                config.drive_speed
+                * input_curve(deadzone(-self.driver_controller.getLeftX())),
+                turn_speed,
+            )
+            self.drive.drive(drive_input, self.field_oriented_drive)
 
         # Set swerves button
         if self.driver_controller.getBackButtonPressed():
@@ -192,6 +200,7 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.run_shooter(config.flywheel_setpoint)
         else:
             self.shooter.run_shooter(0)
+
         dpad = self.manip_controller.getPOV()
         speed = self.drive.chassis.chassis_speeds()
         # if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
@@ -272,6 +281,9 @@ class MyRobot(wpilib.TimedRobot):
 
     def testPeriodic(self):
         print(self.gatherer.note_present())
+
+    def teleopExit(self):
+        self.aas_command.end(True)
 
 
 if __name__ == "__main__":
