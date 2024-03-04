@@ -30,7 +30,7 @@ class Shooter:
         self.pitch_target = 0.0
 
         self.pitch_min = units.degreesToRadians(25.7)
-        self.pitch_max = units.degreesToRadians(57.8)
+        self.pitch_max = units.degreesToRadians(53)
 
         self.should_feed = False
         self.feed_override = False

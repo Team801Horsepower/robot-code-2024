@@ -5,12 +5,14 @@ from typing import Tuple
 class Climber:
     def __init__(self, motor_id_left: int, motor_id_right: int):
         self.motor_left = CANSparkMax(motor_id_left, CANSparkMax.MotorType.kBrushless)
+        self.motor_left.setInverted(True)
         self.motor_left_pid = self.motor_left.getPIDController()
         self.motor_left_pid.setP(1)
         self.motor_left_pid.setI(0)
         self.motor_left_pid.setD(0)
 
         self.motor_right = CANSparkMax(motor_id_right, CANSparkMax.MotorType.kBrushless)
+        self.motor_right.setInverted(False)
         self.motor_right_pid = self.motor_right.getPIDController()
         self.motor_right_pid.setP(1)
         self.motor_right_pid.setI(0)
