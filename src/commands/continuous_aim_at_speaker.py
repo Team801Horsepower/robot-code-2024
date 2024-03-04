@@ -37,12 +37,12 @@ class ContinuousAimAtSpeaker(Command):
             )
 
             # target_yaw = atan2(config.camera_left_offset, cam_dist)
-            self.target_yaw = cur_rot + atag_yaw
+            self.target_yaw = cur_rot - atag_yaw
 
         if not self.should_run:
             return
 
-        yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
+        yaw_power = self.yaw_pid.calculate(cur_rot, self.target_yaw)
         drive_input = Transform2d(0, 0, yaw_power)
         self.drive.drive(drive_input)
 
