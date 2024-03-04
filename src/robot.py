@@ -43,8 +43,6 @@ class MyRobot(wpilib.TimedRobot):
         self.special_turning = False
         self.turn_setpoint = 0
 
-        self.is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
-
         self.drive.chassis.set_swerves()
         for swerve in self.drive.chassis.swerves:
             swerve.turn_motor.set(0)
@@ -63,15 +61,12 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
-        # TODO: Enable side checking and auto selection
-        # file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
-        file_path = "/home/lvuser/py/autos/Gollum'sReverseEarthQuest.json"
-        # if self.is_red:
-        #     file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
-        #     # file_path = "/home/lvuser/py/autos/Gollum'sSideQuest.json"
-        # else:
-        #     file_path = "/home/lvuser/py/autos/Gollum'sEvenRedderQuest.json"
-        #     # file_path = "/home/lvuser/py/autos/Gollum'sBlueSideQuest.json"
+        is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
+        # TODO: Enable auto selection
+        if is_red:
+            file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
+        else:
+            file_path = "/home/lvuser/py/autos/Gollum'sReverseEarthQuest.json"
         new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
@@ -96,20 +91,17 @@ class MyRobot(wpilib.TimedRobot):
                     cmd = cmd.raceWith(Gather(self.gatherer))
                 elif cmd_s == "s" or cmd_s == "S":
                     keep_spin = cmd_s == "S"
-                    # TODO: Enable side checking
-                    speaker_pos = Translation2d(0.5, 5.5)
-                    # if self.is_red:
-                    #     speaker_pos = Translation2d(0.5, 5.5)
-                    # else:
-                    #     speaker_pos = Translation2d(16, 5.5)
-                    aim_rotation = (speaker_pos - target_pose.translation()).angle()
+                    # speaker_pos = Translation2d(0.5, 5.5)
+
+                    # aim_rotation = (speaker_pos - target_pose.translation()).angle()
                     # aim_dtp = DriveToPose(
                     #     Pose2d(target_pose.translation(), aim_rotation), self.drive
                     # )
-                    # # TODO: Use AimAtSpeaker
                     # cmd = cmd.andThen(
                     #     aim_dtp.deadlineWith(Gather(self.gatherer))
                     # ).andThen(Shoot(self.shooter, self.gatherer, keep_spin))
+
+                    # This shoots without auto aiming
                     cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, keep_spin))
             new_new_cmds.append(cmd)
 
