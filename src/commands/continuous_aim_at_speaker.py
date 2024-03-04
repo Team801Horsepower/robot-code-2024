@@ -3,7 +3,7 @@ from wpimath.geometry import Transform2d
 from wpimath import units
 from commands2 import Command
 
-from math import atan2, tan
+from math import atan, atan2, tan
 
 from subsystems.drive import Drive
 from subsystems.vision import Vision
@@ -37,7 +37,14 @@ class ContinuousAimAtSpeaker(Command):
             )
 
             # target_yaw = atan2(config.camera_left_offset, cam_dist)
-            self.target_yaw = cur_rot - atag_yaw
+            cam_yaw_diff = -atag_yaw
+            robot_yaw_diff = atan(
+                cam_dist
+                / (cam_dist + config.camera_shooter_distance)
+                * tan(cam_yaw_diff)
+            )
+            # self.target_yaw = cur_rot - atag_yaw
+            self.target_yaw = cur_rot + robot_yaw_diff
 
         if not self.should_run:
             return
