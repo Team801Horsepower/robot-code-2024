@@ -240,7 +240,10 @@ class MyRobot(wpilib.TimedRobot):
             self.climber.motor_left.set(-1)
         else:
             self.climber.run(
-                (self.manip_controller.getLeftTriggerAxis(), self.manip_controller.getRightTriggerAxis())
+                (
+                    self.manip_controller.getLeftTriggerAxis(),
+                    self.manip_controller.getRightTriggerAxis(),
+                )
             )
 
     def testInit(self):
