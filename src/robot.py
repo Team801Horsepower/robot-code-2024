@@ -51,6 +51,14 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
 
+        self.chooser = wpilib.SendableChooser()
+        
+        self.chooser.setDefaultOption("Four note auto", "4note")
+        self.chooser.addOption("One note auto", "1note")
+        
+        SmartDashboard.putData("Auto choices", self.chooser)
+
+
     def robotPeriodic(self):
         self.scheduler.run()
 
@@ -60,14 +68,20 @@ class MyRobot(wpilib.TimedRobot):
         )
 
     def autonomousInit(self):
+        self.selected_auto = self.chooser.getSelected()
+        print("Auto selected: " + self.autoSelected)
+
         self.drive.chassis.set_swerves()
 
-        is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
+        color_flag = "red.json" if DriverStation.getAlliance() == DriverStation.Alliance.kRed else "blue.json"
         # TODO: Enable auto selection
-        if is_red:
-            file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
-        else:
-            file_path = "/home/lvuser/py/autos/Gollum'sReverseEarthQuest.json"
+
+        file_path = "/home/lvuser/py/autos/" + self.selected_auto + color_flag 
+
+        # if is_red:
+        #     file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
+        # else:
+        #     file_path = "/home/lvuser/py/autos/Gollum'sReverseEarthQuest.json"
         new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
