@@ -46,6 +46,8 @@ class MyRobot(wpilib.TimedRobot):
         self.is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
         self.drive.chassis.set_swerves()
+        for swerve in self.drive.chassis.swerves:
+            swerve.turn_motor.set(0)
 
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
