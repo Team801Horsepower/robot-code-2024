@@ -193,7 +193,7 @@ class MyRobot(wpilib.TimedRobot):
             if self.manip_controller.getBackButton():
                 self.shooter.amp_scorer.is_up = False
 
-            if self.manip_controller.getRightBumper():
+            if self.manip_controller.getXButton():
                 self.shooter.set_pitch(0.4, speed=1)
             elif dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
@@ -235,9 +235,13 @@ class MyRobot(wpilib.TimedRobot):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
 
-        self.climber.run(
-            (-self.manip_controller.getLeftY(), self.manip_controller.getRightY())
-        )
+        if self.manip_controller.getRightBumper():
+            self.climber.motor_right.set(-1)
+            self.climber.motor_left.set(1)
+        else:
+            self.climber.run(
+                (-self.manip_controller.getLeftTriggerAxis(), self.manip_controller.getRightTriggerAxis())
+            )
 
     def testInit(self):
         pass
