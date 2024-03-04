@@ -3,7 +3,9 @@ from wpimath.geometry import Transform2d
 from wpimath import units
 from commands2 import Command
 
-from math import atan, atan2, tan
+from wpilib import SmartDashboard
+
+from math import atan, atan2, tan, pi
 
 from subsystems.drive import Drive
 from subsystems.vision import Vision
@@ -40,14 +42,25 @@ class ContinuousAimAtSpeaker(Command):
             cam_yaw_diff = -atag_yaw
             robot_yaw_diff = atan(
                 cam_dist
-                / (cam_dist + config.camera_shooter_distance)
+                / (cam_dist + config.camera_center_distance)
                 * tan(cam_yaw_diff)
             )
             # self.target_yaw = cur_rot - atag_yaw
             self.target_yaw = cur_rot + robot_yaw_diff
 
+            SmartDashboard.putNumber(
+                "robot yaw diff", units.radiansToDegrees(robot_yaw_diff)
+            )
+        else:
+            SmartDashboard.putNumber("robot yaw diff", -1)
+
         if not self.should_run:
             return
+
+        while self.target_yaw - cur_rot > pi:
+            self.target_yaw -= 2 * pi
+        while cur_rot - self.target_yaw > pi:
+            self.target_yaw += 2 * pi
 
         yaw_power = self.yaw_pid.calculate(cur_rot, self.target_yaw)
         drive_input = Transform2d(0, 0, yaw_power)

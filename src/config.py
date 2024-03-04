@@ -67,6 +67,8 @@ camera_angle = units.degreesToRadians(30)
 # with positive for shooter behind camera
 camera_shooter_distance = units.inchesToMeters(22.719)
 
+camera_center_distance = units.inchesToMeters(13)
+
 # Distance of the camera left of the center of the robot
 camera_left_offset = units.inchesToMeters(0)
 
@@ -92,4 +94,5 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
 ]
 
 amp_flipper_up_value = 5.28
-amp_shooter_pitch = 0.77
+# amp_shooter_pitch = 0.77
+amp_shooter_pitch = 0.8223598776

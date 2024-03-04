@@ -53,10 +53,13 @@ class MyRobot(wpilib.TimedRobot):
 
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
+        SmartDashboard.putNumber("shooter abs enc", -1)
+        SmartDashboard.putNumber("shooter abs enc abs", -1)
 
         self.auto_chooser = SendableChooser()
         self.auto_chooser.setDefaultOption("4 note", 0)
         self.auto_chooser.addOption("1 note", 1)
+        self.auto_chooser.addOption("legacy 4 note", 2)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -66,6 +69,10 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber(
             "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
         )
+        SmartDashboard.putNumber("shooter abs enc", self.shooter.pitch_encoder.get())
+        SmartDashboard.putNumber(
+            "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
+        )
 
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
@@ -73,8 +80,16 @@ class MyRobot(wpilib.TimedRobot):
         is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
         autos_dir = "/home/lvuser/py/autos/"
         auto_i = self.auto_chooser.getSelected()
-        red_autos = ["Gollum'sMiddleEarthQuest.json", "Gollum'sSideQuest.json"]
-        blue_autos = ["Gollum'sReverseEarthQuest.json", "Gollum'sBlueSideQuest.json"]
+        red_autos = [
+            "Gollum'sMiddleEarthQuest.json",
+            "Gollum'sSideQuest.json",
+            "Gollum'sEvenBetterQuest.json",
+        ]
+        blue_autos = [
+            "Gollum'sReverseEarthQuest.json",
+            "Gollum'sBlueSideQuest.json",
+            "Gollum'sEvenRedderQuest.json",
+        ]
         if is_red:
             auto_name = red_autos[auto_i]
         else:
@@ -156,9 +171,9 @@ class MyRobot(wpilib.TimedRobot):
             if stick_inp.norm() >= 0.8:
                 self.yaw_setpoint = stick_inp.angle().radians()
 
-        if self.driver_controller.getAButtonPressed():
-            self.yaw_setpoint = pi
-            self.use_yaw_setpoint = True
+        # if self.driver_controller.getAButtonPressed():
+        #     self.yaw_setpoint = pi
+        #     self.use_yaw_setpoint = True
         elif self.driver_controller.getBButtonPressed():
             self.yaw_setpoint = 3 * pi / 2
             self.use_yaw_setpoint = True
@@ -200,7 +215,8 @@ class MyRobot(wpilib.TimedRobot):
         # Set swerves button
         if self.driver_controller.getBackButtonPressed():
             self.drive.chassis.zero_swerves()
-        if self.driver_controller.getLeftStickButtonPressed():
+        # if self.driver_controller.getLeftStickButtonPressed():
+        if self.driver_controller.getAButtonPressed():
             self.field_oriented_drive ^= True
         if self.driver_controller.getStartButtonPressed():
             self.drive.odometry.reset()
