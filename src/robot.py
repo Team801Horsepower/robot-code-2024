@@ -132,13 +132,34 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getRightStickButtonPressed():
             self.special_turning ^= True
 
+        cur_angle = self.drive.odometry.pose().rotation().radians()
+
         if self.special_turning and self.field_oriented_drive:
             stick_inp = Translation2d(
                 -self.driver_controller.getRightY(), -self.driver_controller.getRightX()
             )
             if stick_inp.norm() >= 0.8:
                 self.yaw_setpoint = stick_inp.angle().radians()
-            cur_angle = self.drive.odometry.pose().rotation().radians()
+
+        if self.driver_controller.getAButtonPressed():
+            self.yaw_setpoint = pi
+            self.use_yaw_setpoint = True
+        elif self.driver_controller.getBButtonPressed():
+            self.yaw_setpoint = 3 * pi / 2
+            self.use_yaw_setpoint = True
+        elif self.driver_controller.getXButtonPressed():
+            self.yaw_setpoint = pi / 2
+            self.use_yaw_setpoint = True
+        elif self.driver_controller.getYButtonPressed():
+            self.yaw_setpoint = 0
+            self.use_yaw_setpoint = True
+
+        turn_input = deadzone(-self.driver_controller.getRightX())
+        self.use_yaw_setpoint &= turn_input == 0
+
+        if self.use_yaw_setpoint or (
+            self.special_turning and self.field_oriented_drive
+        ):
             while self.yaw_setpoint - cur_angle > pi:
                 self.yaw_setpoint -= 2 * pi
             while cur_angle - self.yaw_setpoint > pi:
@@ -146,9 +167,7 @@ class MyRobot(wpilib.TimedRobot):
             diff = self.yaw_setpoint - cur_angle
             turn_speed = min(5 * diff, copysign(config.turn_speed, diff), key=abs)
         else:
-            turn_speed = config.turn_speed * input_curve(
-                deadzone(-self.driver_controller.getRightX())
-            )
+            turn_speed = config.turn_speed * input_curve(turn_input)
 
         drive_input = wpimath.geometry.Transform2d(
             config.drive_speed
