@@ -115,6 +115,7 @@ class MyRobot(wpilib.TimedRobot):
     def teleopInit(self):
         self.drive.chassis.set_swerves()
         self.shooter.set_feed_override(False)
+        self.use_yaw_setpoint = False
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
