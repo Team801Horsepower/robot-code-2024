@@ -66,6 +66,10 @@ class Chassis:
     def set_swerves(self):
         for swerve in self.swerves:
             swerve.reset_from_abs_enc()
+
+    def zero_swerves(self):
+        self.set_swerves()
+        for swerve in self.swerves:
             swerve.turn_pid.setReference(
                 0.0, rev.CANSparkLowLevel.ControlType.kPosition
             )

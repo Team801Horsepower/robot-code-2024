@@ -45,6 +45,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
+        self.drive.chassis.set_swerves()
+
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
 
@@ -57,6 +59,8 @@ class MyRobot(wpilib.TimedRobot):
         )
 
     def autonomousInit(self):
+        self.drive.chassis.set_swerves()
+
         # TODO: Enable side checking and auto selection
         file_path = "/home/lvuser/py/autos/Gollum'sEvenBetterQuest.json"
         # if self.is_red:
@@ -109,7 +113,7 @@ class MyRobot(wpilib.TimedRobot):
         self.feeder.run(feed_power)
 
     def teleopInit(self):
-        pass
+        self.drive.chassis.set_swerves()
 
     def teleopPeriodic(self):
         def deadzone(activation: float) -> float:
@@ -156,7 +160,7 @@ class MyRobot(wpilib.TimedRobot):
 
         # Set swerves button
         if self.driver_controller.getAButtonPressed():
-            self.drive.chassis.set_swerves()
+            self.drive.chassis.zero_swerves()
         if self.driver_controller.getBButtonPressed():
             self.field_oriented_drive ^= True
         if self.driver_controller.getXButtonPressed():
