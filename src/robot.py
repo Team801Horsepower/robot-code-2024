@@ -11,7 +11,7 @@ from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
-from wpilib import DriverStation, SmartDashboard
+from wpilib import DriverStation, SmartDashboard, SendableChooser
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
 from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
@@ -51,6 +51,11 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
 
+        self.auto_chooser = SendableChooser()
+        self.auto_chooser.setDefaultOption("4 note", 0)
+        self.auto_chooser.addOption("1 note", 1)
+        SmartDashboard.putData("auto select", self.auto_chooser)
+
     def robotPeriodic(self):
         self.scheduler.run()
 
@@ -63,11 +68,16 @@ class MyRobot(wpilib.TimedRobot):
         self.drive.chassis.set_swerves()
 
         is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
-        # TODO: Enable auto selection
+        autos_dir = "/home/lvuser/py/autos/"
+        auto_i = self.auto_chooser.getSelected()
+        red_autos = ["Gollum'sMiddleEarthQuest.json", "Gollum'sSideQuest.json"]
+        blue_autos = ["Gollum'sReverseEarthQuest.json", "Gollum'sBlueSideQuest.json"]
         if is_red:
-            file_path = "/home/lvuser/py/autos/Gollum'sMiddleEarthQuest.json"
+            auto_name = red_autos[auto_i]
         else:
-            file_path = "/home/lvuser/py/autos/Gollum'sReverseEarthQuest.json"
+            auto_name = blue_autos[auto_i]
+        file_path = autos_dir + auto_name
+
         new_cmds = []
         pose_list = read_auto(file_path)
         cmd_list = read_cmds(file_path)
