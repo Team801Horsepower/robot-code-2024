@@ -58,6 +58,9 @@ class Vision(Subsystem):
     def cur_speaker_atag(self) -> Tuple[float, float] | None:
         return self.cur_atag(4, 7)
 
+    def cur_amp_atag(self) -> Tuple[float, float] | None:
+        return self.cur_atag(5, 6)
+
     def speaker_dist(self) -> float:
         sp_atag = self.cur_speaker_atag()
         if sp_atag is None:

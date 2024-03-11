@@ -82,8 +82,9 @@ camera_left_offset = units.inchesToMeters(0)
 # speaker_height = units.inchesToMeters(90)
 speaker_height = units.inchesToMeters(100)
 
-# Height of the center of a speaker april tag
+# Height of the center of an april tag
 speaker_tag_height = units.inchesToMeters(57.125)
+amp_tag_height = units.inchesToMeters(48.125 + 5.25)
 
 shooter_lookup_table = [  # position to angle; entries every three feet, starting from 6
     units.degreesToRadians(48),
