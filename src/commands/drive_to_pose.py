@@ -1,8 +1,9 @@
 from commands2 import Command
 from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Translation2d
 from wpimath.controller import PIDController
-from math import pi
+from math import pi, sqrt
 from typing import Callable
+import time
 
 from subsystems.drive import Drive
 
@@ -27,8 +28,10 @@ class DriveToPose(Command):
 
         self.finished = False
 
+        self.slow_time = time.time()
+
     def initialize(self):
-        pass
+        self.slow_time = time.time()
 
     def execute(self):
         if self.finished:
@@ -66,11 +69,17 @@ class DriveToPose(Command):
         drive_input = Transform2d(drive_vel, Rotation2d(omega))
         self.drive.drive(drive_input, True)
 
-        # pos_error = (self.target.translation() - current_pose.translation()).norm()
-        # theta_error = abs(rot - target_rot)
+        speeds = self.drive.chassis.chassis_speeds()
+        is_slow = (
+            sqrt(speeds.vx**2 + speeds.vy**2) < 0.05 and abs(speeds.omega) < 0.1
+        )
+        now = time.time()
+        if not is_slow:
+            self.slow_time = now
 
-        # if pos_error < self.pos_tolerance and theta_error < self.theta_tolerance:
-        if drive_vel.norm() < self.pos_tolerance and abs(omega) < self.theta_tolerance:
+        if now - self.slow_time > 0.75 or (
+            drive_vel.norm() < self.pos_tolerance and abs(omega) < self.theta_tolerance
+        ):
             self.drive.drive(Transform2d())
             self.finished = True
 

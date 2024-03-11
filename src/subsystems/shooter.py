@@ -65,7 +65,8 @@ class Shooter:
                 pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
-        angle_offset = 4.163813417
+        # angle_offset = 4.163813417
+        angle_offset = 4.287924906
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
         while angle > pi:
