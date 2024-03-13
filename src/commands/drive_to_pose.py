@@ -77,7 +77,7 @@ class DriveToPose(Command):
         if not is_slow:
             self.slow_time = now
 
-        if now - self.slow_time > 0.75 or (
+        if now - self.slow_time > 0.5 or (
             drive_vel.norm() < self.pos_tolerance and abs(omega) < self.theta_tolerance
         ):
             self.drive.drive(Transform2d())

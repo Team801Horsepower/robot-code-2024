@@ -45,7 +45,6 @@ class ContinuousAimAtSpeaker(Command):
                 / (cam_dist + config.camera_center_distance)
                 * tan(cam_yaw_diff)
             )
-            # self.target_yaw = cur_rot - atag_yaw
             self.target_yaw = cur_rot + robot_yaw_diff
 
             SmartDashboard.putNumber(

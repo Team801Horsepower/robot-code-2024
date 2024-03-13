@@ -65,7 +65,6 @@ class Shooter:
                 pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
-        # angle_offset = 4.163813417
         angle_offset = 4.287924906
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
@@ -132,11 +131,6 @@ class Shooter:
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def run_shooter(self, velocity: float, differential: float = 0):
-        # if self.amp_scorer.is_up and velocity > 0:
-        #     # velocity *= 0.1
-        #     self.amp_scorer.set_scorer(0.5)
-        # else:
-        #     self.amp_scorer.set_scorer(0)
         if self.amp_scorer.is_up:
             if velocity > 0:
                 self.should_feed = True
@@ -152,14 +146,7 @@ class Shooter:
         self.amp_scorer.set_scorer(0)
         flywheel_speeds = [-(velocity + differential), velocity - differential]
         self.set_flywheels(flywheel_speeds)
-        # TODO: incorporate self.pitch_ready()
 
-        # if self.amp_scorer.is_up and velocity > 0:
-        #     self.should_feed = True
-        # else:
-        #     self.should_feed = abs(velocity) > 0 and (
-        #         self.flywheels_ready() or self.should_feed
-        #     )
         self.should_feed = abs(velocity) > 0 and (
             self.flywheels_ready() or self.should_feed
         )

@@ -41,7 +41,7 @@ auto_turn_speed = 3
 swerves = [
     (2, 3, 0.7892499),
     (8, 9, 0.5298459),
-    (18, 19, 0.9826425),
+    (18, 19, 0.0104102),
     (10, 11, 0.0611273),
 ]
 
@@ -94,5 +94,4 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
 ]
 
 amp_flipper_up_value = 5.28
-# amp_shooter_pitch = 0.77
 amp_shooter_pitch = 0.8223598776

@@ -57,9 +57,10 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("shooter abs enc abs", -1)
 
         self.auto_chooser = SendableChooser()
-        self.auto_chooser.setDefaultOption("4 note", 0)
+        self.auto_chooser.addOption("4 note", 0)
         self.auto_chooser.addOption("1 note", 1)
-        self.auto_chooser.addOption("legacy 4 note", 2)
+        self.auto_chooser.setDefaultOption("amp side 1 note", 2)
+        self.auto_chooser.addOption("legacy 4 note", 3)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -83,11 +84,13 @@ class MyRobot(wpilib.TimedRobot):
         red_autos = [
             "Gollum'sMiddleEarthQuest.json",
             "Gollum'sSideQuest.json",
+            "Gollum'sUltraSideQuest.json",
             "Gollum'sEvenBetterQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
             "Gollum'sBlueSideQuest.json",
+            "Gollum'sUltraBlueSideQuest.json",
             "Gollum'sEvenRedderQuest.json",
         ]
         if is_red:
@@ -117,7 +120,7 @@ class MyRobot(wpilib.TimedRobot):
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s == "G":
-                    cmd = cmd.raceWith(Gather(self.gatherer))
+                    cmd = cmd.raceWith(Gather(self.gatherer, False))
                 elif cmd_s == "s" or cmd_s == "S":
                     keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
