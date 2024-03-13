@@ -5,6 +5,7 @@ import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
+from commands.aim_at_amp import StrafeToAmp
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
@@ -52,7 +53,7 @@ class Gollum(wpilib.TimedRobot):
             swerve.turn_motor.set(0)
 
         self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
-
+        self.aaa_command = StrafeToAmp(self.drive, self.vision)
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
         SmartDashboard.putNumber("shooter abs enc", -1)
@@ -216,6 +217,10 @@ class Gollum(wpilib.TimedRobot):
 
         self.aas_command.should_run = self.driver_controller.getLeftBumper()
         self.aas_command.execute()
+
+         if self.driver_controller.getPOV() = 90:
+            self.aaa_command.should_run = True
+        self.aaa_command.execute()
 
         if not self.aas_command.should_run:
             drive_input = wpimath.geometry.Transform2d(
