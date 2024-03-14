@@ -13,7 +13,7 @@ from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
-from wpilib import DriverStation, SmartDashboard, SendableChooser
+from wpilib import SmartDashboard, SendableChooser
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
 from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
@@ -22,7 +22,6 @@ from functools import reduce
 from math import pi, sqrt, copysign
 
 import config
-
 
 
 class MyRobot(wpilib.TimedRobot):
@@ -208,8 +207,7 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.should_run = self.driver_controller.getLeftBumper()
         self.aas_command.execute()
 
-         if self.driver_controller.getPOV() = 90:
-            self.aaa_command.should_run = True
+        self.aaa_command.should_run = self.driver_controller.getPOV() == 90
         self.aaa_command.execute()
 
         if not self.aas_command.should_run:

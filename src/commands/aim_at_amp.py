@@ -21,15 +21,15 @@ class StrafeToAmp(Command):
 
         self.strafe_pid = PIDController(0.3, 0, 0)
         self.yaw_pid = PIDController(4.6, 0, 0)
-        
+
         self.strafe_power = 0
 
         self.should_run = False
 
         if config.is_red():
-            self.side_yaw = 3*pi/2
+            self.side_yaw = 3 * pi / 2
         else:
-            self.side_yaw = pi/2
+            self.side_yaw = pi / 2
 
     def initialize(self):
         pass
@@ -54,7 +54,7 @@ class StrafeToAmp(Command):
             )
             # self.target_yaw = cur_rot - atag_yaw
             self.target_yaw = cur_rot + robot_yaw_diff
-            
+
             self.strafe_power = self.strafe_pid.calculate(atag_yaw, 0)
 
         if not self.should_run:

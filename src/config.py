@@ -1,10 +1,12 @@
 import wpimath
 from wpimath import units
 from wpimath.geometry import Translation2d
+from wpilib import DriverStation
 
 
 def is_red() -> bool:
     return DriverStation.getAlliance() == DriverStation.Alliance.kRed
+
 
 # lengths: meters
 
