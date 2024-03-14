@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -38,6 +38,7 @@ class MyRobot(wpilib.TimedRobot):
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
+        self.led = led.Led(999)
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
@@ -173,6 +174,12 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.driver_controller.getRightStickButtonPressed():
             self.special_turning ^= True
+            
+        if self.gatherer.note_present():
+            self.led.set_leds(255, 0, 0)
+            
+        if vision.speaker_dist == -1:
+            self.led.set_leds(0, 255, 0)            
 
         cur_angle = self.drive.odometry.pose().rotation().radians()
 
@@ -314,6 +321,8 @@ class MyRobot(wpilib.TimedRobot):
         )
         should_rumble = self.gatherer.spin_gatherer(gather_power)
         rumble = 1.0 if should_rumble else 0
+        if rumble == 1:
+            self.led.set_leds(0, 0, 255)
         self.driver_controller.setRumble(
             wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
         )
