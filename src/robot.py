@@ -218,8 +218,7 @@ class Gollum(wpilib.TimedRobot):
         self.aas_command.should_run = self.driver_controller.getLeftBumper()
         self.aas_command.execute()
 
-         if self.driver_controller.getPOV() = 90:
-            self.aaa_command.should_run = True
+        self.aaa_command.should_run = self.driver_controller.getPOV() == 90
         self.aaa_command.execute()
 
         if not self.aas_command.should_run:

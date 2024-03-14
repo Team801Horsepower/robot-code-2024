@@ -8,9 +8,6 @@ def is_red() -> bool:
     return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
 
-def is_red() -> bool:
-    return DriverStation.getAlliance() == DriverStation.Alliance.kRed
-
 # lengths: meters
 
 # (length, width)
