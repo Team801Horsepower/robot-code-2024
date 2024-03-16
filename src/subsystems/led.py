@@ -1,18 +1,15 @@
-import wpilib
+from wpilib import Spark
+import time
 
 class Led:
     def __init__(self, led_id: int):
-    #     self.led = wpilib.AddressableLED(999)
-    #     self.kLEDBuffer = 60
-    #     self.ledData = [wpilib.AddressableLED.LEDData() for _ in range(self.kLEDBuffer)]
-    #     self.led.setLength(self.kLEDBuffer)
-    #     self.led.setData(self.ledData)
-    #     self.led.start()
-        self.led = wpilib.AddressableLED(led_id)
-        self.kLEDBuffer = 60
-        self.led.setLength(self.kLEDBuffer)
-        self.led.start()
+        self.led_driver = Spark(led_id)
+        self.start_blink = -1
 
-    def set_leds(self, red: int, green: int, blue: int):
-        for i in range(self.kLEDBuffer):
-            self.led.LEDData[i].setRGB(red, green, blue)
+    def set_leds(self, test_value):
+        self.led_driver.set(test_value)
+        self.start_blink = time.time()
+
+    def stop_blink(self):
+        if time.time() - self.start_blink >= 3:
+            self.set_leds(0.99)

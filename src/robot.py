@@ -38,7 +38,7 @@ class MyRobot(wpilib.TimedRobot):
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
-        self.led = led.Led(999)
+        self.led = led.Led(0)
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
@@ -57,6 +57,7 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("shooter pitch", -1)
         SmartDashboard.putNumber("shooter abs enc", -1)
         SmartDashboard.putNumber("shooter abs enc abs", -1)
+        SmartDashboard.putNumber("color value", -1)
 
         self.auto_chooser = SendableChooser()
         self.auto_chooser.setDefaultOption("4 note", 0)
@@ -176,10 +177,10 @@ class MyRobot(wpilib.TimedRobot):
             self.special_turning ^= True
             
         if self.gatherer.note_present():
-            self.led.set_leds(255, 0, 0)
+            self.led.set_leds(0.57)
             
         if vision.speaker_dist == -1:
-            self.led.set_leds(0, 255, 0)            
+            self.led.set_leds(-0.05)            
 
         cur_angle = self.drive.odometry.pose().rotation().radians()
 
@@ -322,7 +323,7 @@ class MyRobot(wpilib.TimedRobot):
         should_rumble = self.gatherer.spin_gatherer(gather_power)
         rumble = 1.0 if should_rumble else 0
         if rumble == 1:
-            self.led.set_leds(0, 0, 255)
+            self.led.set_leds(-0.95)
         self.driver_controller.setRumble(
             wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
         )
@@ -341,16 +342,17 @@ class MyRobot(wpilib.TimedRobot):
                 )
             )
 
+        self.led.stop_blink()
+
     def testInit(self):
-        pass
+        self.cycle_num = .99
+        self.led.set_leds(self.cycle_num)
 
     def testPeriodic(self):
-        if self.driver_controller.getBButton():
-            self.shooter.stow()
-        # Values: 0.71 down, 0.04 up
+        pass
 
     def teleopExit(self):
-        self.aas_command.end(True)
+        pass
 
 
 if __name__ == "__main__":
