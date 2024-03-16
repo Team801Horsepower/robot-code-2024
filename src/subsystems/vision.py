@@ -47,6 +47,7 @@ class Vision(Subsystem):
     def cur_speaker_atag(self) -> Tuple[float, float] | None:
         result = self.camera.getLatestResult()
         for target in result.getTargets():
+            # TODO: Use is_red check rather than allowing both
             if target.fiducialId in [4, 7]:
                 return (
                     units.degreesToRadians(target.getPitch()),
