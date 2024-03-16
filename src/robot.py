@@ -259,11 +259,11 @@ class MyRobot(wpilib.TimedRobot):
             elif dpad in [135, 180, 225]:
                 self.shooter.pitch_down()
             elif self.manip_controller.getYButton():
-                self.shooter.set_pitch(0.9, speed=1)
+                self.shooter.set_pitch(0.9, speed=0.05)
             elif self.manip_controller.getBButton():
-                self.shooter.set_pitch(0.78, speed=1)
+                self.shooter.set_pitch(0.78, speed=0.05)
             elif self.manip_controller.getAButton():
-                self.shooter.set_pitch(0.69, speed=1)
+                self.shooter.set_pitch(0.69, speed=0.05)
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
@@ -309,7 +309,9 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        print(self.gatherer.note_present())
+        if self.driver_controller.getBButton(): 
+            self.shooter.stow()
+        # Values: 0.71 down, 0.04 up
 
     def teleopExit(self):
         self.aas_command.end(True)

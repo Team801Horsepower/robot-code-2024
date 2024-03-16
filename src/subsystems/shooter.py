@@ -27,6 +27,7 @@ class Shooter:
         self.pitch_motor = CANSparkMax(pitch_motor, CANSparkMax.MotorType.kBrushless)
         self.pitch_motor.setInverted(True)
         self.pitch_encoder = DutyCycleEncoder(0)
+        self.link_pivot_encoder = DutyCycleEncoder(3)
         self.pitch_target = 0.0
 
         self.pitch_min = units.degreesToRadians(25.7)
@@ -65,7 +66,7 @@ class Shooter:
                 pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def get_pitch(self) -> float:
-        angle_offset = 4.287924906
+        angle_offset = 0.22200
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
         while angle > pi:
@@ -76,7 +77,7 @@ class Shooter:
 
         return angle
 
-    def set_pitch(self, pitch: float, speed: float = 0.8):
+    def set_pitch(self, pitch: float, speed: float = 0.05):
         pitch = min(self.pitch_max, max(self.pitch_min, pitch))
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
@@ -87,6 +88,12 @@ class Shooter:
             self.pitch_motor.set(-speed)
         elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
             self.pitch_motor.set(speed)
+        else:
+            self.pitch_motor.set(0)
+
+    def stow(self):
+        if self.link_pivot_encoder.getAbsolutePosition() < 0.71:
+            self.pitch_motor.set(-0.1)
         else:
             self.pitch_motor.set(0)
 
