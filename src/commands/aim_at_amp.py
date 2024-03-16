@@ -1,5 +1,5 @@
 from wpimath.controller import PIDController
-from wpimath.geometry import Transform2d
+from wpimath.geometry import Transform2d, Translation2d, Rotation2d
 from wpimath import units
 from commands2 import Command
 
@@ -19,10 +19,10 @@ class StrafeToAmp(Command):
         self.drive = drive
         self.vision = vision
 
-        self.strafe_pid = PIDController(0.3, 0, 0)
+        self.strafe_pid = PIDController(2.2, 0, 0)
         self.yaw_pid = PIDController(4.6, 0, 0)
 
-        self.strafe_power = 0
+        self.atag_pos = None
 
         self.should_run = False
 
@@ -43,25 +43,33 @@ class StrafeToAmp(Command):
             cam_dist = (config.amp_tag_height - config.camera_height) / tan(
                 atag_pitch + config.camera_angle
             )
+            robot_dist = cam_dist + config.camera_center_distance
 
-            # target_yaw = atan2(config.camera_left_offset, cam_dist)
             cam_yaw_diff = -atag_yaw
-            # minus sign jumpscare
-            robot_yaw_diff = atan(
-                cam_dist
-                / (cam_dist + config.camera_center_distance)
-                * tan(cam_yaw_diff)
-            )
-            # self.target_yaw = cur_rot - atag_yaw
-            self.target_yaw = cur_rot + robot_yaw_diff
+            robot_yaw_diff = atan(cam_dist / robot_dist * tan(cam_yaw_diff))
 
-            self.strafe_power = self.strafe_pid.calculate(atag_yaw, 0)
+            self.atag_pos = self.drive.odometry.pose().translation() + Translation2d(
+                robot_dist, Rotation2d(cur_rot + robot_yaw_diff)
+            )
 
         if not self.should_run:
             return
 
-        yaw_power = self.yaw_pid.calculate(cur_rot, self.side_yaw)
-        drive_input = Transform2d(0, self.strafe_power, yaw_power)
+        if self.atag_pos is not None:
+            strafe_power = self.strafe_pid.calculate(
+                self.drive.odometry.pose().x, self.atag_pos.x
+            )
+        else:
+            strafe_power = 0
+
+        target_yaw = self.side_yaw
+        while target_yaw - cur_rot > pi:
+            target_yaw -= 2 * pi
+        while target_yaw - cur_rot < -pi:
+            target_yaw += 2 * pi
+
+        yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
+        drive_input = Transform2d(0, strafe_power, yaw_power)
         self.drive.drive(drive_input)
 
     def isFinished(self):
