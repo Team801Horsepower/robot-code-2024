@@ -5,6 +5,7 @@ from functools import reduce
 from rev import CANSparkMax, CANSparkFlex, SparkPIDController
 from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
+from commands2 import CommandScheduler, Subsystem
 
 from subsystems.amp_scorer import AmpScorer
 
@@ -16,9 +17,10 @@ import config
 # pylint: disable=too-many-instance-attributes
 
 
-class Shooter:
+class Shooter(Subsystem):
     def __init__(
         self,
+        scheduler: CommandScheduler,
         flywheel_motors: List[int],
         pitch_motor: int,
         amp_flipper: int,
@@ -54,16 +56,10 @@ class Shooter:
 
         self.flywheels_ready_time = time.time()
 
-    def set_flywheels(self, speeds: List[float]):
-        self.flywheel_targets = speeds
-        # for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
-        #     motor.set(target)
-        if min(self.flywheel_targets) == 0:
-            for motor in self.flywheel_motors:
-                motor.set(0)
-        else:
-            for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
-                pid.setReference(target, CANSparkMax.ControlType.kVelocity)
+        scheduler.registerSubsystem(self)
+
+    def periodic(self):
+        pass
 
     def get_pitch(self) -> float:
         angle_offset = 0.22200
@@ -106,6 +102,10 @@ class Shooter:
     def stop_pitch(self):
         self.set_pitch(self.get_pitch())
 
+    def pitch_ready(self) -> bool:
+        pitch_ok_threshold = 0.04
+        return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
+
     def feed_power(self) -> float:
         # return 1.0 if self.should_feed else 0
         if self.should_feed and not self.feed_override:
@@ -115,6 +115,17 @@ class Shooter:
                 return 1.0
         else:
             return 0
+
+    def set_flywheels(self, speeds: List[float]):
+        self.flywheel_targets = speeds
+        # for motor, target in zip(self.flywheel_motors, self.flywheel_targets):
+        #     motor.set(target)
+        if min(self.flywheel_targets) == 0:
+            for motor in self.flywheel_motors:
+                motor.set(0)
+        else:
+            for pid, target in zip(self.flywheel_pids, self.flywheel_targets):
+                pid.setReference(target, CANSparkMax.ControlType.kVelocity)
 
     def flywheels_ready(self) -> bool:
         # return (
@@ -132,10 +143,6 @@ class Shooter:
         if not ready:
             self.flywheels_ready_time = now
         return now - self.flywheels_ready_time > 0.1
-
-    def pitch_ready(self) -> bool:
-        pitch_ok_threshold = 0.04
-        return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def run_shooter(self, velocity: float, differential: float = 0):
         if self.amp_scorer.is_up:
