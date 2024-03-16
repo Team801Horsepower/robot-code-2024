@@ -53,7 +53,7 @@ class ContinuousAimAtSpeaker(Command):
         else:
             SmartDashboard.putNumber("robot yaw diff", -1)
 
-        if not self.should_run:
+        if not self.should_run or self.atag_pos is None:
             return
 
         if self.atag_pos is None:

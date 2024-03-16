@@ -221,7 +221,7 @@ class Gollum(wpilib.TimedRobot):
         self.aaa_command.should_run = self.driver_controller.getPOV() == 90
         self.aaa_command.execute()
 
-        if not self.aas_command.should_run:
+        if not self.aas_command.should_run and not self.aaa_command.should_run:
             drive_input = wpimath.geometry.Transform2d(
                 config.drive_speed
                 * input_curve(deadzone(-self.driver_controller.getLeftY())),

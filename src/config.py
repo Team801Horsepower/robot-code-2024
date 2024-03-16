@@ -100,7 +100,7 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
 ]
 
 amp_flipper_up_value = 5.28
-amp_shooter_pitch = 0.8223598776
+amp_shooter_pitch = units.degreesToRadians(43.46)
 
 link_pivot_setpoint_down = 0.71
 link_pivot_setpoint_up = 0.04
