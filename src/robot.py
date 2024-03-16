@@ -35,7 +35,7 @@ class MyRobot(wpilib.TimedRobot):
         self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
+        self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
 
         self.field_oriented_drive = True
@@ -231,6 +231,7 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.run_shooter(0)
 
         dpad = self.manip_controller.getPOV()
+        pitch_stick = -self.manip_controller.getLeftY()
         speed = self.drive.chassis.chassis_speeds()
         # if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
         #     if dpad in [315, 0, 45]:
@@ -253,17 +254,21 @@ class MyRobot(wpilib.TimedRobot):
                 self.shooter.amp_scorer.is_up = False
 
             if self.manip_controller.getXButton():
-                self.shooter.set_pitch(0.4, speed=1)
+                # self.shooter.set_pitch(0.4, speed=1)
+                self.shooter.stow()
+            elif abs(pitch_stick) > 0.01:
+                self.shooter.manual_pitch(pitch_stick * 0.5)
+                manip_rumble = -1
             elif dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
             elif dpad in [135, 180, 225]:
                 self.shooter.pitch_down()
             elif self.manip_controller.getYButton():
-                self.shooter.set_pitch(0.9, speed=1)
+                self.shooter.set_pitch(0.9)
             elif self.manip_controller.getBButton():
-                self.shooter.set_pitch(0.78, speed=1)
+                self.shooter.set_pitch(0.78)
             elif self.manip_controller.getAButton():
-                self.shooter.set_pitch(0.69, speed=1)
+                self.shooter.set_pitch(0.69)
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
@@ -309,7 +314,9 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        print(self.gatherer.note_present())
+        if self.driver_controller.getBButton():
+            self.shooter.stow()
+        # Values: 0.71 down, 0.04 up
 
     def teleopExit(self):
         self.aas_command.end(True)
