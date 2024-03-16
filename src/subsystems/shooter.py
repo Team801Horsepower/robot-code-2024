@@ -34,8 +34,8 @@ class Shooter(Subsystem):
         self.pitch_target = 0.0
         self.hold_pitch = False
 
-        self.pitch_min = units.degreesToRadians(15)
-        self.pitch_max = units.degreesToRadians(53)
+        self.pitch_min = units.degreesToRadians(12)
+        self.pitch_max = units.degreesToRadians(59)
 
         self.pitch_pid = PIDController(2, 0, 0)
         self.pitch_ff = ArmFeedforward(0, 0.06, 0)
@@ -91,12 +91,11 @@ class Shooter(Subsystem):
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
 
-        if link_pivot_pos < 0.71 and link_pivot_pos > 0.04:
-            self.pitch_motor.set(power)
-        elif link_pivot_pos < 0.85 and link_pivot_pos > 0.04:
-            self.pitch_motor.set(0.1)
-        else:
-            self.pitch_motor.set(-0.1)
+        if link_pivot_pos > 0.71:
+            power = max(0, power)
+        if link_pivot_pos < 0.04:
+            power = min(0, power)
+        self.pitch_motor.set(power)
 
     def stow(self):
         if self.link_pivot_encoder.getAbsolutePosition() < 0.71:

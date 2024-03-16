@@ -146,6 +146,8 @@ class MyRobot(wpilib.TimedRobot):
     def teleopInit(self):
         self.drive.chassis.set_swerves()
         self.shooter.set_feed_override(False)
+        self.shooter.hold_pitch = False
+        self.shooter.stop_pitch()
         self.use_yaw_setpoint = False
         self.aas_command.initialize()
 
@@ -253,10 +255,7 @@ class MyRobot(wpilib.TimedRobot):
             if self.manip_controller.getBackButton():
                 self.shooter.amp_scorer.is_up = False
 
-            if self.manip_controller.getXButton():
-                # self.shooter.set_pitch(0.4, speed=1)
-                self.shooter.stow()
-            elif abs(pitch_stick) > 0.01:
+            if abs(pitch_stick) > 0.01:
                 self.shooter.manual_pitch(pitch_stick * 0.5)
                 manip_rumble = -1
             elif dpad in [315, 0, 45]:
@@ -269,6 +268,8 @@ class MyRobot(wpilib.TimedRobot):
                 self.shooter.set_pitch(0.78)
             elif self.manip_controller.getAButton():
                 self.shooter.set_pitch(0.69)
+            elif self.manip_controller.getXButton():
+                self.shooter.set_pitch(units.degreesToRadians(20))
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
