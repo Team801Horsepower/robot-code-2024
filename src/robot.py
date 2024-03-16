@@ -35,7 +35,7 @@ class MyRobot(wpilib.TimedRobot):
         self.vision = vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter([14, 7], 12, 5, 16)
+        self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
 
         self.field_oriented_drive = True
@@ -253,17 +253,18 @@ class MyRobot(wpilib.TimedRobot):
                 self.shooter.amp_scorer.is_up = False
 
             if self.manip_controller.getXButton():
-                self.shooter.set_pitch(0.4, speed=1)
+                # self.shooter.set_pitch(0.4, speed=1)
+                self.shooter.stow()
             elif dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
             elif dpad in [135, 180, 225]:
                 self.shooter.pitch_down()
             elif self.manip_controller.getYButton():
-                self.shooter.set_pitch(0.9, speed=0.05)
+                self.shooter.set_pitch(0.9)
             elif self.manip_controller.getBButton():
-                self.shooter.set_pitch(0.78, speed=0.05)
+                self.shooter.set_pitch(0.78)
             elif self.manip_controller.getAButton():
-                self.shooter.set_pitch(0.69, speed=0.05)
+                self.shooter.set_pitch(0.69)
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
@@ -309,7 +310,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        if self.driver_controller.getBButton(): 
+        if self.driver_controller.getBButton():
             self.shooter.stow()
         # Values: 0.71 down, 0.04 up
 
