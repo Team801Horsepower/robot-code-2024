@@ -110,7 +110,18 @@ class Shooter(Subsystem):
         current_pitch = self.get_pitch()
         power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
         power = min(max_power, max(-max_power, power))
-        self.pitch_motor.set(power)
+
+        link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
+        print(link_pivot_pos)
+
+        if link_pivot_pos < 0.71 and link_pivot_pos > 0.04:
+            self.pitch_motor.set(power)
+        elif link_pivot_pos < 0.85 and link_pivot_pos > 0.04:
+            self.pitch_motor.set(0.1)
+            print("link pivot exceeded lower bound")
+        else:
+            self.pitch_motor.set(-0.1)
+            print("link pivot exceeded upper bound")
 
     def stow(self):
         if self.link_pivot_encoder.getAbsolutePosition() < 0.71:
