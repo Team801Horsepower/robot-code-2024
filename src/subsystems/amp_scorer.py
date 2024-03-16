@@ -1,4 +1,5 @@
 from rev import CANSparkMax, CANSparkFlex
+from wpilib import DutyCycleEncoder
 
 import time
 
@@ -12,6 +13,8 @@ class AmpScorer:
         self.flipper.setInverted(True)
         self.flipper.setIdleMode(CANSparkMax.IdleMode.kBrake)
         self.flipper_encoder.setPosition(0)
+
+        self.abs_encoder = DutyCycleEncoder(4)
 
         self.scorer = CANSparkFlex(scorer, CANSparkMax.MotorType.kBrushless)
         self.scorer.setInverted(True)
@@ -37,28 +40,42 @@ class AmpScorer:
         else:
             self.flip_down()
 
+    # def flip_down(self):
+    #     if not self.limit_set or self.flipper_encoder.getPosition() > 0.5:
+    #         self.flipper.set(-self.flip_power)
+    #         cur = self.flipper.getOutputCurrent()
+    #         if cur > 20:
+    #             self.limit_cycles += 1
+    #             if self.limit_cycles >= 10:
+    #                 self.flipper_encoder.setPosition(0)
+    #                 self.limit_set = True
+    #         else:
+    #             self.limit_cycles = 0
+    #     else:
+    #         self.flipper.set(0)
+
     def flip_down(self):
-        if not self.limit_set or self.flipper_encoder.getPosition() > 0.5:
+        print("flip down")
+        if self.abs_encoder.get() < config.amp_abs_enc_down:
             self.flipper.set(-self.flip_power)
-            cur = self.flipper.getOutputCurrent()
-            if cur > 20:
-                self.limit_cycles += 1
-                if self.limit_cycles >= 10:
-                    self.flipper_encoder.setPosition(0)
-                    self.limit_set = True
-            else:
-                self.limit_cycles = 0
         else:
             self.flipper.set(0)
 
+    # def flip_up(self):
+    #     if not self.limit_set:
+    #         self.flip_down()
+    #     else:
+    #         power = 0.5 * (
+    #             config.amp_flipper_up_value - self.flipper_encoder.getPosition()
+    #         )
+    #         self.flipper.set(min(self.flip_power, max(0, power)))
+
     def flip_up(self):
-        if not self.limit_set:
-            self.flip_down()
-        else:
-            power = 0.5 * (
-                config.amp_flipper_up_value - self.flipper_encoder.getPosition()
-            )
-            self.flipper.set(min(self.flip_power, max(0, power)))
+        print("flip up")
+        power = 0.5 * (
+            config.amp_abs_enc_up - self.abs_encoder.getAbsolutePosition()
+        )
+        self.flipper.set(min(self.flip_power, max(0, power)))
 
     def set_scorer(self, power: float):
         self.scorer.set(power)
