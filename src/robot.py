@@ -231,6 +231,7 @@ class MyRobot(wpilib.TimedRobot):
             self.shooter.run_shooter(0)
 
         dpad = self.manip_controller.getPOV()
+        pitch_stick = -self.manip_controller.getLeftY()
         speed = self.drive.chassis.chassis_speeds()
         # if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
         #     if dpad in [315, 0, 45]:
@@ -255,6 +256,9 @@ class MyRobot(wpilib.TimedRobot):
             if self.manip_controller.getXButton():
                 # self.shooter.set_pitch(0.4, speed=1)
                 self.shooter.stow()
+            elif abs(pitch_stick) > 0.01:
+                self.shooter.manual_pitch(pitch_stick * 0.5)
+                manip_rumble = -1
             elif dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
             elif dpad in [135, 180, 225]:

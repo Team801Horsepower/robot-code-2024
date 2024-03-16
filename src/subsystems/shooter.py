@@ -5,7 +5,7 @@ from functools import reduce
 from rev import CANSparkMax, CANSparkFlex, SparkPIDController
 from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
-from wpimath.controller import PIDController
+from wpimath.controller import PIDController, ArmFeedforward
 from commands2 import CommandScheduler, Subsystem
 
 from subsystems.amp_scorer import AmpScorer
@@ -34,13 +34,11 @@ class Shooter(Subsystem):
         self.pitch_target = 0.0
         self.hold_pitch = False
 
-        self.pitch_min = units.degreesToRadians(20)
+        self.pitch_min = units.degreesToRadians(15)
         self.pitch_max = units.degreesToRadians(53)
 
-        self.pitch_pid = PIDController(10, 0, 0)
-        SmartDashboard.putNumber("shooter P", self.pitch_pid.getP())
-        SmartDashboard.putNumber("shooter I", self.pitch_pid.getI())
-        SmartDashboard.putNumber("shooter D", self.pitch_pid.getD())
+        self.pitch_pid = PIDController(2, 0, 0)
+        self.pitch_ff = ArmFeedforward(0, 0.06, 0)
 
         self.should_feed = False
         self.feed_override = False
@@ -70,13 +68,6 @@ class Shooter(Subsystem):
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
         )
 
-        p = SmartDashboard.getNumber("shooter P", 10)
-        i = SmartDashboard.getNumber("shooter I", 0)
-        d = SmartDashboard.getNumber("shooter D", 0)
-        self.pitch_pid.setP(p)
-        self.pitch_pid.setI(i)
-        self.pitch_pid.setD(d)
-
     def get_pitch(self) -> float:
         angle_offset = 0.22200
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
@@ -89,51 +80,38 @@ class Shooter(Subsystem):
 
         return angle
 
-    # def set_pitch(self, pitch: float, speed: float = 0.05):
-    #     pitch = min(self.pitch_max, max(self.pitch_min, pitch))
-    #     self.pitch_target = pitch
-    #     current_pitch = self.get_pitch()
-    #     # print("shooter at", units.radiansToDegrees(current_pitch))
-    #     if abs(current_pitch - self.pitch_target) < 0.02:
-    #         self.pitch_motor.set(0)
-    #     elif current_pitch > self.pitch_target and current_pitch > self.pitch_min:
-    #         self.pitch_motor.set(-speed)
-    #     elif current_pitch < self.pitch_target and current_pitch < self.pitch_max:
-    #         self.pitch_motor.set(speed)
-    #     else:
-    #         self.pitch_motor.set(0)
-
-    def set_pitch(self, pitch: float, max_power: float = 0.15):
+    def set_pitch(self, pitch: float, max_power: float = 1):
         self.hold_pitch = False
         pitch = min(self.pitch_max, max(self.pitch_min, pitch))
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
-        power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
-        power = min(max_power, max(-max_power, power))
+        pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
+        ff_power = self.pitch_ff.calculate(self.pitch_target, 0)
+        power = min(max_power, max(-max_power, pid_power + ff_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
-        print(link_pivot_pos)
 
         if link_pivot_pos < 0.71 and link_pivot_pos > 0.04:
             self.pitch_motor.set(power)
         elif link_pivot_pos < 0.85 and link_pivot_pos > 0.04:
             self.pitch_motor.set(0.1)
-            print("link pivot exceeded lower bound")
         else:
             self.pitch_motor.set(-0.1)
-            print("link pivot exceeded upper bound")
 
     def stow(self):
         if self.link_pivot_encoder.getAbsolutePosition() < 0.71:
-            self.pitch_motor.set(-0.1)
+            self.pitch_down()
         else:
-            self.pitch_motor.set(0)
+            self.stop_pitch()
 
     def pitch_up(self):
         self.set_pitch(self.get_pitch() + 1)
 
     def pitch_down(self):
         self.set_pitch(self.get_pitch() - 1)
+
+    def manual_pitch(self, diff: float):
+        self.set_pitch(self.get_pitch() + diff)
 
     def stop_pitch(self):
         if not self.hold_pitch:
