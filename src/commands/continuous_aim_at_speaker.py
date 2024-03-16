@@ -21,8 +21,6 @@ class ContinuousAimAtSpeaker(Command):
 
         self.yaw_pid = PIDController(4.6, 0, 0)
 
-        # self.target_yaw = self.drive.odometry.rotation().radians()
-
         self.atag_pos = None
 
         self.should_run = False
@@ -41,10 +39,8 @@ class ContinuousAimAtSpeaker(Command):
             )
             robot_dist = cam_dist + config.camera_center_distance
 
-            # target_yaw = atan2(config.camera_left_offset, cam_dist)
             cam_yaw_diff = -atag_yaw
             robot_yaw_diff = atan(cam_dist / robot_dist * tan(cam_yaw_diff))
-            # self.target_yaw = cur_rot + robot_yaw_diff
 
             self.atag_pos = self.drive.odometry.pose().translation() + Translation2d(
                 robot_dist, Rotation2d(cur_rot + robot_yaw_diff)
@@ -59,11 +55,6 @@ class ContinuousAimAtSpeaker(Command):
         if not self.should_run:
             return
 
-        # while self.target_yaw - cur_rot > pi:
-        #     self.target_yaw -= 2 * pi
-        # while cur_rot - self.target_yaw > pi:
-        #     self.target_yaw += 2 * pi
-
         target_yaw = (
             (self.atag_pos - self.drive.odometry.pose().translation()).angle().radians()
         )
@@ -73,7 +64,6 @@ class ContinuousAimAtSpeaker(Command):
         while cur_rot - target_yaw > pi:
             target_yaw += 2 * pi
 
-        # yaw_power = self.yaw_pid.calculate(cur_rot, self.target_yaw)
         yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
         drive_input = Transform2d(0, 0, yaw_power)
         self.drive.drive(drive_input)
