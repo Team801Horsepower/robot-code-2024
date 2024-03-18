@@ -37,8 +37,8 @@ class Shooter(Subsystem):
         self.pitch_min = units.degreesToRadians(12)
         self.pitch_max = units.degreesToRadians(59)
 
-        self.pitch_pid = PIDController(2, 0, 0)
-        self.pitch_ff = ArmFeedforward(0, 0.06, 0)
+        self.pitch_pid = PIDController(3, 0, 0.05)
+        # self.pitch_ff = ArmFeedforward(0, 0.06, 0)
 
         self.should_feed = False
         self.feed_override = False
@@ -86,8 +86,9 @@ class Shooter(Subsystem):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
-        ff_power = self.pitch_ff.calculate(self.pitch_target, 0)
-        power = min(max_power, max(-max_power, pid_power + ff_power))
+        # ff_power = self.pitch_ff.calculate(self.pitch_target, 0)
+        # power = min(max_power, max(-max_power, pid_power + ff_power))
+        power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
 
