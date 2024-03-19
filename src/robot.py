@@ -61,6 +61,8 @@ class MyRobot(wpilib.TimedRobot):
         self.auto_chooser.addOption("1 note", 1)
         self.auto_chooser.setDefaultOption("amp side 1 note", 2)
         self.auto_chooser.addOption("legacy 4 note", 3)
+        self.auto_chooser.addOption("blue only note theft", 4)
+        self.auto_chooser.addOption("blue only far note", 5)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -92,6 +94,8 @@ class MyRobot(wpilib.TimedRobot):
             "Gollum'sBlueSideQuest.json",
             "Gollum'sUltraBlueSideQuest.json",
             "Gollum'sEvenRedderQuest.json",
+            "PettyTheft.json",
+            "Gollum'sExtensiveQuest.json",
         ]
         if is_red:
             auto_name = red_autos[auto_i]
