@@ -38,7 +38,6 @@ class Shooter(Subsystem):
         self.pitch_max = units.degreesToRadians(59)
 
         self.pitch_pid = PIDController(3, 0, 0.05)
-        # self.pitch_ff = ArmFeedforward(0, 0.06, 0)
 
         self.should_feed = False
         self.feed_override = False
@@ -64,20 +63,11 @@ class Shooter(Subsystem):
         scheduler.registerSubsystem(self)
 
         self.pitch_pid = PIDController(3.5, 0, 0)
-        SmartDashboard.putNumber("shooter P", self.pitch_pid.getP())
-        SmartDashboard.putNumber("shooter I", self.pitch_pid.getI())
-        SmartDashboard.putNumber("shooter D", self.pitch_pid.getD())
 
     def periodic(self):
         SmartDashboard.putNumber(
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
         )
-        p = SmartDashboard.getNumber("shooter P", 3.5)
-        i = SmartDashboard.getNumber("shooter I", 0)
-        d = SmartDashboard.getNumber("shooter D", 0.05)
-        self.pitch_pid.setP(p)
-        self.pitch_pid.setI(i)
-        self.pitch_pid.setD(d)
 
     def get_pitch(self) -> float:
         angle_offset = 0.22200
@@ -97,8 +87,6 @@ class Shooter(Subsystem):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
-        # ff_power = self.pitch_ff.calculate(self.pitch_target, 0)
-        # power = min(max_power, max(-max_power, pid_power + ff_power))
         power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
