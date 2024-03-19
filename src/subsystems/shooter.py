@@ -63,7 +63,7 @@ class Shooter(Subsystem):
 
         scheduler.registerSubsystem(self)
 
-        self.pitch_pid = PIDController(10, 0, 0)
+        self.pitch_pid = PIDController(3.5, 0, 0)
         SmartDashboard.putNumber("shooter P", self.pitch_pid.getP())
         SmartDashboard.putNumber("shooter I", self.pitch_pid.getI())
         SmartDashboard.putNumber("shooter D", self.pitch_pid.getD())
@@ -72,9 +72,9 @@ class Shooter(Subsystem):
         SmartDashboard.putNumber(
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
         )
-        p = SmartDashboard.getNumber("shooter P", 10)
+        p = SmartDashboard.getNumber("shooter P", 3.5)
         i = SmartDashboard.getNumber("shooter I", 0)
-        d = SmartDashboard.getNumber("shooter D", 0)
+        d = SmartDashboard.getNumber("shooter D", 0.05)
         self.pitch_pid.setP(p)
         self.pitch_pid.setI(i)
         self.pitch_pid.setD(d)
