@@ -14,9 +14,11 @@ class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
     
-
-
-    def get_distance_degree(self) -> Tuple[float, float] | None:
+    def periodic(self):
+        print(self.get_distance_degree())
+        
+        
+    def get_distance_degree(self) -> dict[float, float] | None:
         result = self.camera.getLatestResult()
         # note = {"dist": value, "angle": value}
         all_distances = []

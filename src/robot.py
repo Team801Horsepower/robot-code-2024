@@ -2,6 +2,7 @@
 
 import wpilib
 import wpimath
+import note_vision
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
@@ -23,6 +24,7 @@ from math import pi, sqrt, copysign
 import config
 
 
+
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
         # pylint: disable=attribute-defined-outside-init
@@ -33,6 +35,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drive = drive.Drive(self.scheduler)
         self.vision = vision.Vision(self.scheduler)
+        self.note_vision = note_vision.Vision(self.scheduler)
         self.gatherer = gatherer.Gatherer(1)
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
@@ -152,6 +155,8 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.initialize()
 
     def teleopPeriodic(self):
+        self.note_vision.run()  
+        return
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
             if abs(activation) < 0.01:
