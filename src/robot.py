@@ -269,7 +269,7 @@ class MyRobot(wpilib.TimedRobot):
             elif self.manip_controller.getAButton():
                 self.shooter.set_pitch(0.69)
             elif self.manip_controller.getXButton():
-                self.shooter.set_pitch(units.degreesToRadians(20))
+                self.shooter.set_pitch(0.4)
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
