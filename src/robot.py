@@ -24,7 +24,6 @@ from math import pi, sqrt, copysign
 import config
 
 
-
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
         # pylint: disable=attribute-defined-outside-init
@@ -155,8 +154,9 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.initialize()
 
     def teleopPeriodic(self):
-        self.note_vision.run()  
-        return
+        
+        
+
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
             if abs(activation) < 0.01:
