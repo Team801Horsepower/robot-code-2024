@@ -62,8 +62,6 @@ class Shooter(Subsystem):
 
         scheduler.registerSubsystem(self)
 
-        self.pitch_pid = PIDController(3.5, 0, 0)
-
     def periodic(self):
         SmartDashboard.putNumber(
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
