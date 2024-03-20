@@ -26,7 +26,8 @@ def read_cmds(path: str) -> List[str]:
         data = json.load(f)
 
     cmds = []
-    for cmd in data["commands"]:
-        cmds.append(cmd)
+
+    for wp in data["waypoints"]:
+        cmds.append(wp["c"])
 
     return cmds
