@@ -121,7 +121,7 @@ class MyRobot(wpilib.TimedRobot):
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s == "G":
-                    cmd = cmd.raceWith(Gather(self.gatherer, False))
+                    cmd = cmd.raceWith(Gather(self.gatherer, True))
                 elif cmd_s == "s" or cmd_s == "S":
                     keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
