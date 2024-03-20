@@ -320,9 +320,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        if self.driver_controller.getBButton():
-            self.shooter.stow()
-        # Values: 0.71 down, 0.04 up
+        self.note_vision()
 
     def teleopExit(self):
         self.aas_command.end(True)

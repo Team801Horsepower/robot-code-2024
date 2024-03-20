@@ -2,16 +2,14 @@ import math
 from operator import itemgetter
 from photonlibpy.photonCamera import PhotonCamera
 
-from wpimath.geometry import Transform3d, Rotation3d
-from wpimath import units
 from commands2 import Subsystem, CommandScheduler
-from typing import Tuple
+
 
 from config import rear_camera_angle_offset, second_camera_height
 
 
 class Vision(Subsystem):
-    def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v2"):
+    def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
         scheduler.registerSubsystem(self)
     
