@@ -15,15 +15,18 @@ class DriveToPose(Command):
         self,
         target: Pose2d,
         drive: Drive,
+        speed: float = config.auto_drive_speed,
+        passthrough: bool = False,
     ):
         self.target = target
         self.drive = drive
+        self.speed = speed
 
         self.x_pid = PIDController(5.0, 0, 0)
         self.y_pid = PIDController(5.0, 0, 0)
         self.theta_pid = PIDController(5.0, 0, 0.03)
 
-        self.pos_tolerance = 0.05
+        self.pos_tolerance = 0.05 if not passthrough else 0.5
         self.theta_tolerance = 0.1
 
         self.finished = False
@@ -56,8 +59,8 @@ class DriveToPose(Command):
 
         drive_vel = Translation2d(x_speed, y_speed)
         norm = drive_vel.norm()
-        if norm > config.auto_drive_speed:
-            drive_vel *= config.auto_drive_speed / norm
+        if norm > self.speed:
+            drive_vel *= self.speed / norm
         if abs(omega) > config.auto_turn_speed:
             omega *= config.auto_turn_speed / abs(omega)
 

@@ -110,11 +110,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drive.odometry.reset(pose_list[0][0])
 
-        for pose, pitch in pose_list:
-            dtp = DriveToPose(
-                pose,
-                self.drive,
-            )
+        for pose, pitch, speed, passthrough in pose_list:
+            dtp = DriveToPose(pose, self.drive, passthrough=passthrough, speed=speed)
             new_cmds.append((dtp, AimAtPitch(self.shooter, pitch)))
 
         for (cmd, aap), loc_cmds in zip(new_cmds, cmd_list):
