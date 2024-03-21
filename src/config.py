@@ -30,8 +30,8 @@ turn_gear_ratio = 150.0 / 7.0
 # wheel_diameter = units.inchesToMeters(4.5)
 wheel_diameter = units.inchesToMeters(3.965)
 
-drive_speed = 4
-turn_speed = 4
+drive_speed = 6
+turn_speed = 6
 auto_drive_speed = 1.8
 auto_turn_speed = 3
 
