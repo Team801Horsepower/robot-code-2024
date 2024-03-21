@@ -20,6 +20,7 @@ class ContinuousAimAtSpeaker(Command):
         self.vision = vision
 
         self.yaw_pid = PIDController(4.6, 0, 0)
+        self.yaw_power = 0
 
         self.atag_pos = None
 
@@ -64,9 +65,12 @@ class ContinuousAimAtSpeaker(Command):
         while cur_rot - target_yaw > pi:
             target_yaw += 2 * pi
 
-        yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
-        drive_input = Transform2d(0, 0, yaw_power)
+        self.yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
+        drive_input = Transform2d(0, 0, self.yaw_power)
         self.drive.drive(drive_input)
+
+    def is_ready(self):
+        return abs(self.yaw_power) < 0.1
 
     def isFinished(self):
         return False
