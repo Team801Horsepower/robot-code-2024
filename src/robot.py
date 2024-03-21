@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -38,6 +38,7 @@ class MyRobot(wpilib.TimedRobot):
         self.feeder = feeder.Feeder(13)
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
+        self.led = led.Led(0)
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
@@ -56,6 +57,7 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("shooter pitch", -1)
         SmartDashboard.putNumber("shooter abs enc", -1)
         SmartDashboard.putNumber("shooter abs enc abs", -1)
+        SmartDashboard.putNumber("color value", -1)
 
         self.auto_chooser = SendableChooser()
         self.auto_chooser.setDefaultOption("4 note", 0)
@@ -332,13 +334,22 @@ class MyRobot(wpilib.TimedRobot):
                 )
             )
 
+        if (
+            self.shooter.pitch_ready()
+            and self.aas_command.is_ready()
+            and self.aas_command.should_run
+        ):
+            self.led.blue_solid()
+        elif self.gatherer.note_present():
+            self.led.blue_blink()
+        else:
+            self.led.idle()
+
     def testInit(self):
         pass
 
     def testPeriodic(self):
-        if self.driver_controller.getBButton():
-            self.shooter.stow()
-        # Values: 0.71 down, 0.04 up
+        pass
 
     def teleopExit(self):
         self.aas_command.end(True)

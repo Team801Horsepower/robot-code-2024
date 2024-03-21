@@ -70,7 +70,7 @@ class Shooter(Subsystem):
             self.stop_pitch()
 
     def get_pitch(self) -> float:
-        angle_offset = 0.22200
+        angle_offset = 0.565696
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
         while angle > pi:
@@ -90,6 +90,9 @@ class Shooter(Subsystem):
         power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
+        while link_pivot_pos > 0.8:
+            link_pivot_pos -= 1
+        # SmartDashboard.putNumber("link pivot pos", link_pivot_pos)
 
         if link_pivot_pos > 0.71:
             power = max(0, power)
