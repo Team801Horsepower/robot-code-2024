@@ -56,6 +56,11 @@ class ContinuousAimAtSpeaker(Command):
         if not self.should_run:
             return
 
+        if self.atag_pos is None:
+            self.drive.drive(Transform2d())
+            return
+
+
         target_yaw = (
             (self.atag_pos - self.drive.odometry.pose().translation()).angle().radians()
         )
