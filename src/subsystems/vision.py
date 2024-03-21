@@ -44,16 +44,19 @@ class Vision(Subsystem):
         # print(result.getTargets())
         pass
 
-    def cur_speaker_atag(self) -> Tuple[float, float] | None:
+    def cur_atag(self, red_id: int, blue_id: int) -> Tuple[float, float] | None:
+        atag_id = red_id if config.is_red() else blue_id
         result = self.camera.getLatestResult()
         for target in result.getTargets():
-            # TODO: Use is_red check rather than allowing both
-            if target.fiducialId in [4, 7]:
+            if target.fiducialId == atag_id:
                 return (
                     units.degreesToRadians(target.getPitch()),
                     units.degreesToRadians(target.getYaw()),
                 )
         return None
+
+    def cur_speaker_atag(self) -> Tuple[float, float] | None:
+        return self.cur_atag(4, 7)
 
     def speaker_dist(self) -> float:
         sp_atag = self.cur_speaker_atag()
