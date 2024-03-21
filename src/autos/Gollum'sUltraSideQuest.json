@@ -8,7 +8,7 @@
             "p": 51.5,
             "c": "s",
             "v": 1.8,
-            "passthrough": 0
+            "passthrough": false
         }
     ]
 }
