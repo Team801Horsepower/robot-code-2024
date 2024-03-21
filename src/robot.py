@@ -176,12 +176,6 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getRightStickButtonPressed():
             self.special_turning ^= True
             
-        if self.gatherer.note_present():
-            self.led.set_leds(0.57)
-            
-        if vision.speaker_dist == -1:
-            self.led.set_leds(-0.05)            
-
         cur_angle = self.drive.odometry.pose().rotation().radians()
 
         if self.special_turning and self.field_oriented_drive:
@@ -323,7 +317,9 @@ class MyRobot(wpilib.TimedRobot):
         should_rumble = self.gatherer.spin_gatherer(gather_power)
         rumble = 1.0 if should_rumble else 0
         if rumble == 1:
-            self.led.set_leds(-0.95)
+            self.led.blue_blink()
+        else:
+            self.led.off()
         self.driver_controller.setRumble(
             wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
         )
@@ -342,15 +338,19 @@ class MyRobot(wpilib.TimedRobot):
                 )
             )
 
-        self.led.stop_blink()
-
     def testInit(self):
-        self.cycle_num = .99
-        self.led.set_leds(self.cycle_num)
-
-    def testPeriodic(self):
+        # self.cycle_num = .99
+        # self.led.set_leds(self.cycle_num)
         pass
 
+    def testPeriodic(self):
+        if self.driver_controller.getBButtonPressed():
+            self.led.blue_blink()
+        if self.driver_controller.getAButtonPressed():
+            self.led.blue_solid()
+        if self.driver_controller.getXButtonPressed():
+            self.led.off()
+        
     def teleopExit(self):
         pass
 
