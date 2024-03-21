@@ -66,6 +66,8 @@ class Shooter(Subsystem):
         SmartDashboard.putNumber(
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
         )
+        if self.hold_pitch:
+            self.stop_pitch()
 
     def get_pitch(self) -> float:
         angle_offset = 0.22200

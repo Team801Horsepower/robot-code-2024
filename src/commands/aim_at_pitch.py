@@ -20,4 +20,5 @@ class AimAtPitch(Command):
         return self.shooter.pitch_ready()
 
     def end(self, interrupted: bool):
+        self.shooter.hold_pitch = False
         self.shooter.stop_pitch()

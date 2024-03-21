@@ -7,6 +7,7 @@ from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
+from commands.auto_auto_aim import AutoAutoAim
 from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
@@ -57,10 +58,12 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("shooter abs enc abs", -1)
 
         self.auto_chooser = SendableChooser()
-        self.auto_chooser.addOption("4 note", 0)
+        self.auto_chooser.setDefaultOption("4 note", 0)
         self.auto_chooser.addOption("1 note", 1)
-        self.auto_chooser.setDefaultOption("amp side 1 note", 2)
+        self.auto_chooser.addOption("amp side 1 note", 2)
         self.auto_chooser.addOption("legacy 4 note", 3)
+        self.auto_chooser.addOption("blue only note theft", 4)
+        self.auto_chooser.addOption("far note", 5)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -86,12 +89,16 @@ class MyRobot(wpilib.TimedRobot):
             "Gollum'sSideQuest.json",
             "Gollum'sUltraSideQuest.json",
             "Gollum'sEvenBetterQuest.json",
+            "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
+            "Gollum'sRedstensiveQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
             "Gollum'sBlueSideQuest.json",
             "Gollum'sUltraBlueSideQuest.json",
             "Gollum'sEvenRedderQuest.json",
+            "PettyTheft.json",
+            "Gollum'sExtensiveQuest.json",
         ]
         if is_red:
             auto_name = red_autos[auto_i]
@@ -106,11 +113,8 @@ class MyRobot(wpilib.TimedRobot):
 
         self.drive.odometry.reset(pose_list[0][0])
 
-        for pose, pitch in pose_list:
-            dtp = DriveToPose(
-                pose,
-                self.drive,
-            )
+        for pose, pitch, speed, passthrough in pose_list:
+            dtp = DriveToPose(pose, self.drive, passthrough=passthrough, speed=speed)
             new_cmds.append((dtp, AimAtPitch(self.shooter, pitch)))
 
         for (cmd, aap), loc_cmds in zip(new_cmds, cmd_list):
@@ -120,9 +124,9 @@ class MyRobot(wpilib.TimedRobot):
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s == "G":
-                    cmd = cmd.raceWith(Gather(self.gatherer, False))
+                    cmd = cmd.raceWith(Gather(self.gatherer, True))
                 elif cmd_s == "s" or cmd_s == "S":
-                    keep_spin = cmd_s == "S"
+                    # keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
 
                     # aim_rotation = (speaker_pos - target_pose.translation()).angle()
@@ -133,8 +137,12 @@ class MyRobot(wpilib.TimedRobot):
                     #     aim_dtp.deadlineWith(Gather(self.gatherer))
                     # ).andThen(Shoot(self.shooter, self.gatherer, keep_spin))
 
-                    # This shoots without auto aiming
-                    cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, keep_spin))
+                    # Vision-based auto aim
+                    if cmd_s == "S":
+                        cmd = cmd.andThen(
+                            AutoAutoAim(self.drive, self.shooter, self.vision)
+                        )
+                    cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
             new_new_cmds.append(cmd)
 
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))

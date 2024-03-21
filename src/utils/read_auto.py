@@ -7,7 +7,8 @@ from typing import List, Tuple
 
 def read_auto(path: str) -> List[Tuple[Pose2d, float]]:
     with open(path) as f:
-        data = json.load(f)
+        contents = ''.join(line.split('#')[0] + ('\n' if '#' in line else '') for line in f.readlines())
+        data = json.loads(contents)
 
     waypoints = []
     for waypoint in data["waypoints"]:
@@ -16,17 +17,21 @@ def read_auto(path: str) -> List[Tuple[Pose2d, float]]:
             waypoint["x"], waypoint["y"], units.degreesToRadians(waypoint["r"])
         )
         pitch = units.degreesToRadians(waypoint["p"])
-        waypoints.append((pose, pitch))
+        speed = waypoint["v"]
+        passthrough = waypoint["passthrough"]
+        waypoints.append((pose, pitch, speed, passthrough))
 
     return waypoints
 
 
 def read_cmds(path: str) -> List[str]:
     with open(path) as f:
-        data = json.load(f)
+        contents = ''.join(line.split('#')[0] + ('\n' if '#' in line else '') for line in f.readlines())
+        data = json.loads(contents)
 
     cmds = []
-    for cmd in data["commands"]:
-        cmds.append(cmd)
+
+    for wp in data["waypoints"]:
+        cmds.append(wp["c"])
 
     return cmds

@@ -30,8 +30,8 @@ turn_gear_ratio = 150.0 / 7.0
 # wheel_diameter = units.inchesToMeters(4.5)
 wheel_diameter = units.inchesToMeters(3.965)
 
-drive_speed = 4
-turn_speed = 4
+drive_speed = 6
+turn_speed = 6
 auto_drive_speed = 1.8
 auto_turn_speed = 3
 
@@ -99,5 +99,5 @@ amp_shooter_pitch = 0.8223598776
 link_pivot_setpoint_down = 0.71
 link_pivot_setpoint_up = 0.04
 
-amp_abs_enc_up = 0.948 
+amp_abs_enc_up = 0.948
 amp_abs_enc_down = 0.429
