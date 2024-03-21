@@ -354,6 +354,7 @@ class MyRobot(wpilib.TimedRobot):
             self.led.blue_solid()
         if self.driver_controller.getXButtonPressed():
             self.led.off()
+        print(self.shooter.amp_scorer.flipper_encoder.get())
         
     def teleopExit(self):
         pass
