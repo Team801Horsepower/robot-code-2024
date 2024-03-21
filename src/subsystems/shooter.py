@@ -70,7 +70,7 @@ class Shooter(Subsystem):
             self.stop_pitch()
 
     def get_pitch(self) -> float:
-        angle_offset = 0.22200
+        angle_offset = 0.565696
         angle = self.pitch_encoder.get() * 2.0 * pi - angle_offset
 
         while angle > pi:
