@@ -13,7 +13,7 @@ from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
-from wpilib import DriverStation, SmartDashboard, SendableChooser
+from wpilib import SmartDashboard, SendableChooser
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
 from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
