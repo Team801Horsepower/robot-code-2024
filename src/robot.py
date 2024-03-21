@@ -7,6 +7,7 @@ from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
+from commands.auto_auto_aim import AutoAutoAim
 from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
@@ -123,7 +124,7 @@ class MyRobot(wpilib.TimedRobot):
                 elif cmd_s == "G":
                     cmd = cmd.raceWith(Gather(self.gatherer, True))
                 elif cmd_s == "s" or cmd_s == "S":
-                    keep_spin = cmd_s == "S"
+                    # keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
 
                     # aim_rotation = (speaker_pos - target_pose.translation()).angle()
@@ -134,8 +135,12 @@ class MyRobot(wpilib.TimedRobot):
                     #     aim_dtp.deadlineWith(Gather(self.gatherer))
                     # ).andThen(Shoot(self.shooter, self.gatherer, keep_spin))
 
-                    # This shoots without auto aiming
-                    cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, keep_spin))
+                    # Vision-based auto aim
+                    if cmd_s == "S":
+                        cmd = cmd.andThen(
+                            AutoAutoAim(self.drive, self.shooter, self.vision)
+                        )
+                    cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
             new_new_cmds.append(cmd)
 
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
