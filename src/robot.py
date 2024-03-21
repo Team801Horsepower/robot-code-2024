@@ -343,19 +343,11 @@ class MyRobot(wpilib.TimedRobot):
 
 
     def testInit(self):
-        # self.cycle_num = .99
-        # self.led.set_leds(self.cycle_num)
         pass
 
     def testPeriodic(self):
-        if self.driver_controller.getBButtonPressed():
-            self.led.blue_blink()
-        if self.driver_controller.getAButtonPressed():
-            self.led.blue_solid()
-        if self.driver_controller.getXButtonPressed():
-            self.led.idle()
-        print(self.shooter.amp_scorer.flipper_encoder.get())
-        
+        pass
+
     def teleopExit(self):
         pass
 
