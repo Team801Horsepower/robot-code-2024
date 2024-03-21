@@ -316,10 +316,6 @@ class MyRobot(wpilib.TimedRobot):
         )
         should_rumble = self.gatherer.spin_gatherer(gather_power)
         rumble = 1.0 if should_rumble else 0
-        if rumble == 1:
-            self.led.blue_blink()
-        else:
-            self.led.off()
         self.driver_controller.setRumble(
             wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
         )
@@ -337,6 +333,14 @@ class MyRobot(wpilib.TimedRobot):
                     self.manip_controller.getRightTriggerAxis(),
                 )
             )
+
+        if self.shooter.pitch_ready() and self.aas_command.is_ready() and self.aas_command.should_run:
+            self.led.blue_solid()
+        elif self.gatherer.note_present():
+            self.led.blue_blink()
+        else:
+            self.led.off()
+
 
     def testInit(self):
         # self.cycle_num = .99
