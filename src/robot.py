@@ -352,7 +352,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def teleopExit(self):
-        pass
+        self.aas_command.end(True)
 
 
 if __name__ == "__main__":
