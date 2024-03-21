@@ -175,7 +175,7 @@ class MyRobot(wpilib.TimedRobot):
 
         if self.driver_controller.getRightStickButtonPressed():
             self.special_turning ^= True
-            
+
         cur_angle = self.drive.odometry.pose().rotation().radians()
 
         if self.special_turning and self.field_oriented_drive:
@@ -334,13 +334,16 @@ class MyRobot(wpilib.TimedRobot):
                 )
             )
 
-        if self.shooter.pitch_ready() and self.aas_command.is_ready() and self.aas_command.should_run:
+        if (
+            self.shooter.pitch_ready()
+            and self.aas_command.is_ready()
+            and self.aas_command.should_run
+        ):
             self.led.blue_solid()
         elif self.gatherer.note_present():
             self.led.blue_blink()
         else:
             self.led.idle()
-
 
     def testInit(self):
         pass

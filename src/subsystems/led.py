@@ -1,5 +1,6 @@
 from wpilib import Spark
 
+
 class Led:
     def __init__(self, led_id: int):
         self.led_driver = Spark(led_id)
