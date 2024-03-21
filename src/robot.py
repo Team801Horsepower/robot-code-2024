@@ -81,7 +81,6 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
-        is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
         autos_dir = "/home/lvuser/py/autos/"
         auto_i = self.auto_chooser.getSelected()
         red_autos = [
@@ -100,7 +99,7 @@ class MyRobot(wpilib.TimedRobot):
             "PettyTheft.json",
             "Gollum'sExtensiveQuest.json",
         ]
-        if is_red:
+        if config.is_red():
             auto_name = red_autos[auto_i]
         else:
             auto_name = blue_autos[auto_i]
@@ -235,9 +234,11 @@ class MyRobot(wpilib.TimedRobot):
             self.drive.odometry.reset()
             self.yaw_setpoint = 0
 
-        if self.driver_controller.getRightBumper():
+        should_shoot = self.driver_controller.getRightBumper()
+        if should_shoot:
+            self.shooter.set_feed_override(False)
             self.shooter.run_shooter(config.flywheel_setpoint)
-        else:
+        elif not self.shooter.feed_override:
             self.shooter.run_shooter(0)
 
         dpad = self.manip_controller.getPOV()
@@ -259,17 +260,23 @@ class MyRobot(wpilib.TimedRobot):
         if self.manip_controller.getStartButton():
             self.shooter.amp_scorer.is_up = True
             self.shooter.set_pitch(config.amp_shooter_pitch)
+            self.shooter.set_feed_override(False)
         else:
             if self.manip_controller.getBackButton():
                 self.shooter.amp_scorer.is_up = False
 
+            prespin = not should_shoot and not self.shooter.amp_scorer.is_up
+
             if abs(pitch_stick) > 0.01:
                 self.shooter.manual_pitch(pitch_stick * 0.5)
                 manip_rumble = -1
+                prespin = False
             elif dpad in [315, 0, 45]:
                 self.shooter.pitch_up()
+                prespin = False
             elif dpad in [135, 180, 225]:
                 self.shooter.pitch_down()
+                prespin = False
             elif self.manip_controller.getYButton():
                 self.shooter.set_pitch(0.9)
             elif self.manip_controller.getBButton():
@@ -278,13 +285,19 @@ class MyRobot(wpilib.TimedRobot):
                 self.shooter.set_pitch(0.69)
             elif self.manip_controller.getXButton():
                 self.shooter.set_pitch(0.4)
+                prespin = False
             elif self.manip_controller.getLeftBumper():
                 pitch = self.vision.vision_pitch()
                 if pitch is not None:
                     self.shooter.set_pitch(pitch)
             else:
                 self.shooter.stop_pitch()
+                prespin = False
                 manip_rumble = -1
+
+            self.shooter.set_feed_override(prespin)
+            if prespin:
+                self.shooter.run_shooter(config.flywheel_setpoint)
 
         if self.shooter.pitch_ready() and manip_rumble != -1:
             manip_rumble = 1.0
