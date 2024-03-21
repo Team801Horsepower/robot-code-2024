@@ -10,6 +10,7 @@ from subsystems import (
     climber,
     led,
     note_vision,
+    eeby_client,
 )
 from commands.drive_to_pose import DriveToPose
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -49,6 +50,7 @@ class Gollum(wpilib.TimedRobot):
         self.climber = climber.Climber(6, 15)
         self.led = led.Led(0)
         self.note_vision = note_vision.NoteVision()
+        self.eeby_client = eeby_client.EebyClient("http://rearcamera.local:8000/deeby")
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
