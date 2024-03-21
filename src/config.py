@@ -1,6 +1,11 @@
 import wpimath
 from wpimath import units
 from wpimath.geometry import Translation2d
+from wpilib import DriverStation
+
+
+def is_red() -> bool:
+    return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
 
 # lengths: meters
@@ -77,8 +82,9 @@ camera_left_offset = units.inchesToMeters(0)
 # speaker_height = units.inchesToMeters(90)
 speaker_height = units.inchesToMeters(100)
 
-# Height of the center of a speaker april tag
+# Height of the center of an april tag
 speaker_tag_height = units.inchesToMeters(57.125)
+amp_tag_height = units.inchesToMeters(48.125 + 5.25)
 
 shooter_lookup_table = [  # position to angle; entries every three feet, starting from 6
     units.degreesToRadians(48),
@@ -94,10 +100,10 @@ shooter_lookup_table = [  # position to angle; entries every three feet, startin
 ]
 
 amp_flipper_up_value = 5.28
-amp_shooter_pitch = 0.8223598776
+amp_shooter_pitch = units.degreesToRadians(43.46)
 
 link_pivot_setpoint_down = 0.71
 link_pivot_setpoint_up = 0.04
 
-amp_abs_enc_up = 0.948 
+amp_abs_enc_up = 0.9848
 amp_abs_enc_down = 0.429

@@ -5,6 +5,7 @@ import wpimath
 from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
+from commands.aim_at_amp import StrafeToAmp
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from wpilib.event import EventLoop
@@ -12,7 +13,7 @@ from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
-from wpilib import DriverStation, SmartDashboard, SendableChooser
+from wpilib import SmartDashboard, SendableChooser
 from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
 from wpimath import units
 from commands2 import CommandScheduler, Command, SequentialCommandGroup
@@ -50,7 +51,7 @@ class MyRobot(wpilib.TimedRobot):
             swerve.turn_motor.set(0)
 
         self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
-
+        self.aaa_command = StrafeToAmp(self.drive, self.vision)
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
         SmartDashboard.putNumber("shooter abs enc", -1)
@@ -78,7 +79,6 @@ class MyRobot(wpilib.TimedRobot):
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
-        is_red = DriverStation.getAlliance() == DriverStation.Alliance.kRed
         autos_dir = "/home/lvuser/py/autos/"
         auto_i = self.auto_chooser.getSelected()
         red_autos = [
@@ -93,7 +93,7 @@ class MyRobot(wpilib.TimedRobot):
             "Gollum'sUltraBlueSideQuest.json",
             "Gollum'sEvenRedderQuest.json",
         ]
-        if is_red:
+        if config.is_red():
             auto_name = red_autos[auto_i]
         else:
             auto_name = blue_autos[auto_i]
@@ -207,7 +207,10 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.should_run = self.driver_controller.getLeftBumper()
         self.aas_command.execute()
 
-        if not self.aas_command.should_run:
+        self.aaa_command.should_run = self.driver_controller.getPOV() == 90
+        self.aaa_command.execute()
+
+        if not self.aas_command.should_run and not self.aaa_command.should_run:
             drive_input = wpimath.geometry.Transform2d(
                 config.drive_speed
                 * input_curve(deadzone(-self.driver_controller.getLeftY())),

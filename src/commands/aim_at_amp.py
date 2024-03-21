@@ -14,27 +14,33 @@ from subsystems.shooter import Shooter
 import config
 
 
-class ContinuousAimAtSpeaker(Command):
+class StrafeToAmp(Command):
     def __init__(self, drive: Drive, vision: Vision):
         self.drive = drive
         self.vision = vision
 
+        self.strafe_pid = PIDController(2.2, 0, 0)
         self.yaw_pid = PIDController(4.6, 0, 0)
 
         self.atag_pos = None
 
         self.should_run = False
 
+        if config.is_red():
+            self.side_yaw = 3 * pi / 2
+        else:
+            self.side_yaw = pi / 2
+
     def initialize(self):
         pass
 
     def execute(self):
         cur_rot = self.drive.odometry.rotation().radians()
-        sp_atag = self.vision.cur_speaker_atag()
-        if sp_atag is not None:
-            atag_pitch, atag_yaw = sp_atag
+        amp_atag = self.vision.cur_amp_atag()
+        if amp_atag is not None:
+            atag_pitch, atag_yaw = amp_atag
 
-            cam_dist = (config.speaker_tag_height - config.camera_height) / tan(
+            cam_dist = (config.amp_tag_height - config.camera_height) / tan(
                 atag_pitch + config.camera_angle
             )
             robot_dist = cam_dist + config.camera_center_distance
@@ -46,26 +52,24 @@ class ContinuousAimAtSpeaker(Command):
                 robot_dist, Rotation2d(cur_rot + robot_yaw_diff)
             )
 
-            SmartDashboard.putNumber(
-                "robot yaw diff", units.radiansToDegrees(robot_yaw_diff)
-            )
-        else:
-            SmartDashboard.putNumber("robot yaw diff", -1)
-
-        if not self.should_run or self.atag_pos is None:
+        if not self.should_run:
             return
 
-        target_yaw = (
-            (self.atag_pos - self.drive.odometry.pose().translation()).angle().radians()
-        )
+        if self.atag_pos is not None:
+            strafe_power = self.strafe_pid.calculate(
+                self.drive.odometry.pose().x, self.atag_pos.x
+            )
+        else:
+            strafe_power = 0
 
+        target_yaw = self.side_yaw
         while target_yaw - cur_rot > pi:
             target_yaw -= 2 * pi
-        while cur_rot - target_yaw > pi:
+        while target_yaw - cur_rot < -pi:
             target_yaw += 2 * pi
 
         yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
-        drive_input = Transform2d(0, 0, yaw_power)
+        drive_input = Transform2d(0, strafe_power, yaw_power)
         self.drive.drive(drive_input)
 
     def isFinished(self):

@@ -55,6 +55,16 @@ class Vision(Subsystem):
                 )
         return None
 
+    def cur_amp_atag(self) -> Tuple[float, float] | None:
+        result = self.camera.getLatestResult()
+        for target in result.getTargets():
+            if target.fiducialId in [5, 6]:  # red, blue
+                return (
+                    units.degreesToRadians(target.getPitch()),
+                    units.degreesToRadians(target.getYaw()),
+                )
+        return None
+
     def speaker_dist(self) -> float:
         sp_atag = self.cur_speaker_atag()
         if sp_atag is None:
