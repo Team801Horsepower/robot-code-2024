@@ -339,7 +339,7 @@ class MyRobot(wpilib.TimedRobot):
         elif self.gatherer.note_present():
             self.led.blue_blink()
         else:
-            self.led.off()
+            self.led.idle()
 
 
     def testInit(self):
@@ -353,7 +353,7 @@ class MyRobot(wpilib.TimedRobot):
         if self.driver_controller.getAButtonPressed():
             self.led.blue_solid()
         if self.driver_controller.getXButtonPressed():
-            self.led.off()
+            self.led.idle()
         print(self.shooter.amp_scorer.flipper_encoder.get())
         
     def teleopExit(self):
