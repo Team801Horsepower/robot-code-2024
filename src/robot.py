@@ -58,12 +58,12 @@ class MyRobot(wpilib.TimedRobot):
         SmartDashboard.putNumber("shooter abs enc abs", -1)
 
         self.auto_chooser = SendableChooser()
-        self.auto_chooser.addOption("4 note", 0)
+        self.auto_chooser.setDefaultOption("4 note", 0)
         self.auto_chooser.addOption("1 note", 1)
-        self.auto_chooser.setDefaultOption("amp side 1 note", 2)
+        self.auto_chooser.addOption("amp side 1 note", 2)
         self.auto_chooser.addOption("legacy 4 note", 3)
         self.auto_chooser.addOption("blue only note theft", 4)
-        self.auto_chooser.addOption("blue only far note", 5)
+        self.auto_chooser.addOption("far note", 5)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -89,6 +89,8 @@ class MyRobot(wpilib.TimedRobot):
             "Gollum'sSideQuest.json",
             "Gollum'sUltraSideQuest.json",
             "Gollum'sEvenBetterQuest.json",
+            "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
+            "Gollum'sRedstensiveQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
