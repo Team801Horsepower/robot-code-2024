@@ -26,7 +26,8 @@ def read_auto(path: str) -> List[Tuple[Pose2d, float]]:
 
 def read_cmds(path: str) -> List[str]:
     with open(path) as f:
-        data = json.load(f)
+        contents = ''.join(line.split('#')[0] + ('\n' if '#' in line else '') for line in f.readlines())
+        data = json.loads(contents)
 
     cmds = []
 
