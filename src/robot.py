@@ -2,8 +2,7 @@
 
 import wpilib
 import wpimath
-import note_vision
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, note_vision
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -320,7 +319,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        self.note_vision()
+        pass
 
     def teleopExit(self):
         self.aas_command.end(True)
