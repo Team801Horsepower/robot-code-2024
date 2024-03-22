@@ -161,6 +161,7 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.initialize()
 
     def teleopPeriodic(self):
+        SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
             if abs(activation) < 0.01:
