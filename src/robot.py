@@ -350,6 +350,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
+        pass
         # SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
 
     def teleopExit(self):
