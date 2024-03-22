@@ -18,7 +18,7 @@ class AmpScorer:
 
         self.is_up = False
 
-        self.flip_power = 0.5
+        self.flip_power = 1
 
     def set_flip_power(self, power: float):
         self.flipper.set(power)
@@ -31,15 +31,13 @@ class AmpScorer:
 
     def flip_down(self):
         if self.flipper_encoder.get() < config.amp_abs_enc_down:
-            self.flipper.set(-self.flip_power)
+            self.flipper.set(-0.5 * self.flip_power)
         else:
             self.flipper.set(0)
 
     def flip_up(self):
-        power = 0.5 * (
-            config.amp_abs_enc_up - self.flipper_encoder.getAbsolutePosition()
-        )
-        self.flipper.set(min(self.flip_power, max(0, power)))
+        power = 3 * (self.flipper_encoder.getAbsolutePosition() - config.amp_abs_enc_up)
+        self.flipper.set(max(min(power, self.flip_power), 0))
 
     def set_scorer(self, power: float):
         self.scorer.set(power)
