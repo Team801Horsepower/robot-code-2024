@@ -104,5 +104,5 @@ amp_shooter_pitch = 0.8223598776
 link_pivot_setpoint_down = 0.71
 link_pivot_setpoint_up = 0.04
 
-amp_abs_enc_up = 0.296
-amp_abs_enc_down = 0.72
+amp_abs_enc_up = 0.135
+amp_abs_enc_down = 0.55
