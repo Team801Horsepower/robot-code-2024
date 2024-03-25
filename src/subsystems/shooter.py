@@ -132,12 +132,12 @@ class Shooter(Subsystem):
     def feed_power(self) -> float:
         # return 1.0 if self.should_feed else 0
         if self.should_feed and not self.feed_override:
-            # if self.amp_scorer.is_up:
-            #     return 0.3
-            # else:
-            #     return 1.0
-            return 1
-        return 0
+            if self.amp_scorer.is_up:
+                return 0.3
+            else:
+                return 1.0
+        else:
+            return 0
 
     def set_flywheels(self, speeds: List[float]):
         self.flywheel_targets = speeds
