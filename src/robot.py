@@ -24,7 +24,7 @@ from math import pi, sqrt, copysign
 import config
 
 
-class MyRobot(wpilib.TimedRobot):
+class Gollum(wpilib.TimedRobot):
     def robotInit(self):
         # pylint: disable=attribute-defined-outside-init
         self.driver_controller = wpilib.XboxController(0)
@@ -359,4 +359,4 @@ class MyRobot(wpilib.TimedRobot):
 
 
 if __name__ == "__main__":
-    wpilib.run(MyRobot)
+    wpilib.run(Gollum)
