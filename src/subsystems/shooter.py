@@ -94,6 +94,9 @@ class Shooter(Subsystem):
             link_pivot_pos -= 1
         # SmartDashboard.putNumber("link pivot pos", link_pivot_pos)
 
+        if power < 0:
+            power *= 1.5
+
         if link_pivot_pos > 0.71:
             power = max(0, power)
         if link_pivot_pos < 0.04:

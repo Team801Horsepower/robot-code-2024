@@ -350,8 +350,9 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        pass
-        # SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
+        SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
+        SmartDashboard.putNumber("swerve", self.drive.chassis.swerves[0].turn_abs_encoder.getAbsolutePosition())
+
 
     def teleopExit(self):
         self.aas_command.end(True)

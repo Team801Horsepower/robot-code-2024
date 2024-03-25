@@ -44,7 +44,7 @@ auto_turn_speed = 3
 # All absolute encoder values are measured with the swerve wheel facing
 # RADIALLY OUTWARD with the gear of the wheel on the LEFT SIDE of the wheel.
 swerves = [
-    (2, 3, 0.7892499),
+    (2, 3, 0.985),
     (8, 9, 0.5298459),
     (18, 19, 0.0104102),
     (10, 11, 0.0611273),
@@ -104,5 +104,5 @@ amp_shooter_pitch = 0.8223598776
 link_pivot_setpoint_down = 0.71
 link_pivot_setpoint_up = 0.04
 
-amp_abs_enc_up = 0.296
-amp_abs_enc_down = 0.72
+amp_abs_enc_up = 0.125
+amp_abs_enc_down = 0.55
