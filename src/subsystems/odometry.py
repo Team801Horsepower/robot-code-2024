@@ -38,7 +38,7 @@ class Odometry:
         for swerve in chassis.swerves:
             # Grab previous values and update immediately to prevent any loss of delta
             prev_drive = swerve.prev_drive_enc
-            prev_turn = swerve.prev_rotation
+            # prev_turn = swerve.prev_rotation
             swerve.update_prevs()
 
             delta = Translation2d(

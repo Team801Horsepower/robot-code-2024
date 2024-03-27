@@ -119,7 +119,7 @@ class Gollum(wpilib.TimedRobot):
             new_cmds.append((dtp, AimAtPitch(self.shooter, pitch)))
 
         for (cmd, aap), loc_cmds in zip(new_cmds, cmd_list):
-            target_pose = cmd.target
+            # target_pose = cmd.target
             cmd = cmd.alongWith(aap)
             for cmd_s in loc_cmds:
                 if cmd_s == "g":
@@ -246,7 +246,7 @@ class Gollum(wpilib.TimedRobot):
 
         dpad = self.manip_controller.getPOV()
         pitch_stick = -self.manip_controller.getLeftY()
-        speed = self.drive.chassis.chassis_speeds()
+        # speed = self.drive.chassis.chassis_speeds()
         # if sqrt(speed.vx**2 + speed.vy**2) < 1.0:
         #     if dpad in [315, 0, 45]:
         #         self.shooter.pitch_up()
@@ -350,9 +350,14 @@ class Gollum(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
-        SmartDashboard.putNumber("swerve", self.drive.chassis.swerves[0].turn_abs_encoder.getAbsolutePosition())
-
+        SmartDashboard.putNumber(
+            "amp abs enc val",
+            self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition(),
+        )
+        SmartDashboard.putNumber(
+            "swerve",
+            self.drive.chassis.swerves[0].turn_abs_encoder.getAbsolutePosition(),
+        )
 
     def teleopExit(self):
         self.aas_command.end(True)

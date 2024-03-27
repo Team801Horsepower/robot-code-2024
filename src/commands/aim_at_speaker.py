@@ -36,8 +36,7 @@ class AimAtSpeaker(Command):
             atag_pitch + config.camera_angle
         )
 
-        # target_yaw = atan2(config.camera_left_offset, cam_dist)
-        target_yaw = 0
+        target_yaw = atan2(config.camera_left_offset, cam_dist)
 
         yaw_power = self.yaw_pid.calculate(atag_yaw, target_yaw)
         drive_input = Transform2d(0, 0, yaw_power)
