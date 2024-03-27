@@ -11,9 +11,7 @@ if "%1" == "" (
     echo Running pylint linter...
     poetry run pylint src/ --disable=missing-docstring,invalid-name,missing-module-docstring
 ) else if "%1" == "deploy" (
-    cd src/
 	poetry run robotpy --main src/robot.py deploy --skip-tests --team 801
-    cd ..
 ) else if "%1" == "console" (
     poetry run netconsole 10.8.1.2
 ) else if "%1" == "shell" (
