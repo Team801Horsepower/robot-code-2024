@@ -26,12 +26,12 @@ class Converter:
             
         }
 
-        file_name = ""
-        l = 0
-        while self.path[l] != ".":
-            file_name += self.path[l]
-            l += 1
-        file_path = file_name + ".json"
+        # file_name = ""
+        # l = 0
+        # while self.path[l] != ".":
+        #     file_name += self.path[l]
+        #     l += 1
+        file_path = self.path.split('.')[0] + ".json"
 
         # Write data to JSON file
         with open(file_path, "w") as json_file:
