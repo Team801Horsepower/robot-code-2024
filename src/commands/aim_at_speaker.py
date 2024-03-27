@@ -1,6 +1,5 @@
 from wpimath.controller import PIDController
 from wpimath.geometry import Transform2d
-from wpimath import units
 from commands2 import Command
 
 from math import atan2, tan

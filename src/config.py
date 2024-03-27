@@ -1,4 +1,3 @@
-import wpimath
 from wpimath import units
 from wpimath.geometry import Translation2d
 from wpilib import DriverStation

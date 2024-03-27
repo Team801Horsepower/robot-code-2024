@@ -1,7 +1,6 @@
 from commands2 import Command
 from subsystems.gatherer import Gatherer
 
-from typing import Callable
 
 
 class Gather(Command):

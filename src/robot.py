@@ -2,24 +2,22 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
+from subsystems import drive, vision, gatherer, feeder, shooter, climber, led
 from commands.drive_to_pose import DriveToPose
-from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
-from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
 from wpilib import SmartDashboard, SendableChooser
-from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
+from wpimath.geometry import Translation2d
 from wpimath import units
-from commands2 import CommandScheduler, Command, SequentialCommandGroup
+from commands2 import CommandScheduler, Command
 from functools import reduce
 
-from math import pi, sqrt, copysign
+from math import pi, copysign
 
 import config
 

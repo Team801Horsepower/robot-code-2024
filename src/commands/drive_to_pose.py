@@ -2,7 +2,6 @@ from commands2 import Command
 from wpimath.geometry import Pose2d, Transform2d, Rotation2d, Translation2d
 from wpimath.controller import PIDController
 from math import pi, sqrt
-from typing import Callable
 import time
 
 from subsystems.drive import Drive
