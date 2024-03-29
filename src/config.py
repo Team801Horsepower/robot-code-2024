@@ -56,9 +56,9 @@ swerve_ids = [0, 1, 2, 3]
 # note_proximity_threshold = 1600
 
 note_proximity_threshold = 600
-flywheel_speed = 4200
+flywheel_speed = 5500
 # Weird PID offset thing (we haven't figured out why we have to do this)
-flywheel_setpoint = flywheel_speed + 700
+flywheel_setpoint = flywheel_speed + 950
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)
