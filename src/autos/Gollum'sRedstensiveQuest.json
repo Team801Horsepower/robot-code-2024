@@ -8,7 +8,7 @@
             "p": 52,
             "c": "s",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 4.5,
@@ -17,7 +17,7 @@
             "p": 20,
             "c": "",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 8.284519366083364,
@@ -26,7 +26,7 @@
             "p": 20,
             "c": "G",
             "v": 8.01,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 4.5,
@@ -35,7 +35,7 @@
             "p": 20,
             "c": "g",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 1.4914308225480144,
@@ -44,7 +44,7 @@
             "p": 30,
             "c": "Sg",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 4.5,
@@ -53,7 +53,7 @@
             "p": 20,
             "c": "",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 8.29917188634136,
@@ -62,7 +62,7 @@
             "p": 20,
             "c": "G",
             "v": 8.01,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 4.5,
@@ -71,7 +71,7 @@
             "p": 20,
             "c": "g",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 1.1914308225480144,
@@ -80,7 +80,7 @@
             "p": 30,
             "c": "g",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         },
         {
             "x": 1.1914308225480144,
@@ -89,7 +89,7 @@
             "p": 30,
             "c": "Sg",
             "v": 8.01,
-            "passthrough": true
+            "passthrough": 0.5
         }
     ]
 }

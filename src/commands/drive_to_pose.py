@@ -16,7 +16,7 @@ class DriveToPose(Command):
         target: Pose2d,
         drive: Drive,
         speed: float = config.auto_drive_speed,
-        passthrough: bool = False,
+        passthrough: float = 0,
     ):
         self.target = target
         self.drive = drive
@@ -81,7 +81,7 @@ class DriveToPose(Command):
         if not is_slow:
             self.slow_time = now
 
-        error = self.target.translation() - current_pose.translation()
+        error = (self.target.translation() - current_pose.translation()).norm()
 
         if (
             now - self.slow_time > 0.5
@@ -89,9 +89,9 @@ class DriveToPose(Command):
                 drive_vel.norm() < self.vel_tolerance
                 and abs(omega) < self.theta_tolerance
             )
-            or (self.passthrough and error.norm() < 0.5)
+            or error < self.passthrough
         ):
-            if not self.passthrough:
+            if error >= self.passthrough:
                 self.drive.drive(Transform2d())
             self.finished = True
 

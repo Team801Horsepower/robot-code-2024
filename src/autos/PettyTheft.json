@@ -8,7 +8,7 @@
             "p": 52,
             "c": "s",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 2.700038613285912,
@@ -17,7 +17,7 @@
             "p": 10,
             "c": "G",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 6.976626055182146,
@@ -26,7 +26,7 @@
             "p": 10,
             "c": "G",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 8.284441427145822,
@@ -35,7 +35,7 @@
             "p": 10,
             "c": "G",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 5.891482227777483,
@@ -44,7 +44,7 @@
             "p": 10,
             "c": "sg",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 8.284441427145822,
@@ -53,7 +53,7 @@
             "p": 10,
             "c": "G",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 8.284441427145822,
@@ -62,7 +62,7 @@
             "p": 10,
             "c": "sg",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         },
         {
             "x": 8.303848222593611,
@@ -71,7 +71,7 @@
             "p": 10,
             "c": "g",
             "v": 1.8,
-            "passthrough": false
+            "passthrough": 0
         }
     ]
 }
