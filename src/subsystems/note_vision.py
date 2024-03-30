@@ -30,9 +30,12 @@ class Vision(Subsystem):
                     final_angle = angle + rear_camera_angle_offset
                     all_distances.append((distance, final_angle))
 
-            final_distances = sorted(all_distances, key=lambda x: x[0])
-            closest_note = final_distances[0]
-            return closest_note
+            if len(all_distances) > 0:
+                    final_distances = sorted(all_distances, key=lambda x: x[0])
+                    closest_note = final_distances[0]
+                    return closest_note
+            else:
+                return None
 
         else:
             return None
