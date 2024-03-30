@@ -36,6 +36,7 @@ class Chassis:
 
         for swerve in self.swerves:
             swerve.drive_encoder.setPosition(0.0)
+            swerve.drive_motor.setInverted(False)
             swerve.turn_motor.setInverted(True)
 
             swerve.drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
