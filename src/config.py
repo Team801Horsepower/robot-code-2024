@@ -3,6 +3,8 @@ from wpimath import units
 from wpimath.geometry import Translation2d
 from wpilib import DriverStation
 
+from typing import List, Tuple
+
 
 def is_red() -> bool:
     return DriverStation.getAlliance() == DriverStation.Alliance.kRed
@@ -85,18 +87,25 @@ speaker_height = units.inchesToMeters(100)
 # Height of the center of a speaker april tag
 speaker_tag_height = units.inchesToMeters(57.125)
 
-shooter_lookup_table = [  # position to angle; entries every three feet, starting from 6
-    units.degreesToRadians(48),
-    units.degreesToRadians(42),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
-    units.degreesToRadians(0),
+# (distance, pitch, yaw difference)
+shooter_lookup_table = [
+    (1.018, 0.8560839981, 0),
+    (1.707, 0.7208209811, 0.1254891732),
+    (2.29, 0.5986479334, 0),
+    (2.34, 0.5550147021, 0.09424777961),
+    (2.457, 0.5497787144, 0.1015781625),
+    (3.315, 0.4700171676, 0.08779006138),
+    (4.18, 0.4392993727, 0.06806784083),
 ]
+
+
+def lookup(table: List[Tuple[float, float]], x: float) -> float:
+    x = max(table[0][0], min(table[-1][0], x))
+    idx = max(0, [r[0] >= x for r in table].index(True) - 1)
+    pt0, pt1 = table[idx], table[idx + 1]
+    ratio = (x - pt0[0]) / (pt1[0] - pt0[0])
+    return pt0[1] + ratio * (pt1[1] - pt0[1])
+
 
 amp_flipper_up_value = 5.28
 amp_shooter_pitch = 0.8223598776

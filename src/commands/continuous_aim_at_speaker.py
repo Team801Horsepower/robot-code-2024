@@ -19,7 +19,7 @@ class ContinuousAimAtSpeaker(Command):
         self.drive = drive
         self.vision = vision
 
-        self.yaw_pid = PIDController(4.6, 0, 0)
+        self.yaw_pid = PIDController(3.5, 0, 0)
         self.yaw_power = 0
 
         self.atag_pos = None
@@ -60,16 +60,16 @@ class ContinuousAimAtSpeaker(Command):
             self.drive.drive(Transform2d())
             return
 
-        target_yaw = (
-            (self.atag_pos - self.drive.odometry.pose().translation()).angle().radians()
-        )
+        target_diff = self.atag_pos - self.drive.odometry.pose().translation()
+        target_yaw = target_diff.angle().radians()
 
         while target_yaw - cur_rot > pi:
             target_yaw -= 2 * pi
         while cur_rot - target_yaw > pi:
             target_yaw += 2 * pi
 
-        target_yaw -= units.degreesToRadians(9.1)
+        yaw_table = [(r[0], r[2]) for r in config.shooter_lookup_table]
+        target_yaw -= config.lookup(yaw_table, target_diff.norm())
 
         self.yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
         drive_input = Transform2d(0, 0, self.yaw_power)

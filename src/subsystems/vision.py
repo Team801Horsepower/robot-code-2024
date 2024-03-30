@@ -72,11 +72,5 @@ class Vision(Subsystem):
         x = self.speaker_dist()
         if x == -1:
             return None
-        return units.degreesToRadians(
-            # Polynomial interpolation of four lookup table values
-            # Actual lookup table in Google Sheet
-            5.47632 * x * x * x
-            - 24.3666 * x * x
-            + 22.5556 * x
-            + 49.0865
-        )
+        pitch_table = [(r[0], r[1]) for r in config.shooter_lookup_table]
+        return config.lookup(pitch_table, x)
