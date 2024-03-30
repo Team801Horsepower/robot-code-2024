@@ -2,7 +2,16 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, note_vision
+from subsystems import (
+    chassis,
+    drive,
+    vision,
+    gatherer,
+    feeder,
+    shooter,
+    climber,
+    note_vision,
+)
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -25,56 +34,56 @@ import config
 
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self):
-        # pylint: disable=attribute-defined-outside-init
-        self.driver_controller = wpilib.XboxController(0)
-        self.manip_controller = wpilib.XboxController(1)
+        # # pylint: disable=attribute-defined-outside-init
+        # self.driver_controller = wpilib.XboxController(0)
+        # self.manip_controller = wpilib.XboxController(1)
 
         self.scheduler = CommandScheduler()
 
-        self.drive = drive.Drive(self.scheduler)
-        self.vision = vision.Vision(self.scheduler)
+        # self.drive = drive.Drive(self.scheduler)
+        # self.vision = vision.Vision(self.scheduler)
         self.note_vision = note_vision.Vision(self.scheduler)
-        self.gatherer = gatherer.Gatherer(1)
-        self.feeder = feeder.Feeder(13)
-        self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
-        self.climber = climber.Climber(6, 15)
+        # self.gatherer = gatherer.Gatherer(1)
+        # self.feeder = feeder.Feeder(13)
+        # self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
+        # self.climber = climber.Climber(6, 15)
 
-        self.field_oriented_drive = True
-        self.drive.odometry.reset()
-        # With this enabled, the position of the turn joystick directly translates to robot heading
-        self.special_turning = False
-        self.use_yaw_setpoint = False
-        self.yaw_setpoint = 0
+        # self.field_oriented_drive = True
+        # self.drive.odometry.reset()
+        # # With this enabled, the position of the turn joystick directly translates to robot heading
+        # self.special_turning = False
+        # self.use_yaw_setpoint = False
+        # self.yaw_setpoint = 0
 
-        self.drive.chassis.set_swerves()
-        for swerve in self.drive.chassis.swerves:
-            swerve.turn_motor.set(0)
+        # self.drive.chassis.set_swerves()
+        # for swerve in self.drive.chassis.swerves:
+        #     swerve.turn_motor.set(0)
 
-        self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
+        # self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
 
-        SmartDashboard.putNumber("speaker distance", -1)
-        SmartDashboard.putNumber("shooter pitch", -1)
-        SmartDashboard.putNumber("shooter abs enc", -1)
-        SmartDashboard.putNumber("shooter abs enc abs", -1)
+        # SmartDashboard.putNumber("speaker distance", -1)
+        # SmartDashboard.putNumber("shooter pitch", -1)
+        # SmartDashboard.putNumber("shooter abs enc", -1)
+        # SmartDashboard.putNumber("shooter abs enc abs", -1)
 
-        self.auto_chooser = SendableChooser()
-        self.auto_chooser.addOption("4 note", 0)
-        self.auto_chooser.addOption("1 note", 1)
-        self.auto_chooser.setDefaultOption("amp side 1 note", 2)
-        self.auto_chooser.addOption("legacy 4 note", 3)
-        SmartDashboard.putData("auto select", self.auto_chooser)
+        # self.auto_chooser = SendableChooser()
+        # self.auto_chooser.addOption("4 note", 0)
+        # self.auto_chooser.addOption("1 note", 1)
+        # self.auto_chooser.setDefaultOption("amp side 1 note", 2)
+        # self.auto_chooser.addOption("legacy 4 note", 3)
+        # SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
         self.scheduler.run()
 
-        SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
-        SmartDashboard.putNumber(
-            "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
-        )
-        SmartDashboard.putNumber("shooter abs enc", self.shooter.pitch_encoder.get())
-        SmartDashboard.putNumber(
-            "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
-        )
+        # SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
+        # SmartDashboard.putNumber(
+        #     "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
+        # )
+        # SmartDashboard.putNumber("shooter abs enc", self.shooter.pitch_encoder.get())
+        # SmartDashboard.putNumber(
+        #     "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
+        # )
 
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
@@ -153,9 +162,6 @@ class MyRobot(wpilib.TimedRobot):
         self.aas_command.initialize()
 
     def teleopPeriodic(self):
-        
-        
-
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
             if abs(activation) < 0.01:
@@ -319,7 +325,7 @@ class MyRobot(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        pass
+        self.note_vision.periodic
 
     def teleopExit(self):
         self.aas_command.end(True)
