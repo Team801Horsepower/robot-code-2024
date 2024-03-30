@@ -12,7 +12,7 @@ class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v2"):
         self.camera = PhotonCamera(camera_name)
         scheduler.registerSubsystem(self)
-    
+
     def periodic(self):
         print(self.get_distance_degree())
 
