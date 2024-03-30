@@ -126,7 +126,7 @@ class Shooter(Subsystem):
         self.hold_pitch = True
 
     def pitch_ready(self) -> bool:
-        pitch_ok_threshold = 0.4
+        pitch_ok_threshold = 0.04
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def feed_power(self) -> float:
