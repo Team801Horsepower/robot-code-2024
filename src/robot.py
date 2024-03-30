@@ -68,11 +68,6 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser.addOption("far note", 5)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
-        SmartDashboard.putNumber("shooter speed", config.flywheel_speed)
-        SmartDashboard.putNumber(
-            "shooter speed offset", config.flywheel_setpoint - config.flywheel_speed
-        )
-
     def robotPeriodic(self):
         self.scheduler.run()
 
@@ -84,13 +79,6 @@ class Gollum(wpilib.TimedRobot):
         SmartDashboard.putNumber(
             "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
         )
-
-        fw_speed = SmartDashboard.getNumber("shooter speed", config.flywheel_speed)
-        fw_offset = SmartDashboard.getNumber(
-            "shooter speed offset", config.flywheel_setpoint - config.flywheel_speed
-        )
-        config.flywheel_speed = fw_speed
-        config.flywheel_setpoint = fw_speed + fw_offset
 
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
