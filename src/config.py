@@ -44,10 +44,10 @@ auto_turn_speed = 3
 # All absolute encoder values are measured with the swerve wheel facing
 # RADIALLY OUTWARD with the gear of the wheel on the LEFT SIDE of the wheel.
 swerves = [
-    (2, 3, 0.985),
+    (3, 2, 0.985),
     (8, 9, 0.5298459),
     (18, 19, 0.0104102),
-    (10, 11, 0.0611273),
+    (11, 10, 0.0611273),
 ]
 
 # front left, back left, front right, back right
@@ -56,9 +56,9 @@ swerve_ids = [0, 1, 2, 3]
 # note_proximity_threshold = 1600
 
 note_proximity_threshold = 600
-flywheel_speed = 4200
+flywheel_speed = 5500
 # Weird PID offset thing (we haven't figured out why we have to do this)
-flywheel_setpoint = flywheel_speed + 700
+flywheel_setpoint = flywheel_speed + 950
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)

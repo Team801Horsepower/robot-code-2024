@@ -69,6 +69,8 @@ class ContinuousAimAtSpeaker(Command):
         while cur_rot - target_yaw > pi:
             target_yaw += 2 * pi
 
+        target_yaw -= units.degreesToRadians(9.1)
+
         self.yaw_power = self.yaw_pid.calculate(cur_rot, target_yaw)
         drive_input = Transform2d(0, 0, self.yaw_power)
         self.drive.drive(drive_input)
