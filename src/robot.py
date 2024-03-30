@@ -268,7 +268,9 @@ class Gollum(wpilib.TimedRobot):
             if self.manip_controller.getBackButton():
                 self.shooter.amp_scorer.is_up = False
 
-            prespin = not should_shoot and not self.shooter.amp_scorer.is_up
+            # TODO: Turn it back on once testing is done
+            # prespin = not should_shoot and not self.shooter.amp_scorer.is_up
+            prespin = False
 
             if abs(pitch_stick) > 0.01:
                 self.shooter.manual_pitch(pitch_stick * 0.5)
@@ -352,7 +354,7 @@ class Gollum(wpilib.TimedRobot):
     def testPeriodic(self):
         SmartDashboard.putNumber(
             "amp abs enc val",
-            self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition(),
+            self.shooter.amp_scorer.flipper_enc_val(),
         )
         SmartDashboard.putNumber(
             "swerve",
