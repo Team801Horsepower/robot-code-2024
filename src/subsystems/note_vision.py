@@ -15,7 +15,7 @@ class Vision(Subsystem):
         scheduler.registerSubsystem(self)
         # SmartDashboard.putNumber("note angle", -1)
 
-    def get_distance_degree(self):
+    def get_notes(self):
         result = self.camera.getLatestResult()
         # note = {"dist": value, "angle": value}
         all_distances = []
@@ -34,8 +34,3 @@ class Vision(Subsystem):
                     final_distances = sorted(all_distances, key=lambda x: x[0])
                     closest_note = final_distances[0]
                     return closest_note
-            else:
-                return None
-
-        else:
-            return None
