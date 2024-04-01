@@ -4,6 +4,7 @@ from wpimath.controller import PIDController
 
 from subsystems.drive import Drive
 from subsystems.gatherer import Gatherer
+from subsystems.note_vision import NoteVision
 import config
 
 

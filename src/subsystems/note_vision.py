@@ -9,7 +9,7 @@ from commands2 import Subsystem, CommandScheduler
 from config import rear_camera_angle_offset, second_camera_height
 
 
-class Vision(Subsystem):
+class NoteVision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Deeby Server"):
         self.camera = PhotonCamera(camera_name)
         scheduler.registerSubsystem(self)
