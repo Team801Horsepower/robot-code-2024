@@ -353,14 +353,7 @@ class Gollum(wpilib.TimedRobot):
         pass
 
     def testPeriodic(self):
-        SmartDashboard.putNumber(
-            "amp abs enc val",
-            self.shooter.amp_scorer.flipper_enc_val(),
-        )
-        SmartDashboard.putNumber(
-            "swerve",
-            self.drive.chassis.swerves[0].turn_abs_encoder.getAbsolutePosition(),
-        )
+        pass
 
     def teleopExit(self):
         self.aas_command.end(True)
