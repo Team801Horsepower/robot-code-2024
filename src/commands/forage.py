@@ -13,10 +13,12 @@ class Forage(Command):
         self,
         drive: Drive,
         gatherer: Gatherer,
+        note_vision: NoteVision,
         speed: float = config.auto_drive_speed,
     ):
         self.drive = drive
         self.gatherer = gatherer
+        self.note_vision = note_vision
 
         self.speed = speed
 
@@ -30,14 +32,11 @@ class Forage(Command):
     def initialize(self):
         pass
 
-    def get_note(self):
-        return (0, 0) # r, theta
-
     def execute(self):
         if self.finished:
             return
 
-        self.note_pos = self.get_note() or self.note_pos
+        self.note_pos = self.note_vision.get_notes() or self.note_pos
 
         r, theta = self.note_pos
 

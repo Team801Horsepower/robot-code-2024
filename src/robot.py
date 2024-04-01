@@ -2,7 +2,7 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
+from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led, note_vision
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
@@ -39,6 +39,7 @@ class Gollum(wpilib.TimedRobot):
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
         self.led = led.Led(0)
+        self.note_vision = note_vision.NoteVision(self.scheduler)
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
