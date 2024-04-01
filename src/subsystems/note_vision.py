@@ -10,9 +10,12 @@ from config import rear_camera_angle_offset, second_camera_height
 
 
 class NoteVision():
-    def __init__(self, camera_name="Deeby Server"):
-        self.camera = PhotonCamera(camera_name)
-        # SmartDashboard.putNumber("note angle", -1)
+    # def __init__(self, camera_name="Deeby Server"):
+    #     self.camera = PhotonCamera(camera_name)
+    #     # SmartDashboard.putNumber("note angle", -1)
+
+    def __init__(self, camera):
+        self.camera = camera
 
     def get_notes(self):
         result = self.camera.getLatestResult()

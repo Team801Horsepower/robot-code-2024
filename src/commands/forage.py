@@ -45,7 +45,7 @@ class Forage(Command):
             self.finished = True
             return
         else:
-            drive_speed = self.drive_pid.calculate(r, 0)
+            drive_speed = 0.2 # self.drive_pid.calculate(r, 0)
             turn_speed = self.drive_pid.calculate(theta, 0)
             self.drive.drive(Transform2d(0, drive_speed, turn_speed))
 
