@@ -40,7 +40,8 @@ class Gollum(wpilib.TimedRobot):
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
         self.led = led.Led(0)
-        self.note_vision = note_vision.NoteVision(self.vision.camera)
+        # self.note_vision = note_vision.NoteVision(self.vision.camera)
+        self.note_vision = note_vision.NoteVision()
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
