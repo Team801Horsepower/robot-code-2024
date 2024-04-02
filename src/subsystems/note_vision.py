@@ -1,6 +1,6 @@
 import math
 import config
-from math import sqrt, sin, cos, asin, pi
+from math import sqrt, sin, cos, asin, pi, acos
 from operator import itemgetter
 from photonlibpy.photonCamera import PhotonCamera
 from wpilib import SmartDashboard
@@ -25,12 +25,12 @@ class NoteVision():
         all_distances = []
         if len(result.getTargets()) >= 1:
             for target in result.getTargets():
-                target_to_cam_angle = target.getPitch()
+                target_to_cam_angle = target.getPitch() + config.second_camera_pitch
                 if target_to_cam_angle < 0:
                     distance = second_camera_height / (
                         -math.tan(math.radians(target_to_cam_angle))
                     )
-                    angle = target.getYaw()
+                    angle = target.getYaw() + config.second_camera_yaw
                     final_angle = angle + rear_camera_angle_offset
                     all_distances.append((distance, final_angle))
 
@@ -42,8 +42,9 @@ class NoteVision():
     def camera_offsetify(self, r, theta):
         theta = math.radians(theta)
         f = config.second_camera_horiz_offset
-        l = sqrt(f ** 2 + r ** 2 - (2 * f * r * cos((pi / 2) + theta)))
-        phi = asin(r * sin(theta) / l)
+        l = sqrt(f ** 2 + r ** 2 - (2 * f * r * sin(theta)))
+        phi = pi/2 - acos((f/l) - (r * sin(theta) / l))
+
         phi = math.degrees(phi)
 
         print(f"rltp: {r:.4f}\t{l:.4f}\t{theta:.4f}\t{phi:.4f}")
