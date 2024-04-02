@@ -47,7 +47,8 @@ class Forage(Command):
         else:
             drive_speed = 0.2 # self.drive_pid.calculate(r, 0)
             turn_speed = self.drive_pid.calculate(theta, 0)
-            self.drive.drive(Transform2d(0, drive_speed, turn_speed))
+            self.drive.drive(Transform2d(-drive_speed, 0, turn_speed))
+            self.gatherer.spin_gatherer(0.5)
 
 
     def isFinished(self):
