@@ -11,7 +11,7 @@ from commands2 import Subsystem, CommandScheduler
 from config import rear_camera_angle_offset, second_camera_height
 
 
-class NoteVision():
+class NoteVision:
     def __init__(self, camera_name="Deeby Server"):
         self.camera = PhotonCamera(camera_name)
         # SmartDashboard.putNumber("note angle", -1)
@@ -35,17 +35,18 @@ class NoteVision():
                     all_distances.append((distance, final_angle))
 
             if len(all_distances) > 0:
-                    final_distances = sorted(all_distances, key=lambda x: x[0])
-                    closest_note = final_distances[0]
-                    return self.camera_offsetify(*closest_note)
+                final_distances = sorted(all_distances, key=lambda x: x[0])
+                closest_note = final_distances[0]
+                return self.camera_offsetify(*closest_note)
 
     def camera_offsetify(self, r, theta):
+        print(theta)
         theta = math.radians(theta)
         f = config.second_camera_horiz_offset
-        l = sqrt(f ** 2 + r ** 2 - (2 * f * r * sin(theta)))
-        phi = pi/2 - acos((f/l) - (r * sin(theta) / l))
+        l = sqrt(f**2 + r**2 - (2 * f * r * sin(theta)))
+        phi = pi / 2 - acos((f / l) - (r * sin(theta) / l))
 
-        phi = math.degrees(phi)
+        # phi = math.degrees(phi)
 
-        print(f"rltp: {r:.4f}\t{l:.4f}\t{theta:.4f}\t{phi:.4f}")
+        # print(f"rltp: {r:.4f}\t{l:.4f}\t{math.degrees(theta):.4f}\t{math.degrees(phi):.4f}")
         return (l, phi)

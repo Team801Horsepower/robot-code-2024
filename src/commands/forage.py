@@ -27,7 +27,6 @@ class Forage(Command):
         self.note_pos = (0, 0)
         self.drive_pid = PIDController(0.1, 0, 0)
         self.turn_pid = PIDController(0.1, 0, 0)
-        
 
     def initialize(self):
         pass
@@ -45,11 +44,11 @@ class Forage(Command):
             self.finished = True
             return
         else:
-            drive_speed = 0.2 # self.drive_pid.calculate(r, 0)
+            drive_speed = 0.2  # self.drive_pid.calculate(r, 0)
             turn_speed = self.drive_pid.calculate(theta, 0)
-            self.drive.drive(Transform2d(-drive_speed, 0, turn_speed))
-            self.gatherer.spin_gatherer(0.5)
-
+            # self.drive.drive(Transform2d(-drive_speed, 0, turn_speed))
+            self.drive.drive(Transform2d())
+            # self.gatherer.spin_gatherer(0.5)
 
     def isFinished(self):
         return self.finished
