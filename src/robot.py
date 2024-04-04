@@ -18,7 +18,7 @@ from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
-from commands.forage import Forage
+from commands.chase_note import ChaseNote
 from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
@@ -65,7 +65,6 @@ class Gollum(wpilib.TimedRobot):
             swerve.turn_motor.set(0)
 
         self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
-        self.forage_command = Forage(self.drive, self.gatherer, self.note_vision)
 
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
@@ -363,10 +362,17 @@ class Gollum(wpilib.TimedRobot):
             self.led.idle()
 
     def testInit(self):
-        self.scheduler.schedule(self.forage_command)
+        self.scheduler.schedule(
+            Gather(self.gatherer).deadlineWith(
+                ChaseNote(Pose2d(), self.note_vision, self.drive)
+            )
+        )
 
     def testPeriodic(self):
-        pass
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        self.feeder.run(feed_power)
+        # test = self.note_vision.robot_space_note_pos()
+        # print(test)
 
     def teleopExit(self):
         self.aas_command.end(True)

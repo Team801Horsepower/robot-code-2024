@@ -19,6 +19,7 @@ class Gatherer:
 
     # Returns whether the controller should rumble
     def spin_gatherer(self, spin_speed) -> bool:
+        spin_speed *= 0.75
         # Deadzone for controller triggers/setting gather speed
         deadzone = 0.1
         should_rumble = False

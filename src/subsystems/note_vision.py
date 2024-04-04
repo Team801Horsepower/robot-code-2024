@@ -1,11 +1,13 @@
 import math
 import config
-from math import sqrt, sin, cos, asin, pi, acos
+from math import sqrt, sin, cos, asin, pi, acos, tan
 from operator import itemgetter
 from photonlibpy.photonCamera import PhotonCamera
 from wpilib import SmartDashboard
-
+from wpimath.geometry import Translation2d, Rotation2d
+from wpimath import units
 from commands2 import Subsystem, CommandScheduler
+from typing import Tuple
 
 
 from config import rear_camera_angle_offset, second_camera_height
@@ -14,39 +16,40 @@ from config import rear_camera_angle_offset, second_camera_height
 class NoteVision:
     def __init__(self, camera_name="Deeby Server"):
         self.camera = PhotonCamera(camera_name)
-        # SmartDashboard.putNumber("note angle", -1)
 
-    # def __init__(self, camera):
-    #     self.camera = camera
+    def robot_space_note_pos(self) -> Translation2d | None:
+        res = self.camera.getLatestResult()
+        if not res.hasTargets():
+            return None
 
-    def get_notes(self):
-        result = self.camera.getLatestResult()
-        # note = {"dist": value, "angle": value}
-        all_distances = []
-        if len(result.getTargets()) >= 1:
-            for target in result.getTargets():
-                target_to_cam_angle = target.getPitch() + config.second_camera_pitch
-                if target_to_cam_angle < 0:
-                    distance = second_camera_height / (
-                        -math.tan(math.radians(target_to_cam_angle))
-                    )
-                    angle = target.getYaw() + config.second_camera_yaw
-                    final_angle = angle + rear_camera_angle_offset
-                    all_distances.append((distance, final_angle))
+        pos_s = []
 
-            if len(all_distances) > 0:
-                final_distances = sorted(all_distances, key=lambda x: x[0])
-                closest_note = final_distances[0]
-                return self.camera_offsetify(*closest_note)
+        for target in res.getTargets():
+            pn = units.degreesToRadians(target.getPitch())
+            yn = units.degreesToRadians(-target.getYaw())
 
-    def camera_offsetify(self, r, theta):
-        print(theta)
-        theta = math.radians(theta)
-        f = config.second_camera_horiz_offset
-        l = sqrt(f**2 + r**2 - (2 * f * r * sin(theta)))
-        phi = pi / 2 - acos((f / l) - (r * sin(theta) / l))
+            pc = config.second_camera_pitch
+            yc = config.second_camera_yaw
+            hc = config.second_camera_height
 
-        # phi = math.degrees(phi)
+            dc = -hc / tan(pn + pc)
 
-        # print(f"rltp: {r:.4f}\t{l:.4f}\t{math.degrees(theta):.4f}\t{math.degrees(phi):.4f}")
-        return (l, phi)
+            if dc < 0:
+                continue
+
+            dist_from_cam = dc * cos(yn)
+            yaw_from_robot = yn + yc + pi
+
+            pos_from_cam = Translation2d(dist_from_cam, Rotation2d(yaw_from_robot))
+            pos_from_robot = Translation2d(
+                pos_from_cam.x, pos_from_cam.y + config.second_camera_horiz_offset
+            )
+
+            # 3.5 meter maximum note distance
+            if pos_from_robot.norm() < 3.5:
+                pos_s.append(pos_from_robot)
+
+        if not pos_s:
+            return None
+
+        return min(pos_s, key=Translation2d.norm)
