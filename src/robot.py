@@ -2,12 +2,24 @@
 
 import wpilib
 import wpimath
-from subsystems import chassis, drive, vision, gatherer, feeder, shooter, climber, led
+from subsystems import (
+    chassis,
+    drive,
+    vision,
+    gatherer,
+    feeder,
+    shooter,
+    climber,
+    led,
+    note_vision,
+)
 from commands.drive_to_pose import DriveToPose
 from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
+from commands.chase_note import ChaseNote
+from commands import chase_note
 from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
@@ -39,6 +51,7 @@ class Gollum(wpilib.TimedRobot):
         self.shooter = shooter.Shooter(self.scheduler, [14, 7], 12, 5, 16)
         self.climber = climber.Climber(6, 15)
         self.led = led.Led(0)
+        self.note_vision = note_vision.NoteVision()
 
         self.field_oriented_drive = True
         self.drive.odometry.reset()
@@ -66,6 +79,7 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser.addOption("legacy 4 note", 3)
         self.auto_chooser.addOption("blue only note theft", 4)
         self.auto_chooser.addOption("far note", 5)
+        self.auto_chooser.addOption("test auto", 6)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -92,6 +106,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sEvenBetterQuest.json",
             "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
             "Gollum'sRedstensiveQuest.json",
+            "Gollum'sPracticeQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
@@ -100,6 +115,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sEvenRedderQuest.json",
             "PettyTheft.json",
             "Gollum'sExtensiveQuest.json",
+            "Gollum'sPracticeQuest.json",
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]
@@ -120,11 +136,13 @@ class Gollum(wpilib.TimedRobot):
 
         for (cmd, aap), loc_cmds in zip(new_cmds, cmd_list):
             # target_pose = cmd.target
+            if "6" in loc_cmds:
+                cmd = chase_note.from_dtp(cmd, self.note_vision)
             cmd = cmd.alongWith(aap)
             for cmd_s in loc_cmds:
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
-                elif cmd_s == "G":
+                elif cmd_s in "G6":
                     cmd = cmd.raceWith(Gather(self.gatherer, True))
                 elif cmd_s == "s" or cmd_s == "S":
                     # keep_spin = cmd_s == "S"
@@ -348,21 +366,17 @@ class Gollum(wpilib.TimedRobot):
         else:
             self.led.idle()
 
+    def teleopExit(self):
+        self.aas_command.end(True)
+
     def testInit(self):
         pass
 
     def testPeriodic(self):
-        SmartDashboard.putNumber(
-            "amp abs enc val",
-            self.shooter.amp_scorer.flipper_enc_val(),
-        )
-        SmartDashboard.putNumber(
-            "swerve",
-            self.drive.chassis.swerves[0].turn_abs_encoder.getAbsolutePosition(),
-        )
-
-    def teleopExit(self):
-        self.aas_command.end(True)
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
+        self.feeder.run(feed_power)
+        test = self.note_vision.robot_space_note_pos()
+        print(test)
 
 
 if __name__ == "__main__":

@@ -115,3 +115,9 @@ link_pivot_setpoint_up = 0.04
 
 amp_abs_enc_up = 0.800
 amp_abs_enc_down = 1.2799
+
+rear_camera_angle_offset = 0
+second_camera_height = units.inchesToMeters(11.5)
+second_camera_horiz_offset = units.inchesToMeters(-10.125)
+second_camera_pitch = units.degreesToRadians(-5)
+second_camera_yaw = units.degreesToRadians(-5)
