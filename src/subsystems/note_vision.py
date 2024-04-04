@@ -1,16 +1,8 @@
-import math
 import config
-from math import sqrt, sin, cos, asin, pi, acos, tan
-from operator import itemgetter
+from math import cos, pi, tan
 from photonlibpy.photonCamera import PhotonCamera
-from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d, Rotation2d
 from wpimath import units
-from commands2 import Subsystem, CommandScheduler
-from typing import Tuple
-
-
-from config import rear_camera_angle_offset, second_camera_height
 
 
 class NoteVision:
