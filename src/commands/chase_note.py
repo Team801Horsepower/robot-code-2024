@@ -32,3 +32,7 @@ class ChaseNote(DriveToPose):
             self.target = new_target
 
         super().execute()
+
+
+def from_dtp(dtp: DriveToPose, note_vision: NoteVision) -> ChaseNote:
+    return ChaseNote(dtp.target, note_vision, dtp.drive, dtp.speed, dtp.passthrough)
