@@ -19,9 +19,15 @@ class ChaseNote(DriveToPose):
         super().__init__(target, drive, speed, passthrough)
 
     def update_note_pos(self):
+        cur_pose = self.drive.odometry.pose()
+
+        # TODO: Make this more robust
+        cur_error = (cur_pose.translation() - self.target.translation()).norm()
+        if cur_error < 0.5:
+            return
+
         relative_note_pos: Translation2d = self.vision.robot_space_note_pos()
         if relative_note_pos is not None:
-            cur_pose = self.drive.odometry.pose()
             field_relative_note_pos = relative_note_pos.rotateBy(cur_pose.rotation())
             rotation = field_relative_note_pos.angle().rotateBy(
                 Rotation2d.fromDegrees(180)

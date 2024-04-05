@@ -18,6 +18,7 @@ class ContinuousChaseNote(ChaseNote):
         super().__init__(target, note_vision, drive, speed, 0)
 
     def execute(self):
+        self.finished = False
         if self.should_run:
             super().execute()
         else:

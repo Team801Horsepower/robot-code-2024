@@ -236,10 +236,14 @@ class Gollum(wpilib.TimedRobot):
         else:
             turn_speed = config.turn_speed * input_curve(turn_input)
 
-        self.aas_command.should_run = self.driver_controller.getLeftBumper()
+        self.aas_command.should_run = (
+            self.driver_controller.getLeftBumper() and self.gatherer.note_present()
+        )
         self.aas_command.execute()
 
-        self.cn_command.should_run = self.driver_controller.getLeftStickButton()
+        self.cn_command.should_run = (
+            self.driver_controller.getLeftBumper() and not self.gatherer.note_present()
+        )
         self.cn_command.execute()
 
         if not self.aas_command.should_run and not self.cn_command.should_run:
@@ -339,8 +343,12 @@ class Gollum(wpilib.TimedRobot):
         )
 
         gather_power = (
-            self.driver_controller.getRightTriggerAxis()
-            - self.driver_controller.getLeftTriggerAxis()
+            (
+                self.driver_controller.getRightTriggerAxis()
+                - self.driver_controller.getLeftTriggerAxis()
+            )
+            if not self.cn_command.should_run
+            else 1
         )
         should_rumble = self.gatherer.spin_gatherer(gather_power)
         rumble = 1.0 if should_rumble else 0
