@@ -167,7 +167,7 @@ class Gollum(wpilib.TimedRobot):
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s in "G6":
-                    cmd = cmd.raceWith(Gather(self.gatherer, True))
+                    cmd = cmd.raceWith(Gather(self.gatherer, False))
                 elif cmd_s == "s" or cmd_s == "S":
                     # keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
