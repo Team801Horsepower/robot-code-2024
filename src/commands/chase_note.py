@@ -18,7 +18,7 @@ class ChaseNote(DriveToPose):
         self.vision = note_vision
         super().__init__(target, drive, speed, passthrough)
 
-    def execute(self):
+    def update_note_pos(self):
         relative_note_pos: Translation2d = self.vision.robot_space_note_pos()
         if relative_note_pos is not None:
             cur_pose = self.drive.odometry.pose()
@@ -31,6 +31,8 @@ class ChaseNote(DriveToPose):
             )
             self.target = new_target
 
+    def execute(self):
+        self.update_note_pos()
         super().execute()
 
 

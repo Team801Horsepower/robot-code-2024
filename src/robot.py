@@ -20,6 +20,7 @@ from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
 from commands.chase_note import ChaseNote
 from commands import chase_note
+from commands.continuous_chase_note import ContinuousChaseNote
 from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
@@ -65,6 +66,9 @@ class Gollum(wpilib.TimedRobot):
             swerve.turn_motor.set(0)
 
         self.aas_command = ContinuousAimAtSpeaker(self.drive, self.vision)
+        self.cn_command = ContinuousChaseNote(
+            self.drive.odometry.pose(), self.note_vision, self.drive
+        )
 
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
@@ -235,7 +239,10 @@ class Gollum(wpilib.TimedRobot):
         self.aas_command.should_run = self.driver_controller.getLeftBumper()
         self.aas_command.execute()
 
-        if not self.aas_command.should_run:
+        self.cn_command.should_run = self.driver_controller.getLeftStickButton()
+        self.cn_command.execute()
+
+        if not self.aas_command.should_run and not self.cn_command.should_run:
             drive_input = wpimath.geometry.Transform2d(
                 config.drive_speed
                 * input_curve(deadzone(-self.driver_controller.getLeftY())),
@@ -368,6 +375,7 @@ class Gollum(wpilib.TimedRobot):
 
     def teleopExit(self):
         self.aas_command.end(True)
+        self.cn_command.end(True)
 
     def testInit(self):
         pass
