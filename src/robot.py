@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import time
 import wpilib
 import wpimath
 from subsystems import (
@@ -167,7 +167,7 @@ class Gollum(wpilib.TimedRobot):
                 if cmd_s == "g":
                     cmd = cmd.deadlineWith(Gather(self.gatherer))
                 elif cmd_s in "G6":
-                    cmd = cmd.raceWith(Gather(self.gatherer, False))
+                    cmd = cmd.raceWith(Gather(self.gatherer, True))
                 elif cmd_s == "s" or cmd_s == "S":
                     # keep_spin = cmd_s == "S"
                     # speaker_pos = Translation2d(0.5, 5.5)
@@ -191,9 +191,14 @@ class Gollum(wpilib.TimedRobot):
         self.shooter.run_shooter(config.flywheel_setpoint)
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
+        self.auto_start_time = time.time()
+
     def autonomousPeriodic(self):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
         self.feeder.run(feed_power)
+
+    def autonomousExit(self):
+        SmartDashboard.putNumber("Auto time", time.time() - self.auto_start_time)
 
     def teleopInit(self):
         self.drive.chassis.set_swerves()
