@@ -123,6 +123,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
             "Gollum'sRedstensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+            "Gollum'sAmplifiedQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
