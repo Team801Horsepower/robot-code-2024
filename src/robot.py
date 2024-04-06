@@ -84,6 +84,7 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser.addOption("blue only note theft", 4)
         self.auto_chooser.addOption("far note", 5)
         self.auto_chooser.addOption("test auto", 6)
+        self.auto_chooser.addOption("amp side far note", 7)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -131,6 +132,7 @@ class Gollum(wpilib.TimedRobot):
             "PettyTheft.json",
             "Gollum'sExtensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+            "Gollum'sBlueAmplifiedQuest.json",
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]
@@ -179,6 +181,7 @@ class Gollum(wpilib.TimedRobot):
                     cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
             new_new_cmds.append(cmd)
 
+        self.shooter.run_shooter(config.flywheel_setpoint)
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
     def autonomousPeriodic(self):
