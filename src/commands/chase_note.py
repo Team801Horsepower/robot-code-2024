@@ -21,6 +21,9 @@ class ChaseNote(DriveToPose):
     def update_note_pos(self):
         cur_pose = self.drive.odometry.pose()
 
+        # If we're close enough to the last note location, we're
+        # probably gathering it and can't see it, so we don't want
+        # to update the targeted note location from a different note.
         # TODO: Make this more robust
         cur_error = (cur_pose.translation() - self.target.translation()).norm()
         if cur_error < 0.5:
