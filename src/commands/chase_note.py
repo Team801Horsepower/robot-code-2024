@@ -18,10 +18,19 @@ class ChaseNote(DriveToPose):
         self.vision = note_vision
         super().__init__(target, drive, speed, passthrough)
 
-    def execute(self):
+    def update_note_pos(self):
+        cur_pose = self.drive.odometry.pose()
+
+        # If we're close enough to the last note location, we're
+        # probably gathering it and can't see it, so we don't want
+        # to update the targeted note location from a different note.
+        # TODO: Make this more robust
+        cur_error = (cur_pose.translation() - self.target.translation()).norm()
+        if cur_error < 0.5:
+            return
+
         relative_note_pos: Translation2d = self.vision.robot_space_note_pos()
         if relative_note_pos is not None:
-            cur_pose = self.drive.odometry.pose()
             field_relative_note_pos = relative_note_pos.rotateBy(cur_pose.rotation())
             rotation = field_relative_note_pos.angle().rotateBy(
                 Rotation2d.fromDegrees(180)
@@ -31,6 +40,8 @@ class ChaseNote(DriveToPose):
             )
             self.target = new_target
 
+    def execute(self):
+        self.update_note_pos()
         super().execute()
 
 
