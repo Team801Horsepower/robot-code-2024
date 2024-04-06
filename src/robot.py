@@ -298,8 +298,8 @@ class Gollum(wpilib.TimedRobot):
                 self.shooter.amp_scorer.is_up = False
 
             # TODO: Turn it back on once testing is done
-            # prespin = not should_shoot and not self.shooter.amp_scorer.is_up
-            prespin = False
+            prespin = not should_shoot and not self.shooter.amp_scorer.is_up
+            # prespin = False
 
             if abs(pitch_stick) > 0.01:
                 self.shooter.manual_pitch(pitch_stick * 0.5)
@@ -376,7 +376,7 @@ class Gollum(wpilib.TimedRobot):
             and self.aas_command.should_run
         ):
             self.led.blue_solid()
-        elif self.gatherer.note_present():
+        elif self.gatherer.note_seen() or self.gatherer.note_present():
             self.led.blue_blink()
         else:
             self.led.idle()
