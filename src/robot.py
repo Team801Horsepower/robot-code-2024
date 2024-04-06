@@ -376,7 +376,7 @@ class Gollum(wpilib.TimedRobot):
             and self.aas_command.should_run
         ):
             self.led.blue_solid()
-        elif self.gatherer.note_present():
+        elif self.gatherer.note_seen() or self.gatherer.note_present():
             self.led.blue_blink()
         else:
             self.led.idle()
