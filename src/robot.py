@@ -312,11 +312,11 @@ class Gollum(wpilib.TimedRobot):
                 self.shooter.pitch_down()
                 prespin = False
             elif self.manip_controller.getYButton():
-                self.shooter.set_pitch(0.9)
+                self.shooter.set_pitch(units.degreesToRadians(49.05))
             elif self.manip_controller.getBButton():
-                self.shooter.set_pitch(0.78)
+                self.shooter.set_pitch(units.degreesToRadians(34.3))
             elif self.manip_controller.getAButton():
-                self.shooter.set_pitch(0.69)
+                self.shooter.set_pitch(units.degreesToRadians(31.8))
             elif self.manip_controller.getXButton():
                 self.shooter.set_pitch(0.4)
                 prespin = False
