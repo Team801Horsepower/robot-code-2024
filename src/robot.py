@@ -110,6 +110,12 @@ class Gollum(wpilib.TimedRobot):
             "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
         )
 
+        SmartDashboard.putNumber("robot yaw", self.drive.odometry.rotation().degrees())
+
+        pos = self.drive.odometry.pose().translation()
+        SmartDashboard.putNumber("robot x", pos.x)
+        SmartDashboard.putNumber("robot y", pos.y)
+
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 

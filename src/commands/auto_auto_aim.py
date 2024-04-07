@@ -25,7 +25,7 @@ class AutoAutoAim(Command):
         self.atag_pos = None
 
         self.yaw_power = None
-        self.yaw_power_threshold = 0.1
+        self.yaw_power_threshold = 0.15
 
     def initialize(self):
         self.drive.drive(Transform2d())
