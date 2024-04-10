@@ -297,9 +297,7 @@ class Gollum(wpilib.TimedRobot):
             if self.manip_controller.getBackButton():
                 self.shooter.amp_scorer.is_up = False
 
-            # TODO: Turn it back on once testing is done
-            # prespin = not should_shoot and not self.shooter.amp_scorer.is_up
-            prespin = False
+            prespin = not should_shoot and not self.shooter.amp_scorer.is_up
 
             if abs(pitch_stick) > 0.01:
                 self.shooter.manual_pitch(pitch_stick * 0.5)
