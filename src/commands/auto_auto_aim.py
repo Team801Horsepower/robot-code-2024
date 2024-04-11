@@ -6,6 +6,7 @@ from commands2 import Command
 from wpilib import SmartDashboard
 
 from math import atan, atan2, tan, pi
+import time
 
 from subsystems.drive import Drive
 from subsystems.vision import Vision
@@ -26,6 +27,8 @@ class AutoAutoAim(Command):
 
         self.yaw_power = None
         self.yaw_power_threshold = 0.15
+
+        self.ready_time = time.time()
 
     def initialize(self):
         self.drive.drive(Transform2d())
@@ -70,15 +73,21 @@ class AutoAutoAim(Command):
         if target_pitch is not None:
             self.shooter.set_pitch(target_pitch)
 
+        if not self.ready():
+            self.ready_time = time.time()
+
         # SmartDashboard.putNumber("aim yaw power", self.yaw_power)
         # SmartDashboard.putNumber("aim pitch ready", self.shooter.pitch_ready())
 
-    def isFinished(self):
+    def ready(self) -> bool:
         return (
             self.yaw_power is not None
             and abs(self.yaw_power) < self.yaw_power_threshold
             and self.shooter.pitch_ready()
         )
+
+    def isFinished(self) -> bool:
+        return time.time() - self.ready_time > 0.1
 
     def end(self, interrupted: bool):
         self.drive.drive(Transform2d())

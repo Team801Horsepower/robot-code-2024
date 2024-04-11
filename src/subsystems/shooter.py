@@ -37,7 +37,7 @@ class Shooter(Subsystem):
         self.pitch_min = units.degreesToRadians(12)
         self.pitch_max = units.degreesToRadians(59)
 
-        self.pitch_pid = PIDController(3, 0, 0.05)
+        self.pitch_pid = PIDController(2.8, 0, 0.05)
 
         self.should_feed = False
         self.feed_override = False
@@ -88,6 +88,9 @@ class Shooter(Subsystem):
         current_pitch = self.get_pitch()
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
         power = min(max_power, max(-max_power, pid_power))
+        # TODO: Allow this to be overridden for climbing (dpad down?)
+        if pid_power < 0:
+            pid_power *= 0.3
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
         while link_pivot_pos > 0.8:
@@ -99,7 +102,7 @@ class Shooter(Subsystem):
 
         if link_pivot_pos > 0.71:
             power = max(0, power)
-        if link_pivot_pos < 0.04:
+        if link_pivot_pos < -0.08:
             power = min(0, power)
         self.pitch_motor.set(power)
 
@@ -126,7 +129,7 @@ class Shooter(Subsystem):
         self.hold_pitch = True
 
     def pitch_ready(self) -> bool:
-        pitch_ok_threshold = 0.04
+        pitch_ok_threshold = 0.025
         return abs(self.get_pitch() - self.pitch_target) < pitch_ok_threshold
 
     def feed_power(self) -> float:
