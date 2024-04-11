@@ -89,6 +89,17 @@ class Gollum(wpilib.TimedRobot):
     def robotPeriodic(self):
         self.scheduler.run()
 
+        if (
+            self.shooter.pitch_ready()
+            and self.aas_command.is_ready()
+            and self.aas_command.should_run
+        ):
+            self.led.blue_solid()
+        elif self.gatherer.note_seen() or self.gatherer.note_present():
+            self.led.blue_blink()
+        else:
+            self.led.idle()
+
         SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
         SmartDashboard.putNumber(
             "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
@@ -369,17 +380,6 @@ class Gollum(wpilib.TimedRobot):
                     self.manip_controller.getRightTriggerAxis(),
                 )
             )
-
-        if (
-            self.shooter.pitch_ready()
-            and self.aas_command.is_ready()
-            and self.aas_command.should_run
-        ):
-            self.led.blue_solid()
-        elif self.gatherer.note_seen() or self.gatherer.note_present():
-            self.led.blue_blink()
-        else:
-            self.led.idle()
 
     def teleopExit(self):
         self.aas_command.end(True)
