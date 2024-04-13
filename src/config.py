@@ -93,7 +93,7 @@ shooter_lookup_table = [
     (1.97, units.degreesToRadians(37.5), units.degreesToRadians(6)),
     (2.46, units.degreesToRadians(29.7), units.degreesToRadians(3)),
     (2.93, units.degreesToRadians(29.0), units.degreesToRadians(4)),
-    (3.34, units.degreesToRadians(27.3), units.degreesToRadians(6)),
+    (3.29, units.degreesToRadians(26.9), units.degreesToRadians(5)), # guesstimated for corner shots (works basically fine)
     (4.00, units.degreesToRadians(24.1), units.degreesToRadians(2)),
     (4.00, units.degreesToRadians(00.0), units.degreesToRadians(6)),
 ]
