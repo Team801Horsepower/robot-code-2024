@@ -3,7 +3,6 @@ import time
 import wpilib
 import wpimath
 from subsystems import (
-    chassis,
     drive,
     vision,
     gatherer,
@@ -14,25 +13,22 @@ from subsystems import (
     note_vision,
 )
 from commands.drive_to_pose import DriveToPose
-from commands.aim_at_speaker import AimAtSpeaker
 from commands.continuous_aim_at_speaker import ContinuousAimAtSpeaker
 from commands.aim_at_pitch import AimAtPitch
 from commands.auto_auto_aim import AutoAutoAim
-from commands.chase_note import ChaseNote
 from commands import chase_note
 from commands.continuous_chase_note import ContinuousChaseNote
-from wpilib.event import EventLoop
 from commands.gather import Gather
 from commands.shoot import Shoot
 from utils.read_auto import read_auto, read_cmds
 
 from wpilib import SmartDashboard, SendableChooser
-from wpimath.geometry import Transform2d, Pose2d, Rotation2d, Translation2d
+from wpimath.geometry import Translation2d
 from wpimath import units
-from commands2 import CommandScheduler, Command, SequentialCommandGroup
+from commands2 import CommandScheduler, Command
 from functools import reduce
 
-from math import pi, sqrt, copysign
+from math import pi, copysign
 
 import config
 
@@ -132,7 +128,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sRedstensiveQuest.json",
             "Gollum'sPracticeQuest.json",
             "Gollum'sAmplifiedQuest.json",
-            "SourceSide.json"
+            "SourceSide.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
@@ -143,7 +139,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sExtensiveQuest.json",
             "Gollum'sPracticeQuest.json",
             "Gollum'sBlueAmplifiedQuest.json",
-            "SourceSideBlue.json"
+            "SourceSideBlue.json",
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]

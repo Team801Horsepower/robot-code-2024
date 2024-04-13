@@ -1,7 +1,6 @@
 from rev import CANSparkMax, CANSparkFlex
 from wpilib import DutyCycleEncoder
 
-import time
 
 import config
 

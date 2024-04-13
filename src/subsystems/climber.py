@@ -1,4 +1,4 @@
-from rev import CANSparkMax, SparkMaxPIDController
+from rev import CANSparkMax
 from typing import Tuple
 
 

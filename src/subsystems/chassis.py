@@ -1,20 +1,18 @@
 from subsystems.swerve import Swerve
 import config
 
-import wpimath
 import rev
-from math import sin, cos, tan, pi
+from math import pi
 
 
-from rev import CANSparkMax, SparkMaxPIDController, SparkMaxRelativeEncoder
+from rev import CANSparkMax
 from wpilib import AnalogEncoder
 from wpimath.geometry import Translation2d, Transform2d, Rotation2d
-from itertools import chain
 
 from wpimath.kinematics import ChassisSpeeds
 from functools import reduce
 
-from typing import List, Tuple
+from typing import Tuple
 
 
 # pylint: disable=missing-docstring, too-few-public-methods
@@ -42,7 +40,7 @@ class Chassis:
             swerve.drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
             swerve.turn_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
 
-           #print(swerve.turn_abs_encoder.getAbsolutePosition())
+            # print(swerve.turn_abs_encoder.getAbsolutePosition())
 
             # Makes turn encoders operate in radians
             swerve.turn_encoder.setPositionConversionFactor(

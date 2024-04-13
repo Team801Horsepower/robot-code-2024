@@ -1,9 +1,7 @@
-from rev import CANSparkMax, SparkMaxPIDController
-from wpilib import I2C, DigitalInput
+from rev import CANSparkMax
+from wpilib import DigitalInput
 
 from math import copysign
-
-import config
 
 
 class Gatherer:

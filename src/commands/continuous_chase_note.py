@@ -1,7 +1,7 @@
 from subsystems.note_vision import NoteVision
 from subsystems.drive import Drive
 from commands.chase_note import ChaseNote
-from wpimath.geometry import Translation2d, Pose2d, Rotation2d
+from wpimath.geometry import Pose2d
 
 import config
 

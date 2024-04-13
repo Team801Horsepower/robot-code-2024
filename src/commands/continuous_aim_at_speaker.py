@@ -5,11 +5,10 @@ from commands2 import Command
 
 from wpilib import SmartDashboard
 
-from math import atan, atan2, tan, pi
+from math import atan, tan, pi
 
 from subsystems.drive import Drive
 from subsystems.vision import Vision
-from subsystems.shooter import Shooter
 
 import config
 

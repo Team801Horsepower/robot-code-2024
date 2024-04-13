@@ -5,7 +5,7 @@ from functools import reduce
 from rev import CANSparkMax, CANSparkFlex, SparkPIDController
 from wpilib import DutyCycleEncoder, SmartDashboard
 from wpimath import units
-from wpimath.controller import PIDController, ArmFeedforward
+from wpimath.controller import PIDController
 from commands2 import CommandScheduler, Subsystem
 
 from subsystems.amp_scorer import AmpScorer

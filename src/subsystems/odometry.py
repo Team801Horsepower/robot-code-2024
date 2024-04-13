@@ -1,11 +1,8 @@
 from navx import AHRS
 from wpilib import SPI
 from wpimath.geometry import Rotation2d, Translation2d, Pose2d
-from itertools import chain
-from math import pi
 
 from subsystems.chassis import Chassis
-import config
 
 
 class Odometry:
