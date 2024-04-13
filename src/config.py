@@ -58,9 +58,9 @@ swerve_ids = [0, 1, 2, 3]
 # note_proximity_threshold = 1600
 
 note_proximity_threshold = 600
-flywheel_speed = 5500
+flywheel_speed = 6200
 # Weird PID offset thing (we haven't figured out why we have to do this)
-flywheel_setpoint = flywheel_speed + 950
+flywheel_setpoint = flywheel_speed + 1030
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)
@@ -89,13 +89,13 @@ speaker_tag_height = units.inchesToMeters(57.125)
 
 # (distance, pitch, yaw difference)
 shooter_lookup_table = [
-    (1.018, 0.8560839981, 0),
-    (1.707, 0.7208209811, 0.1254891732),
-    (2.29, 0.5986479334, 0),
-    (2.34, 0.5550147021, 0.09424777961),
-    (2.457, 0.5497787144, 0.1015781625),
-    (3.315, 0.4700171676, 0.08779006138),
-    (4.18, 0.4392993727, 0.06806784083),
+    (1.40, units.degreesToRadians(42.3), units.degreesToRadians(5)),
+    (1.97, units.degreesToRadians(37.5), units.degreesToRadians(6)),
+    (2.46, units.degreesToRadians(29.7), units.degreesToRadians(3)),
+    (2.93, units.degreesToRadians(29.0), units.degreesToRadians(4)),
+    (3.34, units.degreesToRadians(27.3), units.degreesToRadians(6)),
+    (4.00, units.degreesToRadians(24.1), units.degreesToRadians(2)),
+    (4.00, units.degreesToRadians(00.0), units.degreesToRadians(6)),
 ]
 
 
