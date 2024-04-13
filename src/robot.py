@@ -84,6 +84,7 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser.addOption("blue only note theft", 4)
         self.auto_chooser.addOption("far note", 5)
         self.auto_chooser.addOption("test auto", 6)
+        self.auto_chooser.addOption("amp side far note", 7)
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -109,6 +110,12 @@ class Gollum(wpilib.TimedRobot):
             "shooter abs enc abs", self.shooter.pitch_encoder.getAbsolutePosition()
         )
 
+        SmartDashboard.putNumber("robot yaw", self.drive.odometry.rotation().degrees())
+
+        pos = self.drive.odometry.pose().translation()
+        SmartDashboard.putNumber("robot x", pos.x)
+        SmartDashboard.putNumber("robot y", pos.y)
+
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
@@ -122,6 +129,7 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
             "Gollum'sRedstensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+            "Gollum'sAmplifiedQuest.json",
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
@@ -131,6 +139,7 @@ class Gollum(wpilib.TimedRobot):
             "PettyTheft.json",
             "Gollum'sExtensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+            "Gollum'sBlueAmplifiedQuest.json",
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]
@@ -179,6 +188,7 @@ class Gollum(wpilib.TimedRobot):
                     cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
             new_new_cmds.append(cmd)
 
+        self.shooter.run_shooter(config.flywheel_setpoint)
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
     def autonomousPeriodic(self):
