@@ -85,6 +85,8 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser.addOption("far note", 5)
         self.auto_chooser.addOption("test auto", 6)
         self.auto_chooser.addOption("amp side far note", 7)
+        self.auto_chooser.addOption("source side", 8)
+
         SmartDashboard.putData("auto select", self.auto_chooser)
 
     def robotPeriodic(self):
@@ -129,7 +131,12 @@ class Gollum(wpilib.TimedRobot):
             "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
             "Gollum'sRedstensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+<<<<<<< HEAD
             "Gollum'sAmplifiedQuest.json",
+=======
+            "",
+            "SourceSide.json"
+>>>>>>> e503952 (Source Side autos (not completely ready yet))
         ]
         blue_autos = [
             "Gollum'sReverseEarthQuest.json",
@@ -139,7 +146,12 @@ class Gollum(wpilib.TimedRobot):
             "PettyTheft.json",
             "Gollum'sExtensiveQuest.json",
             "Gollum'sPracticeQuest.json",
+<<<<<<< HEAD
             "Gollum'sBlueAmplifiedQuest.json",
+=======
+            "",
+            "SourceSideBlue.json"
+>>>>>>> e503952 (Source Side autos (not completely ready yet))
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]
@@ -187,7 +199,10 @@ class Gollum(wpilib.TimedRobot):
                         )
                     cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
             new_new_cmds.append(cmd)
+<<<<<<< HEAD
 
+=======
+>>>>>>> e503952 (Source Side autos (not completely ready yet))
         self.shooter.run_shooter(config.flywheel_setpoint)
         self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
 
