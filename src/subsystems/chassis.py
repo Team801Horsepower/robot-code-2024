@@ -40,7 +40,7 @@ class Chassis:
             swerve.drive_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
             swerve.turn_motor.setIdleMode(CANSparkMax.IdleMode.kBrake)
 
-            # print(swerve.turn_abs_encoder.getAbsolutePosition())
+            print(swerve.turn_abs_encoder.getAbsolutePosition())
 
             # Makes turn encoders operate in radians
             swerve.turn_encoder.setPositionConversionFactor(
