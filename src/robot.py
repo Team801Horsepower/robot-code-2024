@@ -129,7 +129,7 @@ class Gollum(wpilib.TimedRobot):
         blue_autos = [
             "Gollum'sExtensiveQuest.json",
             "Gollum'sBlueAmplifiedQuest.json",
-            "Gollum'sBlueResourcefulQuest.json",
+            "Gollum'sReversefulQuest.json",
             "Gollum'sBlueSideQuest.json",
             "Gollum'sUltraBlueSideQuest.json",
             "Gollum'sReverseEarthQuest.json",
