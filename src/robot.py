@@ -75,10 +75,10 @@ class Gollum(wpilib.TimedRobot):
         self.auto_chooser = SendableChooser()
         self.auto_chooser.setDefaultOption("center 5 note", 0)
         self.auto_chooser.addOption("amp side 4 note", 1)
-        self.auto_chooser.addOption("source side 4 note", 2)
+        self.auto_chooser.addOption("source side 3 note", 2)
         self.auto_chooser.addOption("speaker source side 1 note", 3)
         self.auto_chooser.addOption("speaker amp side 1 note", 4)
-        self.auto_chooser.addOption("legacy 4 note", 5)
+        self.auto_chooser.addOption("classic 4 note", 5)
         self.auto_chooser.addOption("test auto", 6)
 
         SmartDashboard.putData("auto select", self.auto_chooser)
