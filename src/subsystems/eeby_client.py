@@ -6,7 +6,7 @@ class EebyClient:
         self.server_address = server_address
 
     def eeby(self):
-        response = requests.get(self.server_address)
+        response = requests.get(self.server_address(3.05, 3.05))
         if response.status_code == 200:
             print(response.text)
         else:
