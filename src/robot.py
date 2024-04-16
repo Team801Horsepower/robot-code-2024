@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import time
 import wpilib
 import wpimath
 from subsystems import (
@@ -20,6 +19,7 @@ from commands import chase_note
 from commands.continuous_chase_note import ContinuousChaseNote
 from commands.gather import Gather
 from commands.shoot import Shoot
+from commands.measure_time import MeasureTime
 from utils.read_auto import read_auto, read_cmds
 
 from wpilib import SmartDashboard, SendableChooser
@@ -73,15 +73,13 @@ class Gollum(wpilib.TimedRobot):
         SmartDashboard.putNumber("color value", -1)
 
         self.auto_chooser = SendableChooser()
-        self.auto_chooser.setDefaultOption("4 note", 0)
-        self.auto_chooser.addOption("1 note", 1)
-        self.auto_chooser.addOption("amp side 1 note", 2)
-        self.auto_chooser.addOption("legacy 4 note", 3)
-        self.auto_chooser.addOption("blue only note theft", 4)
-        self.auto_chooser.addOption("far note", 5)
+        self.auto_chooser.setDefaultOption("center 5 note", 0)
+        self.auto_chooser.addOption("amp side 4 note", 1)
+        self.auto_chooser.addOption("source side 3 note", 2)
+        self.auto_chooser.addOption("speaker source side 1 note", 3)
+        self.auto_chooser.addOption("speaker amp side 1 note", 4)
+        self.auto_chooser.addOption("classic 4 note", 5)
         self.auto_chooser.addOption("test auto", 6)
-        self.auto_chooser.addOption("amp side far note", 7)
-        self.auto_chooser.addOption("source side", 8)
 
         SmartDashboard.putData("auto select", self.auto_chooser)
 
@@ -120,26 +118,22 @@ class Gollum(wpilib.TimedRobot):
         autos_dir = "/home/lvuser/py/autos/"
         auto_i = self.auto_chooser.getSelected()
         red_autos = [
-            "Gollum'sMiddleEarthQuest.json",
+            "Gollum'sRedstensiveQuest.json",
+            "Gollum'sAmplifiedQuest.json",
+            "Gollum'sResourcefulQuest.json",
             "Gollum'sSideQuest.json",
             "Gollum'sUltraSideQuest.json",
-            "Gollum'sEvenBetterQuest.json",
-            "Gollum'sUltraSideQuest.json",  # Filler; TODO: Create red version of PettyTheft
-            "Gollum'sRedstensiveQuest.json",
+            "Gollum'sMiddleEarthQuest.json",
             "Gollum'sPracticeQuest.json",
-            "Gollum'sAmplifiedQuest.json",
-            "SourceSide.json",
         ]
         blue_autos = [
-            "Gollum'sReverseEarthQuest.json",
+            "Gollum'sExtensiveQuest.json",
+            "Gollum'sBlueAmplifiedQuest.json",
+            "Gollum'sReversefulQuest.json",
             "Gollum'sBlueSideQuest.json",
             "Gollum'sUltraBlueSideQuest.json",
-            "Gollum'sEvenRedderQuest.json",
-            "PettyTheft.json",
-            "Gollum'sExtensiveQuest.json",
+            "Gollum'sReverseEarthQuest.json",
             "Gollum'sPracticeQuest.json",
-            "Gollum'sBlueAmplifiedQuest.json",
-            "SourceSideBlue.json",
         ]
         if config.is_red():
             auto_name = red_autos[auto_i]
@@ -189,16 +183,16 @@ class Gollum(wpilib.TimedRobot):
             new_new_cmds.append(cmd)
 
         self.shooter.run_shooter(config.flywheel_setpoint)
-        self.scheduler.schedule(reduce(Command.andThen, new_new_cmds))
-
-        self.auto_start_time = time.time()
+        self.scheduler.schedule(
+            reduce(Command.andThen, new_new_cmds).deadlineWith(MeasureTime())
+        )
 
     def autonomousPeriodic(self):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
         self.feeder.run(feed_power)
 
     def autonomousExit(self):
-        SmartDashboard.putNumber("Auto time", time.time() - self.auto_start_time)
+        pass
 
     def teleopInit(self):
         self.drive.chassis.set_swerves()
