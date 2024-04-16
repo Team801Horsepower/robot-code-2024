@@ -81,7 +81,7 @@ class Shooter(Subsystem):
 
         return angle
 
-    def set_pitch(self, pitch: float, max_power: float = 1):
+    def set_pitch(self, pitch: float, max_power: float = 1, climb: bool = False):
         self.hold_pitch = False
         pitch = min(self.pitch_max, max(self.pitch_min, pitch))
         self.pitch_target = pitch
@@ -89,7 +89,7 @@ class Shooter(Subsystem):
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
         power = min(max_power, max(-max_power, pid_power))
         # TODO: Allow this to be overridden for climbing (dpad down?)
-        if pid_power < 0:
+        if pid_power < 0 and not climb:
             pid_power *= 0.3
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
@@ -116,7 +116,7 @@ class Shooter(Subsystem):
         self.set_pitch(self.get_pitch() + 1)
 
     def pitch_down(self):
-        self.set_pitch(self.get_pitch() - 1)
+        self.set_pitch(self.get_pitch() - 1, climb=True)
 
     def manual_pitch(self, diff: float):
         self.set_pitch(self.get_pitch() + diff)
