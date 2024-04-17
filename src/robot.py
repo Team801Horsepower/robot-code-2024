@@ -87,11 +87,6 @@ class Gollum(wpilib.TimedRobot):
 
         SmartDashboard.putData("auto select", self.auto_chooser)
 
-        if random.random() < 0.0000000001:
-            self.eeby_client.eeby()
-        else:
-            print("Activated.")
-
     def robotPeriodic(self):
         self.scheduler.run()
 
