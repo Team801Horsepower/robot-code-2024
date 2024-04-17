@@ -90,7 +90,7 @@ class Shooter(Subsystem):
         if pid_power < 0 and not climb:
             pid_power *= 0.8
         else:
-            pid_power *= 1.5
+            pid_power *= 2.0
         power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
