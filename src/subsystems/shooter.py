@@ -87,18 +87,16 @@ class Shooter(Subsystem):
         self.pitch_target = pitch
         current_pitch = self.get_pitch()
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
-        power = min(max_power, max(-max_power, pid_power))
-        # TODO: Allow this to be overridden for climbing (dpad down?)
         if pid_power < 0 and not climb:
-            pid_power *= 0.3
+            pid_power *= 0.8
+        else:
+            pid_power *= 1.5
+        power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
         while link_pivot_pos > 0.8:
             link_pivot_pos -= 1
         # SmartDashboard.putNumber("link pivot pos", link_pivot_pos)
-
-        if power < 0:
-            power *= 1.5
 
         if link_pivot_pos > 0.71:
             power = max(0, power)

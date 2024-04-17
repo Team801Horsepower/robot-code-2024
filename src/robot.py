@@ -140,6 +140,7 @@ class Gollum(wpilib.TimedRobot):
         else:
             auto_name = blue_autos[auto_i]
         file_path = autos_dir + auto_name
+        print("running auto at", file_path)
 
         new_cmds = []
         pose_list = read_auto(file_path)
