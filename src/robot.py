@@ -20,6 +20,7 @@ from commands.continuous_chase_note import ContinuousChaseNote
 from commands.gather import Gather
 from commands.shoot import Shoot
 from commands.measure_time import MeasureTime
+from commands.require_note import RequireNote
 from utils.read_auto import read_auto, read_cmds
 
 from wpilib import SmartDashboard, SendableChooser
@@ -181,6 +182,8 @@ class Gollum(wpilib.TimedRobot):
                             AutoAutoAim(self.drive, self.shooter, self.vision)
                         )
                     cmd = cmd.andThen(Shoot(self.shooter, self.gatherer, True))
+                elif cmd_s == "!":
+                    cmd = cmd.raceWith(RequireNote(self.gatherer))
             new_new_cmds.append(cmd)
 
         self.shooter.run_shooter(config.flywheel_setpoint)
