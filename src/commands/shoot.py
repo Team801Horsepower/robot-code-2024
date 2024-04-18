@@ -36,6 +36,7 @@ class Shoot(Command):
         return cond
 
     def end(self, interrupted: bool):
+        self.gatherer.auto_note_seen = False
         if self.keep_spin:
             self.shooter.set_feed_override(True)
         else:
