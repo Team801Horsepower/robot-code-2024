@@ -12,6 +12,8 @@ from subsystems.amp_scorer import AmpScorer
 
 import time
 
+# from wpilib import SmartDashboard
+
 
 import config
 
@@ -37,7 +39,7 @@ class Shooter(Subsystem):
         self.pitch_min = units.degreesToRadians(12)
         self.pitch_max = units.degreesToRadians(59)
 
-        self.pitch_pid = PIDController(2.8, 0, 0.05)
+        self.pitch_pid = PIDController(3.724, 0, 0.05)
 
         self.should_feed = False
         self.feed_override = False
@@ -62,7 +64,14 @@ class Shooter(Subsystem):
 
         scheduler.registerSubsystem(self)
 
+        # SmartDashboard.putNumber("p", 3.724)
+        # SmartDashboard.putNumber("i", 0)
+        # SmartDashboard.putNumber("d", 0.05)
+
     def periodic(self):
+        # self.pitch_pid.setP(SmartDashboard.getNumber("p", 0))
+        # self.pitch_pid.setI(SmartDashboard.getNumber("i", 0))
+        # self.pitch_pid.setD(SmartDashboard.getNumber("d", 0))
         SmartDashboard.putNumber(
             "pitch setpoint", units.radiansToDegrees(self.pitch_target)
         )
@@ -89,8 +98,10 @@ class Shooter(Subsystem):
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
         if pid_power < 0 and not climb:
             pid_power *= 0.8
+        elif pid_power >= 0:
+            pid_power *= 1.5
         else:
-            pid_power *= 2.0
+            pid_power = -1.0
         power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
@@ -103,6 +114,7 @@ class Shooter(Subsystem):
         if link_pivot_pos < -0.08:
             power = min(0, power)
         self.pitch_motor.set(power)
+        # print("power:", power)
 
     def stow(self):
         if self.link_pivot_encoder.getAbsolutePosition() < 0.71:
