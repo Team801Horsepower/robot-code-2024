@@ -30,7 +30,7 @@ class Shoot(Command):
 
     def isFinished(self):
         now = time.time()
-        cond = now - self.start_time > 1.5
+        cond = now - self.start_time > 1.0
         if self.shot_time is not None:
             cond |= now - self.shot_time > 0.15
         return cond
