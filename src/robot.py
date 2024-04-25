@@ -422,8 +422,8 @@ class Gollum(wpilib.TimedRobot):
             inp = min(inp, p * (max_v - cur))
             return inp
 
-        x_min, x_max = 0, 3
-        y_min, y_max = 0, 3
+        x_min, x_max = -1.5, 1.5
+        y_min, y_max = -1.5, 1.5
 
         pos = self.drive.odometry.pose().translation()
         x_speed = bound_input(pos.x, x_min, x_max, x_speed)
@@ -432,13 +432,12 @@ class Gollum(wpilib.TimedRobot):
         drive_input = wpimath.geometry.Transform2d(x_speed, y_speed, turn_speed)
         self.drive.drive(drive_input, self.field_oriented_drive)
 
-        if self.driver_controller.getBackButtonPressed():
+        if self.manip_controller.getBackButtonPressed():
             self.drive.chassis.zero_swerves()
-        if self.driver_controller.getAButtonPressed():
+        if self.manip_controller.getAButtonPressed():
             self.field_oriented_drive ^= True
-        if self.driver_controller.getStartButtonPressed():
+        if self.manip_controller.getStartButtonPressed():
             self.drive.odometry.reset()
-            self.yaw_setpoint = 0
 
 
 if __name__ == "__main__":
