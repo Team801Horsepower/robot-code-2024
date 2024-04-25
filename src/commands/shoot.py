@@ -30,12 +30,13 @@ class Shoot(Command):
 
     def isFinished(self):
         now = time.time()
-        cond = now - self.start_time > 1.5
+        cond = now - self.start_time > 1.0
         if self.shot_time is not None:
             cond |= now - self.shot_time > 0.15
         return cond
 
     def end(self, interrupted: bool):
+        self.gatherer.auto_note_seen = False
         if self.keep_spin:
             self.shooter.set_feed_override(True)
         else:

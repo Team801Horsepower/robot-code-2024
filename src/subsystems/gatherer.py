@@ -15,6 +15,8 @@ class Gatherer:
         self.should_feed = False
         self.feed_val = 0
 
+        self.auto_note_seen = False
+
     # Returns whether the controller should rumble
     def spin_gatherer(self, spin_speed) -> bool:
         spin_speed *= 0.75

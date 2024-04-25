@@ -16,7 +16,11 @@ class Gather(Command):
         self.gatherer.spin_gatherer(1)
         self.short_finished |= self.short and self.gatherer.note_seen()
 
-    def isFinished(self):
+        self.gatherer.auto_note_seen |= (
+            self.gatherer.note_seen() or self.gatherer.note_present()
+        )
+
+    def isFinished(self) -> bool:
         return self.gatherer.note_present() or self.short_finished
 
     def end(self, interrupted):

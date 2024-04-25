@@ -12,7 +12,6 @@ from subsystems.amp_scorer import AmpScorer
 
 import time
 
-
 import config
 
 # pylint: disable=too-many-instance-attributes
@@ -37,7 +36,7 @@ class Shooter(Subsystem):
         self.pitch_min = units.degreesToRadians(12)
         self.pitch_max = units.degreesToRadians(59)
 
-        self.pitch_pid = PIDController(2.8, 0, 0.05)
+        self.pitch_pid = PIDController(3.724, 0, 0.05)
 
         self.should_feed = False
         self.feed_override = False
@@ -89,8 +88,10 @@ class Shooter(Subsystem):
         pid_power = self.pitch_pid.calculate(current_pitch, self.pitch_target)
         if pid_power < 0 and not climb:
             pid_power *= 0.8
-        else:
+        elif pid_power >= 0:
             pid_power *= 1.5
+        else:
+            pid_power = -1.0
         power = min(max_power, max(-max_power, pid_power))
 
         link_pivot_pos = self.link_pivot_encoder.getAbsolutePosition()
