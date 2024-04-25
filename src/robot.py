@@ -397,13 +397,48 @@ class Gollum(wpilib.TimedRobot):
         self.cn_command.end(True)
 
     def testInit(self):
-        pass
+        self.drive.chassis.set_swerves()
+        self.shooter.hold_pitch = False
+        self.shooter.stop_pitch()
+        self.use_yaw_setpoint = False
 
     def testPeriodic(self):
-        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power())
-        self.feeder.run(feed_power)
-        test = self.note_vision.robot_space_note_pos()
-        print(test)
+        self.shooter.set_pitch(units.degreesToRadians(20))
+
+        def deadzone(activation: float) -> float:
+            if abs(activation) < 0.01:
+                return 0.0
+            return activation
+
+        x_speed = deadzone(-self.driver_controller.getLeftY()) * 0.8
+        y_speed = deadzone(-self.driver_controller.getLeftX()) * 0.8
+        turn_speed = deadzone(-self.driver_controller.getRightX()) * 0.8
+
+        # Make the robot slow down when approaching the bounds
+        # by effectively PIDing once close.
+        def bound_input(cur: float, min_v: float, max_v: float, inp: float) -> float:
+            p = 1
+            inp = max(inp, p * (min_v - cur))
+            inp = min(inp, p * (max_v - cur))
+            return inp
+
+        x_min, x_max = 0, 3
+        y_min, y_max = 0, 3
+
+        pos = self.drive.odometry.pose().translation()
+        x_speed = bound_input(pos.x, x_min, x_max, x_speed)
+        y_speed = bound_input(pos.y, y_min, y_max, y_speed)
+
+        drive_input = wpimath.geometry.Transform2d(x_speed, y_speed, turn_speed)
+        self.drive.drive(drive_input, self.field_oriented_drive)
+
+        if self.driver_controller.getBackButtonPressed():
+            self.drive.chassis.zero_swerves()
+        if self.driver_controller.getAButtonPressed():
+            self.field_oriented_drive ^= True
+        if self.driver_controller.getStartButtonPressed():
+            self.drive.odometry.reset()
+            self.yaw_setpoint = 0
 
 
 if __name__ == "__main__":
