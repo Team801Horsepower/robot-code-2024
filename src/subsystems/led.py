@@ -11,8 +11,12 @@ class Led:
     def blue_blink(self):
         self.led_driver.set(-0.09)
 
+    def red_solid(self):
+        self.led_driver.set(-0.17)
+
     def idle(self):
-        self.led_driver.set(0.69)
+        # self.led_driver.set(0.69)
+        self.led_driver.set(0.75)
 
     def off(self):
         self.led_driver.set(0.99)

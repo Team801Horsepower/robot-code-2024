@@ -201,7 +201,8 @@ class Gollum(wpilib.TimedRobot):
     def autonomousExit(self):
         pass
 
-    def teleopInit(self):
+    # def teleopInit(self):
+    def testInit(self):
         self.drive.chassis.set_swerves()
         self.shooter.set_feed_override(False)
         self.shooter.hold_pitch = False
@@ -209,7 +210,8 @@ class Gollum(wpilib.TimedRobot):
         self.use_yaw_setpoint = False
         self.aas_command.initialize()
 
-    def teleopPeriodic(self):
+    # def teleopPeriodic(self):
+    def testPeriodic(self):
         # SmartDashboard.putNumber("amp abs enc val", self.shooter.amp_scorer.flipper_encoder.getAbsolutePosition())
         def deadzone(activation: float) -> float:
             # if abs(activation) < 0.14:
@@ -400,11 +402,13 @@ class Gollum(wpilib.TimedRobot):
                 )
             )
 
-    def teleopExit(self):
+    # def teleopExit(self):
+    def testExit(self):
         self.aas_command.end(True)
         self.cn_command.end(True)
 
-    def testInit(self):
+    # def testInit(self):
+    def teleopInit(self):
         self.drive.chassis.set_swerves()
         self.shooter.hold_pitch = False
         self.shooter.stop_pitch()
@@ -412,7 +416,8 @@ class Gollum(wpilib.TimedRobot):
 
         self.cn_command.initialize()
 
-    def testPeriodic(self):
+    # def testPeriodic(self):
+    def teleopPeriodic(self):
         # x_min, x_max = 0, 3
         # y_min, y_max = -1.5, 3
         x_min, x_max = 0, 4.5
@@ -489,7 +494,8 @@ class Gollum(wpilib.TimedRobot):
         feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
         self.feeder.run(feed_power)
 
-    def testExit(self):
+    # def testExit(self):
+    def teleopExit(self):
         self.cn_command.end(True)
 
 
