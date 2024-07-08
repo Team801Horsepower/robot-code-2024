@@ -36,8 +36,8 @@ turn_gear_ratio = 150.0 / 7.0
 # wheel_diameter = units.inchesToMeters(4.5)
 wheel_diameter = units.inchesToMeters(3.965)
 
-drive_speed = 6
-turn_speed = 6
+drive_speed = 2
+turn_speed = 2
 auto_drive_speed = 1.8
 auto_turn_speed = 3
 
@@ -58,8 +58,10 @@ swerve_ids = [0, 1, 2, 3]
 
 note_proximity_threshold = 600
 flywheel_speed = 6200
+# flywheel_speed = 1000
 # Weird PID offset thing (we haven't figured out why we have to do this)
 flywheel_setpoint = flywheel_speed + 1030
+# flywheel_setpoint = flywheel_speed + 100
 
 # Height of the *pivot* of the shooter
 shooter_height = units.inchesToMeters(9.061)

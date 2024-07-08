@@ -183,12 +183,21 @@ class Shooter(Subsystem):
                 self.amp_scorer.set_scorer(0)
             return
         self.amp_scorer.set_scorer(0)
-        flywheel_speeds = [-(velocity + differential), velocity - differential]
-        self.set_flywheels(flywheel_speeds)
+        # flywheel_speeds = [-(velocity + differential), velocity - differential]
+        # self.set_flywheels(flywheel_speeds)
 
-        self.should_feed = abs(velocity) > 0 and (
-            self.flywheels_ready() or self.should_feed
-        )
+        # self.should_feed = abs(velocity) > 0 and (
+        #     self.flywheels_ready() or self.should_feed
+        # )
+
+        if velocity > 0:
+            self.should_feed = True
+            for whl, mul in zip(self.flywheel_motors, [-1, 1]):
+                whl.set(0.8 * mul)
+        else:
+            self.should_feed = False
+            for whl in self.flywheel_motors:
+                whl.set(0)
 
         dbg = list(map(lambda e: abs(e.getVelocity()), self.flywheel_encoders))
         SmartDashboard.putNumberArray("flywheel speeds", dbg)

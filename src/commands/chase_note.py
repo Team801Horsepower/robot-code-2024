@@ -18,6 +18,8 @@ class ChaseNote(DriveToPose):
         self.vision = note_vision
         super().__init__(target, drive, speed, passthrough)
 
+        self.use_bounds = False
+
     def update_note_pos(self):
         cur_pose = self.drive.odometry.pose()
 
@@ -31,6 +33,9 @@ class ChaseNote(DriveToPose):
 
         relative_note_pos: Translation2d = self.vision.robot_space_note_pos()
         if relative_note_pos is not None:
+            relative_note_pos = Translation2d(
+                relative_note_pos.x - 0.2, relative_note_pos.y
+            )
             field_relative_note_pos = relative_note_pos.rotateBy(cur_pose.rotation())
             rotation = field_relative_note_pos.angle().rotateBy(
                 Rotation2d.fromDegrees(180)
@@ -42,7 +47,18 @@ class ChaseNote(DriveToPose):
 
     def execute(self):
         self.update_note_pos()
+        if self.use_bounds:
+            x = max(self.x_min, min(self.x_max, self.target.x))
+            y = max(self.y_min, min(self.y_max, self.target.y))
+            self.target = Pose2d(Translation2d(x, y), self.target.rotation())
         super().execute()
+
+    def bound(self, x_min: float, x_max: float, y_min: float, y_max: float):
+        self.use_bounds = True
+        self.x_min = x_min
+        self.x_max = x_max
+        self.y_min = y_min
+        self.y_max = y_max
 
 
 def from_dtp(dtp: DriveToPose, note_vision: NoteVision) -> ChaseNote:

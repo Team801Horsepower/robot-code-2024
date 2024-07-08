@@ -30,6 +30,7 @@ from commands2 import CommandScheduler, Command
 from functools import reduce
 
 from math import pi, copysign
+import time
 
 import config
 
@@ -57,6 +58,8 @@ class Gollum(wpilib.TimedRobot):
         self.special_turning = False
         self.use_yaw_setpoint = False
         self.yaw_setpoint = 0
+
+        self.note_last_seen = 0
 
         self.drive.chassis.set_swerves()
         for swerve in self.drive.chassis.swerves:
@@ -290,7 +293,12 @@ class Gollum(wpilib.TimedRobot):
             self.drive.odometry.reset()
             self.yaw_setpoint = 0
 
-        should_shoot = self.driver_controller.getRightBumper()
+        if self.gatherer.note_present():
+            self.note_last_seen = time.time()
+        should_shoot = (
+            self.driver_controller.getRightBumper()
+            and time.time() - self.note_last_seen < 0.2
+        )
         if should_shoot:
             self.shooter.set_feed_override(False)
             self.shooter.run_shooter(config.flywheel_setpoint)
@@ -402,42 +410,87 @@ class Gollum(wpilib.TimedRobot):
         self.shooter.stop_pitch()
         self.use_yaw_setpoint = False
 
+        self.cn_command.initialize()
+
     def testPeriodic(self):
-        self.shooter.set_pitch(units.degreesToRadians(20))
+        # x_min, x_max = 0, 3
+        # y_min, y_max = -1.5, 3
+        x_min, x_max = 0, 4.5
+        y_min, y_max = -1.5, 1.5
+        self.cn_command.bound(x_min, x_max, y_min, y_max)
+
+        self.shooter.set_pitch(units.degreesToRadians(30))
 
         def deadzone(activation: float) -> float:
             if abs(activation) < 0.01:
                 return 0.0
             return activation
 
-        x_speed = deadzone(-self.driver_controller.getLeftY()) * 0.8
-        y_speed = deadzone(-self.driver_controller.getLeftX()) * 0.8
-        turn_speed = deadzone(-self.driver_controller.getRightX()) * 0.8
+        self.cn_command.should_run = (
+            self.driver_controller.getLeftBumper() and not self.gatherer.note_present()
+        )
+        self.cn_command.execute()
 
-        # Make the robot slow down when approaching the bounds
-        # by effectively PIDing once close.
-        def bound_input(cur: float, min_v: float, max_v: float, inp: float) -> float:
-            p = 1
-            inp = max(inp, p * (min_v - cur))
-            inp = min(inp, p * (max_v - cur))
-            return inp
+        if not self.cn_command.should_run:
+            x_speed = deadzone(-self.driver_controller.getLeftY()) * 0.8
+            y_speed = deadzone(-self.driver_controller.getLeftX()) * 0.8
+            turn_speed = deadzone(-self.driver_controller.getRightX()) * 2
 
-        x_min, x_max = -1.5, 1.5
-        y_min, y_max = -1.5, 1.5
+            # Make the robot slow down when approaching the bounds
+            # by effectively PIDing once close.
+            def bound_input(
+                cur: float, min_v: float, max_v: float, inp: float
+            ) -> float:
+                p = 3
+                inp = max(inp, p * (min_v - cur), -1)
+                inp = min(inp, p * (max_v - cur), 1)
+                return inp
 
-        pos = self.drive.odometry.pose().translation()
-        x_speed = bound_input(pos.x, x_min, x_max, x_speed)
-        y_speed = bound_input(pos.y, y_min, y_max, y_speed)
+            pos = self.drive.odometry.pose().translation()
+            x_speed = bound_input(pos.x, x_min, x_max, x_speed)
+            y_speed = bound_input(pos.y, y_min, y_max, y_speed)
 
-        drive_input = wpimath.geometry.Transform2d(x_speed, y_speed, turn_speed)
-        self.drive.drive(drive_input, self.field_oriented_drive)
+            drive_input = wpimath.geometry.Transform2d(x_speed, y_speed, turn_speed)
+            self.drive.drive(drive_input, True)
 
         if self.manip_controller.getBackButtonPressed():
             self.drive.chassis.zero_swerves()
-        if self.manip_controller.getAButtonPressed():
-            self.field_oriented_drive ^= True
+        # if self.manip_controller.getAButtonPressed():
+        #     self.field_oriented_drive ^= True
         if self.manip_controller.getStartButtonPressed():
             self.drive.odometry.reset()
+
+        if self.gatherer.note_present():
+            self.note_last_seen = time.time()
+        should_shoot = (
+            self.driver_controller.getRightBumper()
+            and time.time() - self.note_last_seen < 0.2
+        )
+        if should_shoot:
+            self.shooter.set_feed_override(False)
+            self.shooter.run_shooter(config.flywheel_setpoint)
+        elif not self.shooter.feed_override:
+            self.shooter.run_shooter(0)
+
+        gather_power = (
+            (
+                self.driver_controller.getRightTriggerAxis()
+                - self.driver_controller.getLeftTriggerAxis()
+            )
+            if not self.cn_command.should_run
+            else 1
+        )
+        should_rumble = self.gatherer.spin_gatherer(gather_power)
+        rumble = 1.0 if should_rumble else 0
+        self.driver_controller.setRumble(
+            wpilib.interfaces.GenericHID.RumbleType.kRightRumble, rumble
+        )
+
+        feed_power = max(self.gatherer.feed_power(), self.shooter.feed_power(), key=abs)
+        self.feeder.run(feed_power)
+
+    def testExit(self):
+        self.cn_command.end(True)
 
 
 if __name__ == "__main__":
