@@ -38,8 +38,8 @@ wheel_diameter = units.inchesToMeters(3.965)
 
 drive_speed = 6
 turn_speed = 6
-auto_drive_speed = 1.8
-auto_turn_speed = 3
+auto_drive_speed = 0.8
+auto_turn_speed = 1
 
 # (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
 # All absolute encoder values are measured with the swerve wheel facing
