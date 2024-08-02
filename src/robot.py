@@ -121,13 +121,39 @@ class Gollum(wpilib.TimedRobot):
         autos_dir = config.code_path + "autos/"
         graph_path = autos_dir + "graph.json"
 
-        target = Translation2d(0, 2.14)
-        self.drive.odometry.reset(Pose2d(1.05, -1.9, -pi / 2))
+        speaker_pos = Translation2d(1.03, -2.88)
+        shoot_pos = Translation2d(1.03, -1.18)
+        shoot_rot = (speaker_pos - shoot_pos).angle()
+
+        self.drive.odometry.reset(Pose2d(1.03, -1.9, -pi / 2))
+
+        # target = Translation2d(0, 2.14)
+        # target = Translation2d(-1.22, 3.04)
+        notes = map(
+            lambda t: Translation2d(*t),
+            [(1.03, -0.83), (0, 3.04), (-1.2, 3.04)],
+        )
 
         graph = Graph(graph_path)
 
-        command = GraphPathfind(target, graph, self.drive)
-        self.scheduler.schedule(command)
+        # command = GraphPathfind(
+        #     target, graph, self.drive, self.note_vision, True
+        # ).alongWith(Gather(self.gatherer))
+        commands = []
+        for note in notes:
+            gather_cmd = GraphPathfind(
+                note, graph, self.drive, self.note_vision, chase_note=True
+            ).alongWith(Gather(self.gatherer))
+            shoot_cmd = GraphPathfind(
+                shoot_pos,
+                graph,
+                self.drive,
+                self.note_vision,
+                target_rot_override=shoot_rot,
+            ).andThen(Shoot(self.shooter, self.gatherer))
+            commands.append(gather_cmd)
+            commands.append(shoot_cmd)
+        self.scheduler.schedule(reduce(Command.andThen, commands))
 
     def autonomousInit_old(self):
         self.drive.chassis.set_swerves()
