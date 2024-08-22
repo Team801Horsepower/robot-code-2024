@@ -30,6 +30,7 @@ from commands2 import CommandScheduler, Command
 from functools import reduce
 
 from math import pi, copysign
+from os import path
 
 import config
 
@@ -116,7 +117,7 @@ class Gollum(wpilib.TimedRobot):
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
-        autos_dir = "/home/lvuser/py/autos/"
+        autos_dir = path.dirname(__file__) + "/autos/"
         auto_i = self.auto_chooser.getSelected()
         red_autos = [
             "Gollum'sRedstensiveQuest.json",
