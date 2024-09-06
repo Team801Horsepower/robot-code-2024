@@ -3,11 +3,14 @@ from wpimath.geometry import Translation2d
 from wpilib import DriverStation
 
 from typing import List, Tuple
+from os import path
 
 
 def is_red() -> bool:
     return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
+
+code_path = path.dirname(__file__) + "/"
 
 # lengths: meters
 

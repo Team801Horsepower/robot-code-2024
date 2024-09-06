@@ -116,7 +116,7 @@ class Gollum(wpilib.TimedRobot):
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
-        autos_dir = "/home/lvuser/py/autos/"
+        autos_dir = config.code_path + "autos/"
         auto_i = self.auto_chooser.getSelected()
         red_autos = [
             "Gollum'sRedstensiveQuest.json",

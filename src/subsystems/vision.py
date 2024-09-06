@@ -18,7 +18,7 @@ class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
 
-        layout = AprilTagFieldLayout("/home/lvuser/py/crescendo-apriltags.json")
+        layout = AprilTagFieldLayout(config.code_path + "crescendo-apriltags.json")
         strat = PoseStrategy.LOWEST_AMBIGUITY
         robot_to_cam = Transform3d(
             units.inchesToMeters(1.5),
