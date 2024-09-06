@@ -4,12 +4,12 @@ from photonlibpy.photonPoseEstimator import (
     AprilTagFieldLayout,
     PoseStrategy,
 )
-from wpimath.geometry import Transform3d, Rotation3d
+from wpimath.geometry import Transform3d, Rotation3d, Pose2d, Translation2d
 from wpimath import units
 from commands2 import Subsystem, CommandScheduler
-from typing import Tuple
+from typing import Tuple, Optional
 
-from math import tan
+from math import tan, sin, cos
 
 import config
 
@@ -18,24 +18,24 @@ class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
 
-        layout = AprilTagFieldLayout(config.code_path + "crescendo-apriltags.json")
-        strat = PoseStrategy.LOWEST_AMBIGUITY
+        self.layout = AprilTagFieldLayout(
+            # config.code_path
+            # + "crescendo-apriltags.json"
+            config.code_path
+            + "firehouse-apriltags.json"
+        )
+        # TODO: Put this in config
         robot_to_cam = Transform3d(
             units.inchesToMeters(1.5),
             units.inchesToMeters(12),
             units.inchesToMeters(18.5),
             Rotation3d.fromDegrees(0, 20, 0),
         )
-        self.estimator = PhotonPoseEstimator(layout, strat, self.camera, robot_to_cam)
-
-        self.current_pose = "periodic hasn't been called yet"
 
         scheduler.registerSubsystem(self)
 
     def periodic(self):
-        result = self.camera.getLatestResult()
-        self.current_pose = self.estimator.update(result)
-        # print(self.current_pose)
+        pass
 
     def test(self):
         # result = self.camera.getLatestResult()
@@ -74,3 +74,28 @@ class Vision(Subsystem):
             return None
         pitch_table = [(r[0], r[1]) for r in config.shooter_lookup_table]
         return config.lookup(pitch_table, x)
+
+    # TODO: Incorporate camera pose relative to robot center, then use multiple cameras
+    def estimate_multitag_pose(self, robot_angle: float) -> Optional[Pose2d]:
+        result = self.camera.getLatestResult()
+        targets = result.getTargets()
+        if len(targets) < 2:
+            return None
+        t1, t2 = targets[0], targets[1]
+
+        p1 = self.layout.getTagPose(t1.getFiducialId()).toPose2d().translation()
+        p2 = self.layout.getTagPose(t2.getFiducialId()).toPose2d().translation()
+
+        th1 = units.degreesToRadians(-t1.getYaw()) + robot_angle
+        th2 = units.degreesToRadians(-t2.getYaw()) + robot_angle
+
+        a1, b1 = -sin(th1), cos(th1)
+        a2, b2 = -sin(th2), cos(th2)
+
+        c1 = -a1 * p1.x - b1 * p1.y
+        c2 = -a2 * p2.x - b2 * p2.y
+
+        x = (b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1)
+        y = (c1 * a2 - c2 * a1) / (a1 * b2 - a2 * b1)
+
+        return Pose2d(x, y, robot_angle)

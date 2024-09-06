@@ -109,9 +109,19 @@ class Gollum(wpilib.TimedRobot):
 
         SmartDashboard.putNumber("robot yaw", self.drive.odometry.rotation().degrees())
 
-        pos = self.drive.odometry.pose().translation()
+        pose = self.drive.odometry.pose()
+        pos = pose.translation()
         SmartDashboard.putNumber("robot x", pos.x)
         SmartDashboard.putNumber("robot y", pos.y)
+
+        angle = pose.rotation().radians()
+        vision_pos = self.vision.estimate_multitag_pose(angle)
+        if vision_pos is not None:
+            SmartDashboard.putNumber("vision x", vision_pos.x)
+            SmartDashboard.putNumber("vision y", vision_pos.y)
+        else:
+            SmartDashboard.putNumber("vision x", -1)
+            SmartDashboard.putNumber("vision y", -1)
 
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
