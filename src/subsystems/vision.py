@@ -1,4 +1,5 @@
 from photonlibpy.photonCamera import PhotonCamera
+from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
 from photonlibpy.photonPoseEstimator import (
     PhotonPoseEstimator,
     AprilTagFieldLayout,
@@ -7,7 +8,7 @@ from photonlibpy.photonPoseEstimator import (
 from wpimath.geometry import Transform3d, Rotation3d, Pose2d, Translation2d
 from wpimath import units
 from commands2 import Subsystem, CommandScheduler
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 from math import tan, sin, cos
 
@@ -23,13 +24,6 @@ class Vision(Subsystem):
             # + "crescendo-apriltags.json"
             config.code_path
             + "firehouse-apriltags.json"
-        )
-        # TODO: Put this in config
-        robot_to_cam = Transform3d(
-            units.inchesToMeters(1.5),
-            units.inchesToMeters(12),
-            units.inchesToMeters(18.5),
-            Rotation3d.fromDegrees(0, 20, 0),
         )
 
         scheduler.registerSubsystem(self)
@@ -76,18 +70,26 @@ class Vision(Subsystem):
         return config.lookup(pitch_table, x)
 
     # TODO: Incorporate camera pose relative to robot center, then use multiple cameras
-    def estimate_multitag_pose(self, robot_angle: float) -> Optional[Pose2d]:
+    def estimate_multitag_pose(self, robot_angle: float) -> List[Pose2d]:
         result = self.camera.getLatestResult()
-        targets = result.getTargets()
-        if len(targets) < 2:
-            return None
-        t1, t2 = targets[0], targets[1]
+        tags = result.getTargets()
+        poses = []
+        for i in range(len(tags)):
+            for j in range(i + 1, len(tags)):
+                poses.append(self.estimate_2tag_pose(robot_angle, tags[i], tags[j]))
+        return poses
 
-        p1 = self.layout.getTagPose(t1.getFiducialId()).toPose2d().translation()
-        p2 = self.layout.getTagPose(t2.getFiducialId()).toPose2d().translation()
+    def estimate_2tag_pose(
+        self,
+        robot_angle: float,
+        tag1: PhotonTrackedTarget,
+        tag2: PhotonTrackedTarget,
+    ) -> Pose2d:
+        p1 = self.layout.getTagPose(tag1.getFiducialId()).toPose2d().translation()
+        p2 = self.layout.getTagPose(tag2.getFiducialId()).toPose2d().translation()
 
-        th1 = units.degreesToRadians(-t1.getYaw()) + robot_angle
-        th2 = units.degreesToRadians(-t2.getYaw()) + robot_angle
+        th1 = units.degreesToRadians(-tag1.getYaw()) + robot_angle
+        th2 = units.degreesToRadians(-tag2.getYaw()) + robot_angle
 
         a1, b1 = -sin(th1), cos(th1)
         a2, b2 = -sin(th2), cos(th2)
