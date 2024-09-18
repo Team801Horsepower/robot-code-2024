@@ -10,6 +10,7 @@ class Graph(AStar):
             data = json.load(f)
         self.nodes = [Translation2d(l[0], l[1]) for l in data["nodes"]]
         self.edges = [(l[0], l[1]) for l in data["edges"]]
+        self.shoot_idxs = data["shoot_idxs"]
 
     def neighbors(self, node: int) -> List[int]:
         n_li = []
