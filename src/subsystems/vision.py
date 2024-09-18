@@ -1,15 +1,16 @@
 from photonlibpy.photonCamera import PhotonCamera
+from photonlibpy.photonTrackedTarget import PhotonTrackedTarget
 from photonlibpy.photonPoseEstimator import (
     PhotonPoseEstimator,
     AprilTagFieldLayout,
     PoseStrategy,
 )
-from wpimath.geometry import Transform3d, Rotation3d
+from wpimath.geometry import Transform3d, Rotation3d, Pose2d, Translation2d
 from wpimath import units
 from commands2 import Subsystem, CommandScheduler
-from typing import Tuple
+from typing import Tuple, Optional, List
 
-from math import tan
+from math import tan, sin, cos
 
 import config
 
@@ -18,24 +19,17 @@ class Vision(Subsystem):
     def __init__(self, scheduler: CommandScheduler, camera_name="Camera_Module_v1"):
         self.camera = PhotonCamera(camera_name)
 
-        layout = AprilTagFieldLayout(config.code_path + "crescendo-apriltags.json")
-        strat = PoseStrategy.LOWEST_AMBIGUITY
-        robot_to_cam = Transform3d(
-            units.inchesToMeters(1.5),
-            units.inchesToMeters(12),
-            units.inchesToMeters(18.5),
-            Rotation3d.fromDegrees(0, 20, 0),
+        self.layout = AprilTagFieldLayout(
+            # config.code_path
+            # + "crescendo-apriltags.json"
+            config.code_path
+            + "firehouse-apriltags.json"
         )
-        self.estimator = PhotonPoseEstimator(layout, strat, self.camera, robot_to_cam)
-
-        self.current_pose = "periodic hasn't been called yet"
 
         scheduler.registerSubsystem(self)
 
     def periodic(self):
-        result = self.camera.getLatestResult()
-        self.current_pose = self.estimator.update(result)
-        # print(self.current_pose)
+        pass
 
     def test(self):
         # result = self.camera.getLatestResult()
@@ -74,3 +68,40 @@ class Vision(Subsystem):
             return None
         pitch_table = [(r[0], r[1]) for r in config.shooter_lookup_table]
         return config.lookup(pitch_table, x)
+
+    # Returns list of tuples, each containing a pose and a confidence between 0 and 1
+    # TODO: Incorporate camera pose relative to robot center, then use multiple cameras
+    def estimate_multitag_pose(self, robot_angle: float) -> List[Tuple[Pose2d, float]]:
+        result = self.camera.getLatestResult()
+        tags = result.getTargets()
+        poses = []
+        for i in range(len(tags)):
+            for j in range(i + 1, len(tags)):
+                poses.append(self.estimate_2tag_pose(robot_angle, tags[i], tags[j]))
+        return poses
+
+    # Returns a tuple containing a pose and a confidence between 0 and 1, determined
+    # by the sine of the angle between the vectors to the april tags
+    def estimate_2tag_pose(
+        self,
+        robot_angle: float,
+        tag1: PhotonTrackedTarget,
+        tag2: PhotonTrackedTarget,
+    ) -> Tuple[Pose2d, float]:
+        p1 = self.layout.getTagPose(tag1.getFiducialId()).toPose2d().translation()
+        p2 = self.layout.getTagPose(tag2.getFiducialId()).toPose2d().translation()
+
+        th1 = units.degreesToRadians(-tag1.getYaw()) + robot_angle
+        th2 = units.degreesToRadians(-tag2.getYaw()) + robot_angle
+        confidence = sin(th1 - th2) ** 2
+
+        a1, b1 = -sin(th1), cos(th1)
+        a2, b2 = -sin(th2), cos(th2)
+
+        c1 = -a1 * p1.x - b1 * p1.y
+        c2 = -a2 * p2.x - b2 * p2.y
+
+        x = (b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1)
+        y = (c1 * a2 - c2 * a1) / (a1 * b2 - a2 * b1)
+
+        return (Pose2d(x, y, robot_angle), confidence)
