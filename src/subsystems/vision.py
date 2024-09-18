@@ -69,8 +69,9 @@ class Vision(Subsystem):
         pitch_table = [(r[0], r[1]) for r in config.shooter_lookup_table]
         return config.lookup(pitch_table, x)
 
+    # Returns list of tuples, each containing a pose and a confidence between 0 and 1
     # TODO: Incorporate camera pose relative to robot center, then use multiple cameras
-    def estimate_multitag_pose(self, robot_angle: float) -> List[Pose2d]:
+    def estimate_multitag_pose(self, robot_angle: float) -> List[Tuple[Pose2d, float]]:
         result = self.camera.getLatestResult()
         tags = result.getTargets()
         poses = []
@@ -79,17 +80,20 @@ class Vision(Subsystem):
                 poses.append(self.estimate_2tag_pose(robot_angle, tags[i], tags[j]))
         return poses
 
+    # Returns a tuple containing a pose and a confidence between 0 and 1, determined
+    # by the sine of the angle between the vectors to the april tags
     def estimate_2tag_pose(
         self,
         robot_angle: float,
         tag1: PhotonTrackedTarget,
         tag2: PhotonTrackedTarget,
-    ) -> Pose2d:
+    ) -> Tuple[Pose2d, float]:
         p1 = self.layout.getTagPose(tag1.getFiducialId()).toPose2d().translation()
         p2 = self.layout.getTagPose(tag2.getFiducialId()).toPose2d().translation()
 
         th1 = units.degreesToRadians(-tag1.getYaw()) + robot_angle
         th2 = units.degreesToRadians(-tag2.getYaw()) + robot_angle
+        confidence = sin(th1 - th2) ** 2
 
         a1, b1 = -sin(th1), cos(th1)
         a2, b2 = -sin(th2), cos(th2)
@@ -100,4 +104,4 @@ class Vision(Subsystem):
         x = (b1 * c2 - b2 * c1) / (a1 * b2 - a2 * b1)
         y = (c1 * a2 - c2 * a1) / (a1 * b2 - a2 * b1)
 
-        return Pose2d(x, y, robot_angle)
+        return (Pose2d(x, y, robot_angle), confidence)

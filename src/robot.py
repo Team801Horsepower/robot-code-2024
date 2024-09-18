@@ -122,9 +122,10 @@ class Gollum(wpilib.TimedRobot):
         # else:
         #     SmartDashboard.putNumber("vision x", -1)
         #     SmartDashboard.putNumber("vision y", -1)
-        for i, pose in enumerate(vision_poses):
+        for i, (pose, confidence) in enumerate(vision_poses):
             SmartDashboard.putNumber(f"vision x {i}", pose.x)
             SmartDashboard.putNumber(f"vision y {i}", pose.y)
+            SmartDashboard.putNumber(f"confidence {i}", confidence)
 
     def autonomousInit(self):
         self.drive.chassis.set_swerves()
