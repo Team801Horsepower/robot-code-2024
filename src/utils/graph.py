@@ -1,4 +1,5 @@
 import json
+from config import is_red
 from typing import List
 from astar import AStar
 from wpimath.geometry import Translation2d
@@ -8,7 +9,7 @@ class Graph(AStar):
     def __init__(self, file_path: str):
         with open(file_path, "r") as f:
             data = json.load(f)
-        self.nodes = [Translation2d(l[0], l[1]) for l in data["nodes"]]
+        self.nodes = [Translation2d((16.54 - l[0]) if is_red() else l[0], l[1]) for l in data["nodes"]]
         self.edges = [(l[0], l[1]) for l in data["edges"]]
         self.shoot_idxs = data["shoot_idxs"]
 

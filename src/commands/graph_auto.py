@@ -32,7 +32,6 @@ class GraphAuto(Command):
         vision: Vision,
         note_vision: NoteVision,
     ):
-        # TODO: Mirror the graph if we're on the red side
         self.graph = Graph(graph_path)
         self.notes = notes
 
