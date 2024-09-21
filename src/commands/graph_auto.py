@@ -1,5 +1,6 @@
 from commands2 import Command
 from wpimath.geometry import Translation2d
+from wpimath import units
 
 import time
 from typing import List
@@ -9,6 +10,7 @@ from commands.graph_pathfind import GraphPathfind
 from commands.gather import Gather
 from commands.auto_auto_aim import AutoAutoAim
 from commands.shoot import Shoot
+from commands.aim_at_pitch import AimAtPitch
 from subsystems.drive import Drive
 from subsystems.gatherer import Gatherer
 from subsystems.shooter import Shooter
@@ -83,9 +85,11 @@ class GraphAuto(Command):
         note = self.notes.pop(0)
         if self.cmd is not None:
             self.cmd.end(True)
-        self.cmd = GraphPathfind(
-            note, self.graph, self.drive, self.note_vision, True
-        ).raceWith(Gather(self.gatherer, True))
+        self.cmd = (
+            GraphPathfind(note, self.graph, self.drive, self.note_vision, False)
+            .deadlineWith(AimAtPitch(self.shooter, units.degreesToRadians(20)))
+            .raceWith(Gather(self.gatherer, True))
+        )
         self.cmd.initialize()
         self.state = GATHERING
         self.last_transition = time.time()
@@ -108,6 +112,7 @@ class GraphAuto(Command):
                 self.note_vision,
                 target_rot_override=shoot_rot,
             )
+            .deadlineWith(AimAtPitch(self.shooter, units.degreesToRadians(20)))
             .deadlineWith(Gather(self.gatherer))
             .andThen(AutoAutoAim(self.drive, self.shooter, self.vision))
             .andThen(Shoot(self.shooter, self.gatherer, True))

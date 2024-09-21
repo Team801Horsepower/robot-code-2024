@@ -125,8 +125,14 @@ class Gollum(wpilib.TimedRobot):
 
         # self.drive.odometry.reset(Pose2d(4.0259, 0.4064, 0))
 
+        # in front of speaker
+        # self.drive.odometry.reset(
+        #     Pose2d(flip_red(1.46), 5.56, 0 if config.is_red() else pi)
+        # )
+
+        # source side
         self.drive.odometry.reset(
-            Pose2d(flip_red(1.46), flip_red(5.56), 0 if config.is_red() else pi)
+            Pose2d(flip_red(0.52), 1.98, 0 if config.is_red() else pi)
         )
 
         # notes = list(
@@ -135,10 +141,16 @@ class Gollum(wpilib.TimedRobot):
         #         [(1.6256, 0.41), (0.56, 1.85), (3.45, 2.29)],
         #     )
         # )
+        # notes = list(
+        #     map(
+        #         lambda t: Translation2d(flip_red(t[0]), t[1]),
+        #         [(2.9, 4.1), (2.9, 5.54), (2.9, 7)],
+        #     )
+        # )
         notes = list(
             map(
                 lambda t: Translation2d(flip_red(t[0]), t[1]),
-                [(2.9, 4.1), (2.9, 5.54), (2.9, 7)],
+                [(8.28, 0.74), (8.28, 2.43), (8.28, 4.1)],
             )
         )
 
@@ -151,6 +163,7 @@ class Gollum(wpilib.TimedRobot):
             self.vision,
             self.note_vision,
         )
+        # auto_cmd = Shoot(self.shooter, self.gatherer, True).andThen(auto_cmd)
 
         self.scheduler.schedule(auto_cmd)
 
