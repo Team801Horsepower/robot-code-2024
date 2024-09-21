@@ -33,6 +33,7 @@ from commands2 import CommandScheduler, Command
 from functools import reduce
 
 from math import pi, copysign
+import time
 
 import config
 from config import flip_red
@@ -71,6 +72,9 @@ class Gollum(wpilib.TimedRobot):
             self.drive.odometry.pose(), self.note_vision, self.drive
         )
 
+        self.pose_log = ""
+        self.start_time = 0
+
         SmartDashboard.putNumber("speaker distance", -1)
         SmartDashboard.putNumber("shooter pitch", -1)
         SmartDashboard.putNumber("shooter abs enc", -1)
@@ -102,6 +106,17 @@ class Gollum(wpilib.TimedRobot):
         else:
             self.led.idle()
 
+        if self.isEnabled():
+            vision_poses = self.vision.estimate_multitag_pose(
+                self.drive.odometry.rotation().radians()
+            )
+
+            t = time.time() - self.start_time
+            for i, (pose, confidence) in enumerate(vision_poses):
+                r = pose.rotation().degrees()
+                s = f"{t},{i},{pose.x},{pose.y},{r},{confidence}\n"
+                self.pose_log += s
+
         SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
         SmartDashboard.putNumber(
             "shooter pitch", units.radiansToDegrees(self.shooter.get_pitch())
@@ -113,11 +128,27 @@ class Gollum(wpilib.TimedRobot):
 
         SmartDashboard.putNumber("robot yaw", self.drive.odometry.rotation().degrees())
 
-        pos = self.drive.odometry.pose().translation()
+        pose = self.drive.odometry.pose()
+        pos = pose.translation()
         SmartDashboard.putNumber("robot x", pos.x)
         SmartDashboard.putNumber("robot y", pos.y)
 
+        angle = pose.rotation().radians()
+        vision_poses = self.vision.estimate_multitag_pose(angle)
+        # if vision_pos is not None:
+        #     SmartDashboard.putNumber("vision x", vision_pos.x)
+        #     SmartDashboard.putNumber("vision y", vision_pos.y)
+        # else:
+        #     SmartDashboard.putNumber("vision x", -1)
+        #     SmartDashboard.putNumber("vision y", -1)
+        for i, (pose, confidence) in enumerate(vision_poses):
+            SmartDashboard.putNumber(f"vision x {i}", pose.x)
+            SmartDashboard.putNumber(f"vision y {i}", pose.y)
+            SmartDashboard.putNumber(f"confidence {i}", confidence)
+
     def autonomousInit(self):
+        self.start_time = time.time()
+
         self.drive.chassis.set_swerves()
 
         autos_dir = config.code_path + "autos/"
@@ -498,6 +529,11 @@ class Gollum(wpilib.TimedRobot):
         self.feeder.run(feed_power)
         test = self.note_vision.robot_space_note_pos()
         print(test)
+
+    def disabledInit(self):
+        if self.pose_log:
+            with open("/home/lvuser/pose_log.csv", "a") as f:
+                f.write(self.pose_log)
 
 
 if __name__ == "__main__":
