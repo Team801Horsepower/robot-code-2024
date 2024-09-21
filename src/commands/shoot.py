@@ -13,6 +13,7 @@ class Shoot(Command):
         self.keep_spin = keep_spin
         self.note_was_present = False
         self.shot_time = None
+        self.start_time = 9999999999
 
     def initialize(self):
         self.start_time = time.time()

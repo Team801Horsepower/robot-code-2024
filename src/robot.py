@@ -22,6 +22,7 @@ from commands.shoot import Shoot
 from commands.measure_time import MeasureTime
 from commands.require_note import RequireNote
 from commands.graph_pathfind import GraphPathfind
+from commands.graph_auto import GraphAuto
 from utils.read_auto import read_auto, read_cmds
 from utils.graph import Graph
 
@@ -34,6 +35,7 @@ from functools import reduce
 from math import pi, copysign
 
 import config
+from config import flip_red
 
 
 class Gollum(wpilib.TimedRobot):
@@ -119,6 +121,43 @@ class Gollum(wpilib.TimedRobot):
         self.drive.chassis.set_swerves()
 
         autos_dir = config.code_path + "autos/"
+        graph_path = autos_dir + "graph.json"
+
+        # self.drive.odometry.reset(Pose2d(4.0259, 0.4064, 0))
+
+        self.drive.odometry.reset(
+            Pose2d(flip_red(1.46), flip_red(5.56), 0 if config.is_red() else pi)
+        )
+
+        # notes = list(
+        #     map(
+        #         lambda t: Translation2d(*t),
+        #         [(1.6256, 0.41), (0.56, 1.85), (3.45, 2.29)],
+        #     )
+        # )
+        notes = list(
+            map(
+                lambda t: Translation2d(flip_red(t[0]), t[1]),
+                [(2.9, 4.1), (2.9, 5.54), (2.9, 7)],
+            )
+        )
+
+        auto_cmd = GraphAuto(
+            graph_path,
+            notes,
+            self.drive,
+            self.gatherer,
+            self.shooter,
+            self.vision,
+            self.note_vision,
+        )
+
+        self.scheduler.schedule(auto_cmd)
+
+    def autonomousInit_less_old(self):
+        self.drive.chassis.set_swerves()
+
+        autos_dir = "/home/lvuser/py/autos/"
         graph_path = autos_dir + "graph.json"
 
         speaker_pos = Translation2d(1.03, -2.88)

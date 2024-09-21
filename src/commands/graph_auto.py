@@ -14,6 +14,8 @@ from subsystems.gatherer import Gatherer
 from subsystems.shooter import Shooter
 from subsystems.vision import Vision
 from subsystems.note_vision import NoteVision
+import config
+from config import flip_red
 
 
 GATHERING = 0
@@ -32,7 +34,6 @@ class GraphAuto(Command):
         vision: Vision,
         note_vision: NoteVision,
     ):
-        # TODO: Mirror the graph if we're on the red side
         self.graph = Graph(graph_path)
         self.notes = notes
 
@@ -48,6 +49,7 @@ class GraphAuto(Command):
         self.last_transition = time.time()
 
     def initialize(self):
+        print("BEGIN AUTO")
         if self.gatherer.note_present():
             self.transition_shooting()
         else:
@@ -71,13 +73,16 @@ class GraphAuto(Command):
         self.cmd.execute()
 
     def transition_gathering(self):
+        print("NOW GATHERING")
         if not self.notes:
-            self.cmd.end(True)
+            if self.cmd is not None:
+                self.cmd.end(True)
             self.state = FINISHED
             self.last_transition = time.time()
             return
         note = self.notes.pop(0)
-        self.cmd.end(True)
+        if self.cmd is not None:
+            self.cmd.end(True)
         self.cmd = GraphPathfind(
             note, self.graph, self.drive, self.note_vision, True
         ).raceWith(Gather(self.gatherer, True))
@@ -86,12 +91,15 @@ class GraphAuto(Command):
         self.last_transition = time.time()
 
     def transition_shooting(self):
+        print("NOW SHOOTING")
         shoot_pos_s = [self.graph.nodes[i] for i in self.graph.shoot_idxs]
         cur_pos = self.drive.odometry.pose().translation()
         nearest_shoot_pos = min(shoot_pos_s, key=lambda pos: (pos - cur_pos).norm())
-        speaker_pos = Translation2d(0.0, 5.54)
+        speaker_pos = Translation2d(flip_red(0.0), 5.54)
+        # speaker_pos = Translation2d(2.2606, 3.7178)
         shoot_rot = (speaker_pos - nearest_shoot_pos).angle()
-        self.cmd.end(True)
+        if self.cmd is not None:
+            self.cmd.end(True)
         self.cmd = (
             GraphPathfind(
                 nearest_shoot_pos,
@@ -102,8 +110,7 @@ class GraphAuto(Command):
             )
             .deadlineWith(Gather(self.gatherer))
             .andThen(AutoAutoAim(self.drive, self.shooter, self.vision))
-            # TODO: Change keep_spin to True
-            .andThen(Shoot(self.shooter, self.gatherer, False))
+            .andThen(Shoot(self.shooter, self.gatherer, True))
         )
         self.cmd.initialize()
         self.state = SHOOTING
@@ -113,4 +120,5 @@ class GraphAuto(Command):
         return self.state == FINISHED
 
     def end(self, interrupted: bool):
-        self.cmd.end(interrupted)
+        if self.cmd is not None:
+            self.cmd.end(interrupted)

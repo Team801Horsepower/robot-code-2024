@@ -36,11 +36,11 @@ class GraphPathfind(Command):
             self.drive.odometry.pose().translation(), self.target
         )
         self.target_rot = self.target_rot_override or (
-            self.path[-1] - self.path[-2]
-        ).angle() + Rotation2d.fromDegrees(180)
+            (self.path[-1] - self.path[-2]).angle() + Rotation2d.fromDegrees(180)
+        )
 
     def execute(self):
-        print("path:", self.path)
+        # print("path:", self.path)
         if not self.path:
             return
         cur_pos = self.drive.odometry.pose().translation()

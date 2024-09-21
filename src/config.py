@@ -10,6 +10,10 @@ def is_red() -> bool:
     return DriverStation.getAlliance() == DriverStation.Alliance.kRed
 
 
+def flip_red(x: float) -> float:
+    return 16.54 - x if config.is_red() else x
+
+
 code_path = path.dirname(__file__) + "/"
 
 # lengths: meters
@@ -43,7 +47,7 @@ drive_speed = 6
 turn_speed = 6
 # auto_drive_speed = 0.8
 # auto_turn_speed = 1
-auto_drive_speed = 2.5
+auto_drive_speed = 3
 auto_turn_speed = 3
 
 # (drive ID, turn ID, absolute encoder ID, absolute encoder offset)
