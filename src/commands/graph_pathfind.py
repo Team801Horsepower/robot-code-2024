@@ -14,7 +14,7 @@ class GraphPathfind(Command):
         self.target = target
         self.graph = graph
         self.drive = drive
-        self.path = []
+        self.path = None
         self.dtp = None
         self.target_rot = None
 
@@ -22,10 +22,13 @@ class GraphPathfind(Command):
         self.path = self.graph.create_path(
             self.drive.odometry.pose().translation(), self.target
         )
-        self.target_rot = (self.path[-1] - self.path[-2]).angle()
+        self.target_rot = (
+            self.path[-1] - self.path[-2]
+        ).angle() + Rotation2d.fromDegrees(180)
 
     def execute(self):
         if not self.path:
+            self.drive.drive(Transform2d())
             return
         cur_pos = self.drive.odometry.pose().translation()
         if self.dtp is None:
@@ -40,4 +43,4 @@ class GraphPathfind(Command):
             self.dtp = None
 
     def isFinished(self):
-        return len(self.path) == 0
+        return self.path is not None and len(self.path) == 0

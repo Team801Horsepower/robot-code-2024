@@ -21,10 +21,12 @@ from commands.gather import Gather
 from commands.shoot import Shoot
 from commands.measure_time import MeasureTime
 from commands.require_note import RequireNote
+from commands.graph_pathfind import GraphPathfind
 from utils.read_auto import read_auto, read_cmds
+from utils.graph import Graph
 
 from wpilib import SmartDashboard, SendableChooser
-from wpimath.geometry import Translation2d
+from wpimath.geometry import Translation2d, Pose2d
 from wpimath import units
 from commands2 import CommandScheduler, Command
 from functools import reduce
@@ -114,6 +116,20 @@ class Gollum(wpilib.TimedRobot):
         SmartDashboard.putNumber("robot y", pos.y)
 
     def autonomousInit(self):
+        self.drive.chassis.set_swerves()
+
+        autos_dir = config.code_path + "autos/"
+        graph_path = autos_dir + "graph.json"
+
+        target = Translation2d(0, 2.14)
+        self.drive.odometry.reset(Pose2d(1.05, -1.9, -pi / 2))
+
+        graph = Graph(graph_path)
+
+        command = GraphPathfind(target, graph, self.drive)
+        self.scheduler.schedule(command)
+
+    def autonomousInit_old(self):
         self.drive.chassis.set_swerves()
 
         autos_dir = config.code_path + "autos/"
