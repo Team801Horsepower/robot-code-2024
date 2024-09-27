@@ -11,7 +11,7 @@ def is_red() -> bool:
 
 
 def flip_red(x: float) -> float:
-    return 16.54 - x if config.is_red() else x
+    return 16.54 - x if is_red() else x
 
 
 code_path = path.dirname(__file__) + "/"
@@ -129,7 +129,10 @@ amp_abs_enc_up = 0.800
 amp_abs_enc_down = 1.2799
 
 rear_camera_angle_offset = 0
-second_camera_height = units.inchesToMeters(11.5)
+# second_camera_height = units.inchesToMeters(11.5)
+second_camera_height = units.inchesToMeters(10)
 second_camera_horiz_offset = units.inchesToMeters(-5.125)
-second_camera_pitch = units.degreesToRadians(-5)
-second_camera_yaw = units.degreesToRadians(-5)
+# second_camera_pitch = units.degreesToRadians(-5)
+# second_camera_yaw = units.degreesToRadians(-5)
+second_camera_pitch = units.degreesToRadians(-32)
+second_camera_yaw = units.degreesToRadians(-10)

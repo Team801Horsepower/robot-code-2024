@@ -86,7 +86,9 @@ class GraphAuto(Command):
         if self.cmd is not None:
             self.cmd.end(True)
         self.cmd = (
-            GraphPathfind(note, self.graph, self.drive, self.note_vision, False)
+            GraphPathfind(
+                note, self.graph, self.drive, self.note_vision, chase_note=True
+            )
             .deadlineWith(AimAtPitch(self.shooter, units.degreesToRadians(20)))
             .raceWith(Gather(self.gatherer, True))
         )

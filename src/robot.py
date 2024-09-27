@@ -112,9 +112,10 @@ class Gollum(wpilib.TimedRobot):
             )
 
             t = time.time() - self.start_time
-            for i, (pose, confidence) in enumerate(vision_poses):
-                r = pose.rotation().degrees()
-                s = f"{t},{i},{pose.x},{pose.y},{r},{confidence}\n"
+            o_pos = self.drive.odometry.pose().translation()
+            for i, (v_pose, confidence) in enumerate(vision_poses):
+                r = v_pose.rotation().degrees()
+                s = f"{t},{i},{v_pose.x},{v_pose.y},{r},{confidence},{o_pos.x},{o_pos.y}\n"
                 self.pose_log += s
 
         SmartDashboard.putNumber("speaker distance", self.vision.speaker_dist())
@@ -128,12 +129,12 @@ class Gollum(wpilib.TimedRobot):
 
         SmartDashboard.putNumber("robot yaw", self.drive.odometry.rotation().degrees())
 
-        pose = self.drive.odometry.pose()
-        pos = pose.translation()
+        v_pose = self.drive.odometry.pose()
+        pos = v_pose.translation()
         SmartDashboard.putNumber("robot x", pos.x)
         SmartDashboard.putNumber("robot y", pos.y)
 
-        angle = pose.rotation().radians()
+        angle = v_pose.rotation().radians()
         vision_poses = self.vision.estimate_multitag_pose(angle)
         # if vision_pos is not None:
         #     SmartDashboard.putNumber("vision x", vision_pos.x)
@@ -141,12 +142,17 @@ class Gollum(wpilib.TimedRobot):
         # else:
         #     SmartDashboard.putNumber("vision x", -1)
         #     SmartDashboard.putNumber("vision y", -1)
-        for i, (pose, confidence) in enumerate(vision_poses):
-            SmartDashboard.putNumber(f"vision x {i}", pose.x)
-            SmartDashboard.putNumber(f"vision y {i}", pose.y)
+        for i, (v_pose, confidence) in enumerate(vision_poses):
+            SmartDashboard.putNumber(f"vision x {i}", v_pose.x)
+            SmartDashboard.putNumber(f"vision y {i}", v_pose.y)
             SmartDashboard.putNumber(f"confidence {i}", confidence)
 
-    def autonomousInit(self):
+        note_pos = self.note_vision.robot_space_note_pos()
+        if note_pos is not None:
+            SmartDashboard.putNumber("note x", note_pos.x)
+            SmartDashboard.putNumber("note y", note_pos.y)
+
+    def autonomousInit_new(self):
         self.start_time = time.time()
 
         self.drive.chassis.set_swerves()
@@ -181,7 +187,7 @@ class Gollum(wpilib.TimedRobot):
         notes = list(
             map(
                 lambda t: Translation2d(flip_red(t[0]), t[1]),
-                [(8.28, 0.74), (8.28, 2.43), (8.28, 4.1)],
+                [(8.28, 0.74), (8.28, 2.43), (8.28, 4.1), (8.28, 5.78), (8.28, 7.46)],
             )
         )
 
@@ -238,7 +244,7 @@ class Gollum(wpilib.TimedRobot):
             commands.append(shoot_cmd)
         self.scheduler.schedule(reduce(Command.andThen, commands))
 
-    def autonomousInit_old(self):
+    def autonomousInit(self):
         self.drive.chassis.set_swerves()
 
         autos_dir = config.code_path + "autos/"
@@ -532,7 +538,8 @@ class Gollum(wpilib.TimedRobot):
 
     def disabledInit(self):
         if self.pose_log:
-            with open("/home/lvuser/pose_log.csv", "a") as f:
+            self.pose_log = "---\n" + self.pose_log
+            with open("/home/lvuser/pose_log_v2.csv", "a") as f:
                 f.write(self.pose_log)
 
 

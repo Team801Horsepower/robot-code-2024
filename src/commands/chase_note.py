@@ -29,8 +29,12 @@ class ChaseNote(DriveToPose):
         if cur_error < 0.5:
             return
 
-        relative_note_pos: Translation2d = self.vision.robot_space_note_pos()
+        relative_note_pos = self.vision.robot_space_note_pos()
         if relative_note_pos is not None:
+            # relative_note_pos = Translation2d(
+            #     relative_note_pos.x - 1.5,
+            #     relative_note_pos.y,
+            # )
             field_relative_note_pos = relative_note_pos.rotateBy(cur_pose.rotation())
             rotation = field_relative_note_pos.angle().rotateBy(
                 Rotation2d.fromDegrees(180)
