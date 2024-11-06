@@ -2,7 +2,7 @@
 name = "robot-code-2024"
 version = "0.1.0"
 description = ""
-authors = ["Ishaan Sen <ishaan.sen100@gmail.com", "Nikhil Iyer <iyer.h.nikhil@gmail.com>", "Omkar Subramaniam <omnikar5@gmail.com>", "Aneesha Guna <aneesha.guna@gmail.com>"]
+authors = ["Ishaan Sen <ishaan.sen100@gmail.com", "Omkar Subramaniam <omnikar5@gmail.com>", "Aneesha Guna <aneesha.guna@gmail.com>", "Matthew Carr <matthewstcarr@gmail.com"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
